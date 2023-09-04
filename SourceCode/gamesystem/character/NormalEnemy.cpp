@@ -1,11 +1,12 @@
 #include "NormalEnemy.h"
 #include <random>
 #include "Player.h"
-#include "Collision.h"
-#include "CsvLoader.h"
 #include "Helper.h"
+#include "CsvLoader.h"
+#include "Input.h"
 #include "Easing.h"
 #include "Slow.h"
+#include "Collision.h"
 //モデル読み込み
 NormalEnemy::NormalEnemy() {
 	
@@ -36,30 +37,20 @@ void (NormalEnemy::* NormalEnemy::stateTable[])() = {
 void NormalEnemy::Action() {
 	(this->*stateTable[_charaState])();
 
+	//当たり判定
+	SlowCollide();
 	Obj_SetParam();
 }
 //描画
 void NormalEnemy::Draw(DirectXCommon* dxCommon) {
-	Obj_Draw();
+	if (_charaState != STATE_INTER) {
+		Obj_Draw();
+	}
 }
 //ImGui描画
 void NormalEnemy::ImGui_Origin() {
 	ImGui::Begin("Enemy");
-	//if (ImGui::RadioButton("FOLLOW", &_charaState)) {
-	//	_charaState = STATE_FOLLOW;
-	//}
-	//else if (ImGui::RadioButton("CIRCLE", &_charaState)) {
-	//	m_StartPos = m_Position;
-	//	m_CircleScale = 0.0f;
-	//	m_CircleSpeed = 0.0f;
-	//	_charaState = STATE_CIRCLE;
-	//}
-	//else if (ImGui::RadioButton("SIN", &_charaState)) {
-	//	_charaState = STATE_SIN;
-	//}
-	//else if (ImGui::RadioButton("INTER", &_charaState)) {
-	//	_charaState = STATE_INTER;
-	//}
+	ImGui::Text("Slow:%d", m_Slow);
 	ImGui::End();
 }
 //開放
@@ -67,10 +58,17 @@ void NormalEnemy::Finalize() {
 
 }
 
+//リスポーン
 void NormalEnemy::Inter() {
-
+	m_ResPornTimer++;
+	if (m_ResPornTimer == 100) {
+		m_Position.x = 15.0f;
+		m_ResPornTimer = {};
+		m_Slow = false;
+		_charaState = STATE_LEFT;
+	}
 }
-
+//右に動く
 void NormalEnemy::RightMove() {
 	const float l_MAX = 15.0f;
 	m_velocity = 0.05f;
@@ -78,9 +76,10 @@ void NormalEnemy::RightMove() {
 
 	if (Helper::GetInstance()->CheckMin(m_Position.x, l_MAX, m_velocity)) {
 		m_Position.x = -15.0f;
+		m_Slow = false;
 	}
 }
-
+//左に動く
 void NormalEnemy::LeftMove() {
 	const float l_MIN = -15.0f;
 	m_velocity = -0.05f;
@@ -88,5 +87,22 @@ void NormalEnemy::LeftMove() {
 
 	if (Helper::GetInstance()->CheckMax(m_Position.x, l_MIN, m_velocity)) {
 		m_Position.x = 15.0f;
+		m_Slow = false;
+	}
+}
+
+void NormalEnemy::SlowCollide() {
+	Input* input = Input::GetInstance();
+	if (Collision::CircleCollision(m_Position.x, m_Position.z, m_radius, Player::GetInstance()->GetPosition().x, Player::GetInstance()->GetPosition().z, m_radius)) {
+		if (!m_Slow) {
+			m_Slow = true;
+			Slow::GetInstance()->SetSlow(true);
+		}
+		else {
+			if ((input->TriggerButton(input->A))) {
+				_charaState = STATE_INTER;
+				m_ResPornTimer = {};
+			}
+		}
 	}
 }

@@ -140,11 +140,12 @@ void FirstStageActor::FinishUpdate(DebugCamera* camera) {
 
 void FirstStageActor::ImGuiDraw() {
 	ImGui::Begin("FIRST");
-	ImGui::Text("GroundNum:%d",ground->GetVertexNum());
-	ImGui::Text("SkydomeNum:%d", skydome->GetVertexNum());
+	if (Slow::GetInstance()->GetSlow()) {
+		ImGui::Text("PUSH A!!!");
+	}
 	ImGui::End();
 
 	enemy->ImGuiDraw();
-	Player::GetInstance()->ImGuiDraw();
-	Slow::GetInstance()->ImGuiDraw();
+	//Player::GetInstance()->ImGuiDraw();
+	//Slow::GetInstance()->ImGuiDraw();
 }
