@@ -4,7 +4,7 @@
 #include "ImageManager.h"
 #include "Player.h"
 #include "Helper.h"
-
+#include "Slow.h"
 void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, LightGroup* lightgroup) {
 	dxCommon->SetFullScreen(true);
 	//共通の初期化
@@ -27,7 +27,7 @@ void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 	ground->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::GROUND));
 	ground->SetScale({ 2.f,1.f,2.f });
 	ground->SetPosition({ 0.0f,-10.0f,0.0f });
-	ground->SetAddOffset(3.0f);
+	ground->SetAddOffset(0.5f);
 	ground->VertexCheck();
 
 	//スカイドーム
@@ -40,7 +40,7 @@ void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 
 	//プレイヤー
 	Player::GetInstance()->LoadResource();
-	Player::GetInstance()->InitState({ 0.0f,0.0f,0.0f });
+	Player::GetInstance()->InitState({ 0.0f,0.0f,8.0f });
 	Player::GetInstance()->Initialize();
 
 	//敵
@@ -48,12 +48,16 @@ void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 	enemy->Initialize();
 
 	//テクスチャ
-	tex.reset(IKETexture::Create(ImageManager::MAGIC, { 0,0,0 }, { 0.5f,0.5f,0.5f }, { 1,1,1,1 }));
-	tex->TextureCreate();
-	tex->SetPosition({ 5.0f,2.0f,0.0f });
-	tex->SetScale({ 0.5f,0.5f,0.5f });
-	tex->SetIsBillboard(true);
-	tex->SetColor({ 1.0f,0.0,0.0f,1.0f });
+	for (int i = 0; i < AREA_NUM; i++) {
+		tex[i].reset(IKETexture::Create(ImageManager::AREA, { 0,0,0 }, { 0.5f,0.5f,0.5f }, { 1,1,1,1 }));
+		tex[i]->TextureCreate();
+		tex[i]->SetScale({ 2.0f,0.1f,0.1f });
+		tex[i]->SetIsBillboard(true);
+		tex[i]->SetColor({ 1.0f,0.0,0.0f,0.5f });
+	}
+
+	tex[0]->SetPosition({ 0.0f,2.0f,8.0f });
+	tex[1]->SetPosition({ 0.0f,2.0f,-8.0f });
 }
 
 void FirstStageActor::Finalize() {
@@ -71,8 +75,11 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 	m_AddOffset.x = 0.001f;
 	ground->SetAddOffset(m_AddOffset.x);
 	Player::GetInstance()->Update();
+	Slow::GetInstance()->Update();
 	enemy->Update();
-	tex->Update();
+	for (int i = 0; i < AREA_NUM; i++) {
+		tex[i]->Update();
+	}
 }
 
 void FirstStageActor::Draw(DirectXCommon* dxCommon) {
@@ -113,7 +120,9 @@ void FirstStageActor::BackDraw(DirectXCommon* dxCommon) {
 	IKEObject3d::PostDraw();
 
 	IKETexture::PreDraw2(dxCommon, AlphaBlendType);
-	tex->Draw();
+	for (int i = 0; i < AREA_NUM; i++) {
+		tex[i]->Draw();
+	}
 	IKETexture::PostDraw();
 }
 //導入しーんの更新
@@ -131,10 +140,12 @@ void FirstStageActor::FinishUpdate(DebugCamera* camera) {
 
 void FirstStageActor::ImGuiDraw() {
 	ImGui::Begin("FIRST");
-	ImGui::Text("GroundNum:%d",ground->GetVertexNum());
-	ImGui::Text("SkydomeNum:%d", skydome->GetVertexNum());
+	if (Slow::GetInstance()->GetSlow()) {
+		ImGui::Text("PUSH A!!!");
+	}
 	ImGui::End();
 
 	enemy->ImGuiDraw();
-	Player::GetInstance()->ImGuiDraw();
+	//Player::GetInstance()->ImGuiDraw();
+	//Slow::GetInstance()->ImGuiDraw();
 }

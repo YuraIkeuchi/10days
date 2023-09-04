@@ -27,11 +27,13 @@ private:
 	void ImGuiDraw();
 
 private:
+	static const int AREA_NUM = 2;
+private:
 	unique_ptr<IKEObject3d> ground;
 	IKEModel* model;
 	unique_ptr<IKEObject3d> skydome;
 	XMFLOAT2 m_AddOffset = {};
 	unique_ptr<InterEnemy> enemy;
-	unique_ptr<IKETexture> tex;
+	unique_ptr<IKETexture> tex[AREA_NUM];
 };
 

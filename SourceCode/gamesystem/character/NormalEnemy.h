@@ -11,14 +11,16 @@ public:
 	void ImGui_Origin()override;
 
 	void Draw(DirectXCommon* dxCommon) override;//描画
+
+private:
+	void SlowCollide();
 private:
 	//キャラの状態
 	enum CharaState
 	{
 		STATE_INTER,
-		STATE_FOLLOW,
-		STATE_CIRCLE,
-		STATE_SIN,
+		STATE_RIGHT,
+		STATE_LEFT,
 	};
 
 	//関数ポインタ
@@ -28,22 +30,15 @@ private:
 
 private:
 	void Inter();//待機
-	void Circle();//円運動
-	void Follow();//追従
-	void MoveSin();//sin波
+	void RightMove();//右向き
+	void LeftMove();//左向き
 protected:
 
 private:
-	//円運動の変数
-	float m_CircleAngle = 0.0f;
-	float m_CircleRadius = 0.0f;
-	float m_CircleSpeed = 0.0f;
-	float m_CircleScale = 20.0f;
-	//追従用変数
-	XMFLOAT3 m_FollowVel{};
-	//イージング後の位置
-	XMFLOAT3 m_AfterPos = {};
-	//初めの座標
-	XMFLOAT3 m_StartPos = {};
+	float m_velocity = 0.2f;
+	bool m_Slow = false;
+	float m_radius = 1.0f;
+
+	int m_ResPornTimer = 0;
 };
 

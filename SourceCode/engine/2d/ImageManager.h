@@ -24,6 +24,7 @@ public:
 	enum tex2dName
 	{
 		MAGIC,
+		AREA,
 	};
 	enum particleName
 	{

@@ -19,7 +19,12 @@ public:
 	void Draw(DirectXCommon* dxCommon)override;
 	//ImGui
 	void ImGuiDraw();
-	
+private:
+	static void (Player::* stateTable[])();
+
+private:
+	void Move();
+	void Attack();
 private:
 	XMFLOAT3 MoveVECTOR(XMVECTOR v, float angle);
 private:
@@ -32,4 +37,19 @@ private:
 	float velocity;
 	//移動加算値
 	float m_AddSpeed;
+
+	//キャラの状態
+	enum CharaState
+	{
+		STATE_MOVE,
+		STATE_ATTACK,
+	}_charaState;
+
+	enum AttackState {
+		ATTACK_DOWN,
+		ATTACK_UP,
+	}_AttackState;
+
+	float m_Frame = {};
+	float m_AfterPosZ = {};
 };
