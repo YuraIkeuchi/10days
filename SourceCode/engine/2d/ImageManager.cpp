@@ -20,7 +20,7 @@ void ImageManager::SecondLoad2D()
 void ImageManager::StartLoadTex2D()
 {
 	IKETexture::LoadTexture(MAGIC, L"Resources/2d/objicon/magic.png");
-
+	IKETexture::LoadTexture(AREA, L"Resources/2d/effect/DArea.png");
 }
 
 //非同期処理でのテクスチャの読み込み

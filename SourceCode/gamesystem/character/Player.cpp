@@ -38,55 +38,17 @@ void Player::InitState(const XMFLOAT3& pos) {
 	//移動処理用
 	velocity /= 5.0f;
 }
-
+/*CharaStateのState並び順に合わせる*/
+void (Player::* Player::stateTable[])() = {
+	&Player::Move,//移動
+	&Player::Attack,//攻撃
+};
 //更新処理
 void Player::Update()
 {
-	XMFLOAT3 rot = m_Rotation;
-	Input* input = Input::GetInstance();
-	float StickX = input->GetLeftControllerX();
-	float StickY = input->GetLeftControllerY();
-	const float STICK_MAX = 32768.0f;
-	if (input->TiltPushStick(Input::L_UP, 0.0f) ||
-		input->TiltPushStick(Input::L_DOWN, 0.0f) ||
-		input->TiltPushStick(Input::L_RIGHT, 0.0f) ||
-		input->TiltPushStick(Input::L_LEFT, 0.0f))
-	{
-		//上入力
-		if (input->TiltPushStick(Input::L_UP, 0.0f))
-			XMFLOAT3 vecvel = MoveVECTOR(XMVECTOR{ 0, 0, velocity, 0 }, angle);
+	//状態移行(charastateに合わせる)
+	(this->*stateTable[_charaState])();
 
-		//下入力
-		if (input->TiltPushStick(Input::L_DOWN, 0.0f))
-			XMFLOAT3 vecvel = MoveVECTOR(XMVECTOR{ 0, 0, -velocity, 0 }, angle);
-
-		//右入力
-		if (input->TiltPushStick(Input::L_RIGHT, 0.0f))
-			XMFLOAT3 vecvel = MoveVECTOR(XMVECTOR{ velocity, 0, 0, 0 }, angle);
-
-		//左入力
-		if (input->TiltPushStick(Input::L_LEFT, 0.0f))
-			XMFLOAT3 vecvel = MoveVECTOR(XMVECTOR{ -velocity, 0, 0, 0 }, angle);
-
-		const float rnd_vel = 0.1f;
-
-		XMFLOAT3 vel{};
-
-		vel.x = static_cast<float>(rand()) / RAND_MAX * rnd_vel - rnd_vel / 2.0f;
-		vel.y = static_cast<float>(rand()) / RAND_MAX * rnd_vel - rnd_vel / 2.0f;
-		vel.z = static_cast<float>(rand()) / RAND_MAX * rnd_vel - rnd_vel / 2.0f;
-		rot.y = angle + atan2f(StickX, StickY) * (PI_180 / PI);
-
-		//プレイヤーの回転角を取る
-		m_Rotation = { rot.x, rot.y, rot.z };
-
-		XMVECTOR move = { 0.0f, 0.0f, 0.1f, 0.0f };
-		XMMATRIX matRot = XMMatrixRotationY(XMConvertToRadians(m_Rotation.y));
-		move = XMVector3TransformNormal(move, matRot);
-
-		m_Position.x += move.m128_f32[0] * m_AddSpeed;
-		m_Position.z += move.m128_f32[2] * m_AddSpeed;
-	}
 	Obj_SetParam();
 }
 //VECTOR
@@ -107,6 +69,58 @@ void Player::Draw(DirectXCommon* dxCommon)
 //ImGui
 void Player::ImGuiDraw() {
 	ImGui::Begin("Player");
-	ImGui::Text("AddPower:%f", m_AddSpeed);
+	ImGui::Text("POSX:%f", m_Position.x);
 	ImGui::End();
+}
+
+//移動
+void Player::Move() {
+	XMFLOAT3 rot = m_Rotation;
+	Input* input = Input::GetInstance();
+	float StickX = input->GetLeftControllerX();
+	float StickY = input->GetLeftControllerY();
+	const float STICK_MAX = 32768.0f;
+
+	if (input->TiltPushStick(Input::L_UP, 0.0f) ||
+		input->TiltPushStick(Input::L_DOWN, 0.0f) ||
+		input->TiltPushStick(Input::L_RIGHT, 0.0f) ||
+		input->TiltPushStick(Input::L_LEFT, 0.0f))
+	{
+		//右入力
+		if (input->TiltPushStick(Input::L_RIGHT, 0.0f) && (m_Position.x < 9.5f)) {
+			m_AddSpeed = 0.2f;
+		}
+
+		//左入力
+		if (input->TiltPushStick(Input::L_LEFT, 0.0f) && (m_Position.x > -9.5f)) {
+			m_AddSpeed = -0.2f;
+		}
+
+		//移動量加算
+		m_Position.x += m_AddSpeed;
+	}
+
+	if ((input->TriggerButton(input->B))) {
+		_charaState = STATE_ATTACK;
+		m_Frame = {};
+		if (_AttackState == ATTACK_DOWN) {
+			m_AfterPosZ = -8.0f;
+			_AttackState = ATTACK_UP;
+		}
+		else {
+			m_AfterPosZ = 8.0f;
+			_AttackState = ATTACK_DOWN;
+		}
+	}
+	Helper::GetInstance()->Clamp(m_Position.x, -9.5f, 9.5f);
+}
+
+void Player::Attack() {
+	const float l_AddFrame = 0.025f;
+	if (Helper::GetInstance()->FrameCheck(m_Frame, l_AddFrame)) {
+		m_Frame = {};
+		_charaState = STATE_MOVE;
+	}
+
+	m_Position.z = Ease(In, Cubic, m_Frame, m_Position.z, m_AfterPosZ);
 }
