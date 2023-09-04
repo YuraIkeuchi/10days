@@ -11,6 +11,9 @@ public:
 	void ImGui_Origin()override;
 
 	void Draw(DirectXCommon* dxCommon) override;//•`‰æ
+
+private:
+	void SlowCollide();
 private:
 	//ƒLƒƒƒ‰‚Ìó‘Ô
 	enum CharaState
@@ -33,5 +36,9 @@ protected:
 
 private:
 	float m_velocity = 0.2f;
+	bool m_Slow = false;
+	float m_radius = 1.0f;
+
+	int m_ResPornTimer = 0;
 };
 

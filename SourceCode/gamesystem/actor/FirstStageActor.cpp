@@ -4,7 +4,7 @@
 #include "ImageManager.h"
 #include "Player.h"
 #include "Helper.h"
-
+#include "Slow.h"
 void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, LightGroup* lightgroup) {
 	dxCommon->SetFullScreen(true);
 	//共通の初期化
@@ -75,6 +75,7 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 	m_AddOffset.x = 0.001f;
 	ground->SetAddOffset(m_AddOffset.x);
 	Player::GetInstance()->Update();
+	Slow::GetInstance()->Update();
 	enemy->Update();
 	for (int i = 0; i < AREA_NUM; i++) {
 		tex[i]->Update();
@@ -139,10 +140,12 @@ void FirstStageActor::FinishUpdate(DebugCamera* camera) {
 
 void FirstStageActor::ImGuiDraw() {
 	ImGui::Begin("FIRST");
-	ImGui::Text("GroundNum:%d",ground->GetVertexNum());
-	ImGui::Text("SkydomeNum:%d", skydome->GetVertexNum());
+	if (Slow::GetInstance()->GetSlow()) {
+		ImGui::Text("PUSH A!!!");
+	}
 	ImGui::End();
 
 	enemy->ImGuiDraw();
-	Player::GetInstance()->ImGuiDraw();
+	//Player::GetInstance()->ImGuiDraw();
+	//Slow::GetInstance()->ImGuiDraw();
 }
