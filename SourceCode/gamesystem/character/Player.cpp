@@ -4,6 +4,7 @@
 #include "Input.h"
 #include "Easing.h"
 #include "Collision.h"
+#include "Slow.h"
 Player* Player::GetInstance()
 {
 	static Player instance;
@@ -116,8 +117,8 @@ void Player::Move() {
 }
 
 void Player::Attack() {
-	const float l_AddFrame = 0.025f;
-	if (Helper::GetInstance()->FrameCheck(m_Frame, l_AddFrame)) {
+	const float l_AddFrame = 0.01f;
+	if (Helper::GetInstance()->FrameCheck(m_Frame, l_AddFrame * Slow::GetInstance()->GetSlowPower())) {
 		m_Frame = {};
 		_charaState = STATE_MOVE;
 	}

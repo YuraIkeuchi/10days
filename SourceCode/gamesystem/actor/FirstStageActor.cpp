@@ -4,7 +4,7 @@
 #include "ImageManager.h"
 #include "Player.h"
 #include "Helper.h"
-
+#include "Slow.h"
 void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, LightGroup* lightgroup) {
 	dxCommon->SetFullScreen(true);
 	//共通の初期化
@@ -75,6 +75,7 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 	m_AddOffset.x = 0.001f;
 	ground->SetAddOffset(m_AddOffset.x);
 	Player::GetInstance()->Update();
+	Slow::GetInstance()->Update();
 	enemy->Update();
 	for (int i = 0; i < AREA_NUM; i++) {
 		tex[i]->Update();
@@ -145,4 +146,5 @@ void FirstStageActor::ImGuiDraw() {
 
 	enemy->ImGuiDraw();
 	Player::GetInstance()->ImGuiDraw();
+	Slow::GetInstance()->ImGuiDraw();
 }

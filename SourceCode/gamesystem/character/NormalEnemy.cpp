@@ -5,6 +5,7 @@
 #include "CsvLoader.h"
 #include "Helper.h"
 #include "Easing.h"
+#include "Slow.h"
 //ƒ‚ƒfƒ‹“Ç‚Ýž‚Ý
 NormalEnemy::NormalEnemy() {
 	
@@ -73,7 +74,7 @@ void NormalEnemy::Inter() {
 void NormalEnemy::RightMove() {
 	const float l_MAX = 15.0f;
 	m_velocity = 0.05f;
-	m_Position.x += m_velocity;
+	m_Position.x += m_velocity * Slow::GetInstance()->GetSlowPower();
 
 	if (Helper::GetInstance()->CheckMin(m_Position.x, l_MAX, m_velocity)) {
 		m_Position.x = -15.0f;
@@ -83,7 +84,7 @@ void NormalEnemy::RightMove() {
 void NormalEnemy::LeftMove() {
 	const float l_MIN = -15.0f;
 	m_velocity = -0.05f;
-	m_Position.x += m_velocity;
+	m_Position.x += m_velocity * Slow::GetInstance()->GetSlowPower();
 
 	if (Helper::GetInstance()->CheckMax(m_Position.x, l_MIN, m_velocity)) {
 		m_Position.x = 15.0f;
