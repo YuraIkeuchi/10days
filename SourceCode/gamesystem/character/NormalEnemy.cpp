@@ -36,6 +36,7 @@ bool NormalEnemy::Initialize() {
 	//	_charaState =
 	}
 	_charaState =  CharaState::STATE_LEFT;//StartState;
+	m_BaseSpeed = static_cast<float>(std::any_cast<double>(LoadCSV::LoadCsvParam("Resources/csv/chara/enemy/enemy.csv", "speed")));
 	return true;
 }
 
@@ -86,14 +87,14 @@ void NormalEnemy::Inter() {
 void NormalEnemy::RightMove() {
 
 	const float l_MAX = MapMaxX;
-	m_velocity = 0.05f;
+	m_velocity = m_BaseSpeed;
 	m_Position.x += m_velocity * Slow::GetInstance()->GetSlowPower();
 	
 	if (m_SlowMove) {
-		m_velocity = 0.05f * Slow::GetInstance()->GetSlowPower();
+		m_velocity = m_BaseSpeed * Slow::GetInstance()->GetSlowPower();
 	}
 	else {
-		m_velocity = 0.05f;
+		m_velocity = m_BaseSpeed;
 	}
 	m_Position.x += m_velocity;
 
@@ -105,13 +106,13 @@ void NormalEnemy::RightMove() {
 //¶‚É“®‚­
 void NormalEnemy::LeftMove() {
 	const float l_MIN =MapMinX;
-	m_velocity = -0.05f;
+	m_velocity = -m_BaseSpeed;
 	m_Position.x += m_velocity * Slow::GetInstance()->GetSlowPower();
 	if (m_SlowMove) {
-		m_velocity = -0.05f * Slow::GetInstance()->GetSlowPower();
+		m_velocity = -m_BaseSpeed * Slow::GetInstance()->GetSlowPower();
 	}
 	else {
-		m_velocity = -0.05f;
+		m_velocity = -m_BaseSpeed;
 	}
 	m_Position.x += m_velocity;
 
@@ -123,7 +124,7 @@ void NormalEnemy::LeftMove() {
 //¶‚É“®‚­
 void NormalEnemy::BottomMove() {
 	const float l_MIN = MapMinZ;
-	m_velocity = -0.05f;
+	m_velocity = -m_BaseSpeed;
 	m_Position.z += m_velocity * Slow::GetInstance()->GetSlowPower();
 
 	if (Helper::GetInstance()->CheckMax(m_Position.z, l_MIN, m_velocity)) {
@@ -134,7 +135,7 @@ void NormalEnemy::BottomMove() {
 //¶‚É“®‚­
 void NormalEnemy::UpMove() {
 	const float l_MIN =MapMaxZ;
-	m_velocity = 0.05f;
+	m_velocity = m_BaseSpeed;
 	m_Position.z += m_velocity * Slow::GetInstance()->GetSlowPower();
 
 	if (Helper::GetInstance()->CheckMin(m_Position.z, l_MIN, m_velocity)) {
