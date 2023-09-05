@@ -101,7 +101,6 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 		tex[i]->Update();
 	}
 	ParticleEmitter::GetInstance()->Update();
-	//ParticleEmitter::GetInstance()->SplatterEffect(120, Player::GetInstance()->GetPosition(), { 0, 0, 0 }, 1.0f, 1.0f, { 1, 0, 0, 1 });
 }
 
 void FirstStageActor::Draw(DirectXCommon* dxCommon) {
