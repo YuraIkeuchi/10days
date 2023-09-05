@@ -26,11 +26,7 @@ void Slow::Update() {
 }
 void Slow::ImGuiDraw() {
 	ImGui::Begin("Hit");
-	ImGui::Text("Hit:%d", m_Slow);
-	if (ImGui::RadioButton("Slow", &m_Slow)) {
-		m_Slow = true;
-	}if (ImGui::RadioButton("NoSlow", &m_Slow)) {
-		m_Slow = false;
-	}
+	ImGui::Text("Hit:%f", m_SlowPower);
+	
 	ImGui::End();
 }

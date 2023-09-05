@@ -1,0 +1,9 @@
+diff a/SourceCode/gamesystem/character/NormalEnemy.cpp b/SourceCode/gamesystem/character/NormalEnemy.cpp	(rejected hunks)
+@@ -83,6 +83,7 @@
+ }
+ //�E�ɓ���
+ void NormalEnemy::RightMove() {
++<<<<<<< HEAD
+ 	const float l_MAX = MapMaxX;
+ 	m_velocity = 0.05f;
+ 	m_Position.x += m_velocity * Slow::GetInstance()->GetSlowPower();
