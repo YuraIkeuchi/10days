@@ -44,6 +44,8 @@ private:
 	float velocity = {};
 	//移動加算値
 	float m_AddSpeed = 0.0f;
+	//csv用
+	float m_BaseSpeed = {};
 
 	//キャラの状態
 	enum CharaState

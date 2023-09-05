@@ -35,5 +35,6 @@ private:
 	int m_ResPornTimer = 0;
 
 public:
+	float m_BaseSpeed = {};
 };
 
