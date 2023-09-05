@@ -55,4 +55,9 @@ public:
 	void ImGuiDraw();
 
 	virtual void ImGui_Origin() = 0;
+
+public://gettersetter
+	void SetSlowMove(const bool SlowMove) { m_SlowMove = SlowMove; }
+protected:
+	bool m_SlowMove = false;
 };

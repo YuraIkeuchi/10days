@@ -50,7 +50,7 @@ void NormalEnemy::Draw(DirectXCommon* dxCommon) {
 //ImGui•`‰æ
 void NormalEnemy::ImGui_Origin() {
 	ImGui::Begin("Enemy");
-	ImGui::Text("Slow:%d", m_Slow);
+	ImGui::Text("Slow:%f", m_velocity);
 	ImGui::End();
 }
 //ŠJ•ú
@@ -71,8 +71,13 @@ void NormalEnemy::Inter() {
 //‰E‚É“®‚­
 void NormalEnemy::RightMove() {
 	const float l_MAX = 15.0f;
-	m_velocity = 0.05f;
-	m_Position.x += m_velocity * Slow::GetInstance()->GetSlowPower();
+	if (m_SlowMove) {
+		m_velocity = 0.05f * Slow::GetInstance()->GetSlowPower();
+	}
+	else {
+		m_velocity = 0.05f;
+	}
+	m_Position.x += m_velocity;
 
 	if (Helper::GetInstance()->CheckMin(m_Position.x, l_MAX, m_velocity)) {
 		m_Position.x = -15.0f;
@@ -82,8 +87,13 @@ void NormalEnemy::RightMove() {
 //¶‚É“®‚­
 void NormalEnemy::LeftMove() {
 	const float l_MIN = -15.0f;
-	m_velocity = -0.05f;
-	m_Position.x += m_velocity * Slow::GetInstance()->GetSlowPower();
+	if (m_SlowMove) {
+		m_velocity = -0.05f * Slow::GetInstance()->GetSlowPower();
+	}
+	else {
+		m_velocity = -0.05f;
+	}
+	m_Position.x += m_velocity;
 
 	if (Helper::GetInstance()->CheckMax(m_Position.x, l_MIN, m_velocity)) {
 		m_Position.x = 15.0f;
@@ -104,5 +114,8 @@ void NormalEnemy::SlowCollide() {
 				m_ResPornTimer = {};
 			}
 		}
+	}
+	else {
+		m_Slow = false;
 	}
 }
