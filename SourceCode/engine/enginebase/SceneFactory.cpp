@@ -4,6 +4,7 @@
 #include "ClearScene.h"
 #include "GameoverScene.h"
 #include "LoadScene.h"
+#include"EditorScene.h"
 #include "EditorScene.h"
 #include "TutorialScene.h"
 #include "EndRollScene.h"
@@ -21,6 +22,9 @@ BaseScene* SceneFactory::CreateScene(const std::string& sceneName) {
 	}
 	else if(sceneName == "FIRSTSTAGE"){
 		newScene = new FirstStage();
+	}
+	else if (sceneName == "EDITOR") {
+		newScene = new EditorScene();
 	}
 	else if (sceneName == "EDITORSCENE") {
 		newScene = new EditorScene();

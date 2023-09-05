@@ -17,13 +17,13 @@ bool NormalEnemy::Initialize() {
 	m_Object.reset(new IKEObject3d());
 	m_Object->Initialize();
 	m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::PLAYERMODEL));
-	m_Object->SetPosition({ 0.0f,0.0f,20.0f });
+
 	m_Object->SetColor({ 1.0f,0.0f,0.0,1.0f });
-	m_Position = { 15.0f,0.0f,0.0f };
+//	m_Position = { 15.0f,0.0f,0.0f };
 	m_Color = { 1.0f,0.0f,0.0f,1.0f };
 	m_Object->VertexCheck();
 
-	_charaState = STATE_LEFT;
+	//_charaState = STATE_LEFT;
 	return true;
 }
 
@@ -35,7 +35,7 @@ void (NormalEnemy::* NormalEnemy::stateTable[])() = {
 
 //s“®
 void NormalEnemy::Action() {
-	(this->*stateTable[_charaState])();
+//	(this->*stateTable[_charaState])();
 
 	//“–‚½‚è”»’è
 	SlowCollide();
@@ -43,9 +43,9 @@ void NormalEnemy::Action() {
 }
 //•`‰æ
 void NormalEnemy::Draw(DirectXCommon* dxCommon) {
-	if (_charaState != STATE_INTER) {
+	//if (_charaState != STATE_INTER) {
 		Obj_Draw();
-	}
+	//}
 }
 //ImGui•`‰æ
 void NormalEnemy::ImGui_Origin() {

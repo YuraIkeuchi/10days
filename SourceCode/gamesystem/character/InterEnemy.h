@@ -12,9 +12,23 @@ protected:
 	using XMMATRIX = DirectX::XMMATRIX;
 
 public://getter setter
+	enum class PosSt
+	{
+		UPRES,
+		BOTTOMRES,
+		LEFTRES,
+		RIGHTRES
+	};
+	bool CheckPos[4];
+	void SetResPos(PosSt pos);
+	void SetPosX(float posx) { m_Position.x = posx; }
 
+	void SetPosZ(float posz) { m_Position.z= posz; }
+
+	void SetNum(size_t num) { Num = num; }
 protected:
-
+	XMFLOAT3 RespawnPos;
+	size_t Num;
 public:
 	//virtual ~InterEnemy() = default;
 

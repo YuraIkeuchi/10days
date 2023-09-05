@@ -71,6 +71,7 @@ void Player::Draw(DirectXCommon* dxCommon)
 void Player::ImGuiDraw() {
 	ImGui::Begin("Player");
 	ImGui::Text("POSX:%f", m_Position.x);
+	ImGui::Text("POSZ:%f", m_Position.z);
 	ImGui::End();
 }
 

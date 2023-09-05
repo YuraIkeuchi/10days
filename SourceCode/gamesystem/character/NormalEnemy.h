@@ -22,16 +22,18 @@ private:
 		STATE_RIGHT,
 		STATE_LEFT,
 	};
-
+int _charaState = STATE_INTER;
 	//関数ポインタ
 	static void(NormalEnemy::* stateTable[])();
 
-	int _charaState = STATE_INTER;
+	
 
 private:
 	void Inter();//待機
 	void RightMove();//右向き
 	void LeftMove();//左向き
+	void UpMove();//右向き
+	void BottomMove();//左向き
 protected:
 
 private:
