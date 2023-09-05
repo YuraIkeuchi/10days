@@ -13,10 +13,22 @@ void CameraWork::SplineSet() {
 //XV
 void CameraWork::Update(DebugCamera* camera) {
 	if (Player::GetInstance()->GetCameraZoom()) {
-		m_AfterEye.x = Player::GetInstance()->GetPosition().x - 5.0f;
-		m_AfterEye.y = Player::GetInstance()->GetPosition().y + 5.0f;
-		m_AfterEye.z = Player::GetInstance()->GetPosition().z - 5.0f;
-
+		if (Player::GetInstance()->GetMoveState() == MOVE_DOWN) {
+			SetAfterCamera({ Player::GetInstance()->GetPosition().x - 1.0f,Player::GetInstance()->GetPosition().y + 5.0f,
+				Player::GetInstance()->GetPosition().z + 5.0f });
+		}
+		else if (Player::GetInstance()->GetMoveState() == MOVE_UP) {
+			SetAfterCamera({ Player::GetInstance()->GetPosition().x + 1.0f,Player::GetInstance()->GetPosition().y + 5.0f,
+				Player::GetInstance()->GetPosition().z - 5.0f });
+		}
+		else if (Player::GetInstance()->GetMoveState() == MOVE_RIGHT) {
+			SetAfterCamera({ Player::GetInstance()->GetPosition().x - 5.0f,Player::GetInstance()->GetPosition().y + 5.0f,
+				Player::GetInstance()->GetPosition().z - 1.0f });
+		}
+		else if (Player::GetInstance()->GetMoveState() == MOVE_LEFT) {
+			SetAfterCamera({ Player::GetInstance()->GetPosition().x + 5.0f,Player::GetInstance()->GetPosition().y + 5.0f,
+				Player::GetInstance()->GetPosition().z + 1.0f });
+		}
 		m_AfterTarget = Player::GetInstance()->GetPosition();
 	}
 	else {
@@ -39,4 +51,8 @@ void CameraWork::Update(DebugCamera* camera) {
 }
 void CameraWork::ImGuiDraw() {
 
+}
+//カメラのセット
+void CameraWork::SetAfterCamera(const XMFLOAT3& pos) {
+	m_AfterEye = pos;
 }

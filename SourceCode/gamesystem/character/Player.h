@@ -2,6 +2,12 @@
 #include "ObjCommon.h"
 #include <any>
 using namespace DirectX;
+enum MoveState {
+	MOVE_UP,
+	MOVE_DOWN,
+	MOVE_RIGHT,
+	MOVE_LEFT,
+};
 class Player :public ObjCommon
 {
 public:
@@ -49,13 +55,8 @@ private:
 	float m_Frame = {};
 	float m_AfterPosZ = {};
 	float m_AfterPosX = {};
-	enum MoveState {
-		MOVE_UP,
-		MOVE_DOWN,
-		MOVE_RIGHT,
-		MOVE_LEFT,
-	}_MoveState;
-
+	
+	int _MoveState = {};
 	bool m_ChangeLine = false;
 	bool m_CameraZoom = false;
 };

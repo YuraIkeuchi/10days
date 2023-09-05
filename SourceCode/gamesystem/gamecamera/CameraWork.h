@@ -24,6 +24,8 @@ public:
 	void ImGuiDraw();
 
 private:
+	void SetAfterCamera(const XMFLOAT3& pos);
+private:
 	XMFLOAT3 m_eyePos = {};
 	XMFLOAT3 m_targetPos = {};
 	XMFLOAT3 m_AfterEye = {};
