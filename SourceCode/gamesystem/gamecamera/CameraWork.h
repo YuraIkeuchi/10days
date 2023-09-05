@@ -22,4 +22,12 @@ public:
 	void SplineSet();
 	void Update(DebugCamera* camera);//更新
 	void ImGuiDraw();
+
+private:
+	void SetAfterCamera(const XMFLOAT3& pos);
+private:
+	XMFLOAT3 m_eyePos = {};
+	XMFLOAT3 m_targetPos = {};
+	XMFLOAT3 m_AfterEye = {};
+	XMFLOAT3 m_AfterTarget = {};
 };

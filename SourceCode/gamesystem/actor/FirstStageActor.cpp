@@ -45,22 +45,31 @@ void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 	Player::GetInstance()->Initialize();
 
 	//敵
-	enemy.reset(new NormalEnemy());
-	enemy->Initialize();
+	for (int i = 0; i < 2; i++) {
+		enemy[i].reset(new NormalEnemy());
+		enemy[i]->Initialize();
+	}
+
+	enemy[0]->SetPosition({ 15.0f,0.0f,0.0f });
+	enemy[1]->SetPosition({ 15.0f,0.0f,1.0f });
 
 	//テクスチャ
 	for (int i = 0; i < AREA_NUM; i++) {
 		tex[i].reset(IKETexture::Create(ImageManager::AREA, { 0,0,0 }, { 0.5f,0.5f,0.5f }, { 1,1,1,1 }));
 		tex[i]->TextureCreate();
-		tex[i]->SetScale({ 2.0f,0.1f,0.1f });
-		tex[i]->SetIsBillboard(true);
+		
+		tex[i]->SetRotation({ 90.0f,0.0f,0.0f });
 		tex[i]->SetColor({ 1.0f,0.0,0.0f,0.5f });
 	}
 
 	tex[0]->SetPosition({ 0.0f,2.0f,8.0f });
 	tex[1]->SetPosition({ 0.0f,2.0f,-8.0f });
-
-	//PlayPostEffect = true;
+	tex[2]->SetPosition({ 9.3f,2.0f,0.0f });
+	tex[3]->SetPosition({ -9.3f,2.0f,0.0f });
+	tex[0]->SetScale({ 2.0f,0.1f,0.1f });
+	tex[1]->SetScale({ 2.0f,0.1f,0.1f });
+	tex[2]->SetScale({ 0.1f,1.6f,0.1f });
+	tex[3]->SetScale({ 0.1f,1.6f,0.1f });
 }
 
 void FirstStageActor::Finalize() {
@@ -79,7 +88,15 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 	ground->SetAddOffset(m_AddOffset.x);
 	Player::GetInstance()->Update();
 	Slow::GetInstance()->Update();
-	enemy->Update();
+	for (int i = 0; i < 2; i++) {
+		enemy[i]->Update();
+		if (Slow::GetInstance()->GetSlow()) {
+			enemy[i]->SetSlowMove(true);
+		}
+		else {
+			enemy[i]->SetSlowMove(false);
+		}
+	}
 	for (int i = 0; i < AREA_NUM; i++) {
 		tex[i]->Update();
 	}
@@ -121,7 +138,9 @@ void FirstStageActor::BackDraw(DirectXCommon* dxCommon) {
 	ground->Draw();
 	skydome->Draw();
 	Player::GetInstance()->Draw(dxCommon);
-	enemy->Draw(dxCommon);
+	for (int i = 0; i < 2; i++) {
+		enemy[i]->Draw(dxCommon);
+	}
 	IKEObject3d::PostDraw();
 	ParticleEmitter::GetInstance()->FlontDrawAll();
 
@@ -150,8 +169,9 @@ void FirstStageActor::ImGuiDraw() {
 		ImGui::Text("PUSH A!!!");
 	}
 	ImGui::End();
-
-	enemy->ImGuiDraw();
-	//Player::GetInstance()->ImGuiDraw();
-	//Slow::GetInstance()->ImGuiDraw();
+	for (int i = 0; i < 2; i++) {
+		enemy[i]->ImGuiDraw();
+	}
+	Player::GetInstance()->ImGuiDraw();
+	Slow::GetInstance()->ImGuiDraw();
 }

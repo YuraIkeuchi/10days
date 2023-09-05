@@ -9,6 +9,7 @@ ImageManager* ImageManager::GetInstance()
 //スプライトの読み込み
 void ImageManager::StartLoad2D()
 {
+	IKESprite::LoadTexture(NUMBER, L"Resources/2d/objicon/Num.png");
 }
 
 //非同期処理で読み込むスプライト

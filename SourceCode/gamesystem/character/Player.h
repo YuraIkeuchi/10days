@@ -2,6 +2,12 @@
 #include "ObjCommon.h"
 #include <any>
 using namespace DirectX;
+enum MoveState {
+	MOVE_UP,
+	MOVE_DOWN,
+	MOVE_RIGHT,
+	MOVE_LEFT,
+};
 class Player :public ObjCommon
 {
 public:
@@ -27,16 +33,17 @@ private:
 	void Attack();
 private:
 	XMFLOAT3 MoveVECTOR(XMVECTOR v, float angle);
+public:
+	const int GetMoveState() { return (int)_MoveState; }
+	const bool GetCameraZoom() { return m_CameraZoom; }
 private:
 	void LoadCSV();
 
 private:
-	//移動方向指定用
-	float angle = 0.0f;
 	//歩きまたは走り状態
-	float velocity;
+	float velocity = {};
 	//移動加算値
-	float m_AddSpeed;
+	float m_AddSpeed = 0.0f;
 
 	//キャラの状態
 	enum CharaState
@@ -45,11 +52,11 @@ private:
 		STATE_ATTACK,
 	}_charaState;
 
-	enum AttackState {
-		ATTACK_DOWN,
-		ATTACK_UP,
-	}_AttackState;
-
 	float m_Frame = {};
 	float m_AfterPosZ = {};
+	float m_AfterPosX = {};
+	
+	int _MoveState = {};
+	bool m_ChangeLine = false;
+	bool m_CameraZoom = false;
 };

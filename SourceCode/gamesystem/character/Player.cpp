@@ -30,7 +30,7 @@ bool Player::Initialize()
 }
 //CSV読み込み
 void Player::LoadCSV() {
-	m_AddSpeed = static_cast<float>(std::any_cast<double>(LoadCSV::LoadCsvParam("Resources/csv/chara/player/player.csv", "speed2")));
+	m_AddSpeed = static_cast<float>(std::any_cast<double>(LoadCSV::LoadCsvParam("Resources/csv/chara/player/player.csv", "speed")));
 }
 //ステータスの初期化
 void Player::InitState(const XMFLOAT3& pos) {
@@ -39,6 +39,8 @@ void Player::InitState(const XMFLOAT3& pos) {
 	m_Color = { 1.0f,1.0f,1.0f,1.0f };
 	//移動処理用
 	velocity /= 5.0f;
+
+	_MoveState = MOVE_UP;
 }
 /*CharaStateのState並び順に合わせる*/
 void (Player::* Player::stateTable[])() = {
@@ -72,12 +74,15 @@ void Player::Draw(DirectXCommon* dxCommon)
 void Player::ImGuiDraw() {
 	ImGui::Begin("Player");
 	ImGui::Text("POSX:%f", m_Position.x);
+	ImGui::Text("POSZ:%f", m_Position.z);
+	ImGui::Text("Speed:%f", m_AddSpeed);
+	ImGui::Text("State:%d", _MoveState);
+	ImGui::Text("Zoom:%d", m_CameraZoom);
 	ImGui::End();
 }
 
 //移動
 void Player::Move() {
-	XMFLOAT3 rot = m_Rotation;
 	Input* input = Input::GetInstance();
 	float StickX = input->GetLeftControllerX();
 	float StickY = input->GetLeftControllerY();
@@ -89,34 +94,80 @@ void Player::Move() {
 		input->TiltPushStick(Input::L_LEFT, 0.0f))
 	{
 		//右入力
-		if (input->TiltPushStick(Input::L_RIGHT, 0.0f) && (m_Position.x < 9.5f)) {
-			m_AddSpeed = 0.2f;
-		}
+		if (_MoveState == MOVE_UP || _MoveState == MOVE_DOWN) {
+			//右入力
+			if (input->TiltPushStick(Input::L_RIGHT, 0.0f) && (m_Position.x < 9.5f)) {
+				m_AddSpeed = 0.2f;
+			}
+			//左入力
+			else if (input->TiltPushStick(Input::L_LEFT, 0.0f) && (m_Position.x > -9.5f)) {
+				m_AddSpeed = -0.2f;
+			}
+			//入力なし
+			else {
+				m_AddSpeed = {};
+			}
 
-		//左入力
-		if (input->TiltPushStick(Input::L_LEFT, 0.0f) && (m_Position.x > -9.5f)) {
-			m_AddSpeed = -0.2f;
-		}
-
-		//移動量加算
-		m_Position.x += m_AddSpeed;
-	}
-
-	if ((input->TriggerButton(input->B))) {
-		_charaState = STATE_ATTACK;
-		m_Frame = {};
-		if (_AttackState == ATTACK_DOWN) {
-			m_AfterPosZ = -8.0f;
-			_AttackState = ATTACK_UP;
+			if (Helper::GetInstance()->CheckMax(m_Position.x, -9.5f, m_AddSpeed)) {
+				m_ChangeLine = true;
+				_MoveState = MOVE_LEFT;
+			}
+			else if (Helper::GetInstance()->CheckMin(m_Position.x, 9.5f, m_AddSpeed)) {
+				m_ChangeLine = true;
+				_MoveState = MOVE_RIGHT;
+			}
 		}
 		else {
-			m_AfterPosZ = 8.0f;
-			_AttackState = ATTACK_DOWN;
+			//上入力
+			if (input->TiltPushStick(Input::L_UP, 0.0f) && (m_Position.z < 8.0f)) {
+				m_AddSpeed = 0.2f;
+			}
+			//下入力
+			else if (input->TiltPushStick(Input::L_DOWN, 0.0f) && (m_Position.z > -8.0f)) {
+				m_AddSpeed = -0.2f;
+			}
+			//入力なし
+			else {
+				m_AddSpeed = {};
+			}
+
+			if (Helper::GetInstance()->CheckMax(m_Position.z, -8.0f, m_AddSpeed)) {
+				m_ChangeLine = true;
+				_MoveState = MOVE_DOWN;
+			}
+			else if (Helper::GetInstance()->CheckMin(m_Position.z, 8.0f, m_AddSpeed)) {
+				m_ChangeLine = true;
+				_MoveState = MOVE_UP;
+			}
 		}
 	}
-	Helper::GetInstance()->Clamp(m_Position.x, -9.5f, 9.5f);
-}
 
+	if ((input->TriggerButton(input->A))) {
+		_charaState = STATE_ATTACK;
+		m_Frame = {};
+		m_CameraZoom = true;
+		if (_MoveState == MOVE_UP || _MoveState == MOVE_DOWN) {
+			m_AfterPosZ = m_Position.z * -1.0f;
+			if (_MoveState == MOVE_UP) {
+				_MoveState = MOVE_DOWN;
+			}
+			else {
+				_MoveState = MOVE_UP;
+			}
+		}
+		else {
+			m_AfterPosX = m_Position.x * -1.0f;
+			if (_MoveState == MOVE_RIGHT) {
+				_MoveState = MOVE_LEFT;
+			}
+			else {
+				_MoveState = MOVE_RIGHT;
+			}
+		}
+	}
+	//Helper::GetInstance()->Clamp(m_Position.x, -9.5f, 9.5f);
+}
+//攻撃
 void Player::Attack() {
 	const float l_AddFrame = 0.01f;
 	if (!Slow::GetInstance()->GetSlow()) {
@@ -124,6 +175,15 @@ void Player::Attack() {
 			m_Frame = {};
 			_charaState = STATE_MOVE;
 		}
-		m_Position.z = Ease(In, Cubic, m_Frame, m_Position.z, m_AfterPosZ);
+		if (_MoveState == MOVE_UP || _MoveState == MOVE_DOWN) {
+			m_Position.z = Ease(In, Cubic, m_Frame, m_Position.z, m_AfterPosZ);
+		}
+		else {
+			m_Position.x = Ease(In, Cubic, m_Frame, m_Position.x, m_AfterPosX);
+		}
+
+		if (m_Frame > 0.9f) {
+			m_CameraZoom = false;
+		}
 	}
 }
