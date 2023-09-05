@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "Helper.h"
 #include "Slow.h"
+
 void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, LightGroup* lightgroup) {
 	dxCommon->SetFullScreen(true);
 	//共通の初期化
@@ -58,6 +59,8 @@ void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 
 	tex[0]->SetPosition({ 0.0f,2.0f,8.0f });
 	tex[1]->SetPosition({ 0.0f,2.0f,-8.0f });
+
+	//PlayPostEffect = true;
 }
 
 void FirstStageActor::Finalize() {
@@ -80,6 +83,8 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 	for (int i = 0; i < AREA_NUM; i++) {
 		tex[i]->Update();
 	}
+	ParticleEmitter::GetInstance()->Update();
+	//ParticleEmitter::GetInstance()->SplatterEffect(120, Player::GetInstance()->GetPosition(), { 0, 0, 0 }, 1.0f, 1.0f, { 1, 0, 0, 1 });
 }
 
 void FirstStageActor::Draw(DirectXCommon* dxCommon) {
@@ -118,6 +123,7 @@ void FirstStageActor::BackDraw(DirectXCommon* dxCommon) {
 	Player::GetInstance()->Draw(dxCommon);
 	enemy->Draw(dxCommon);
 	IKEObject3d::PostDraw();
+	ParticleEmitter::GetInstance()->FlontDrawAll();
 
 	IKETexture::PreDraw2(dxCommon, AlphaBlendType);
 	for (int i = 0; i < AREA_NUM; i++) {

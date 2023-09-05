@@ -31,6 +31,7 @@ public:
 		Normal,
 		Smoke,
 		Heal,
+		Blood,
 	};
 
 public:

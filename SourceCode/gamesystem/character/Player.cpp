@@ -5,6 +5,7 @@
 #include "Easing.h"
 #include "Collision.h"
 #include "Slow.h"
+#include "ParticleEmitter.h"
 Player* Player::GetInstance()
 {
 	static Player instance;
