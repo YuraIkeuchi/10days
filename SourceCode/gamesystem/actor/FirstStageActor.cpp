@@ -46,14 +46,8 @@ void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 	Player::GetInstance()->InitState({ 0.0f,0.0f,8.0f });
 	Player::GetInstance()->Initialize();
 
-	//敵
-	for (int i = 0; i < 2; i++) {
-		enemy[i].reset(new NormalEnemy());
-		enemy[i]->Initialize();
-	}
-
-	enemy[0]->SetPosition({ 15.0f,0.0f,0.0f });
-	enemy[1]->SetPosition({ 15.0f,0.0f,1.0f });
+	enemy.reset(new NormalEnemy());
+	enemy->Initialize();
 
 	//テクスチャ
 	for (int i = 0; i < AREA_NUM; i++) {
@@ -88,28 +82,26 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 	lightgroup->Update();
 	ground->Update();
 	skydome->Update();
-	m_AddOffset.x = 0.001f;
 	ground->SetAddOffset(m_AddOffset.x);
-	Player::GetInstance()->Update();
-	Slow::GetInstance()->Update();
+	if (!Timer::GetInstance()->GetStop()) {
+		Player::GetInstance()->Update();
+		Slow::GetInstance()->Update();
+		enemy->Update();
+	}
 	//タイマーを図る
 	if (!Slow::GetInstance()->GetSlow()) {
 		Timer::GetInstance()->Update();
+		enemy->SetSlowMove(false);
+	}
+	else {
+		enemy->SetSlowMove(true);
 	}
 
 	//ゲーム終了
 	if (Timer::GetInstance()->GetEnd()) {
 		SceneManager::GetInstance()->ChangeScene("TITLE");
 	}
-	for (int i = 0; i < 2; i++) {
-		enemy[i]->Update();
-		if (Slow::GetInstance()->GetSlow()) {
-			enemy[i]->SetSlowMove(true);
-		}
-		else {
-			enemy[i]->SetSlowMove(false);
-		}
-	}
+	
 	for (int i = 0; i < AREA_NUM; i++) {
 		tex[i]->Update();
 	}
@@ -150,9 +142,7 @@ void FirstStageActor::BackDraw(DirectXCommon* dxCommon) {
 	ground->Draw();
 	skydome->Draw();
 	Player::GetInstance()->Draw(dxCommon);
-	for (int i = 0; i < 2; i++) {
-		enemy[i]->Draw(dxCommon);
-	}
+	enemy->Draw(dxCommon);
 	IKEObject3d::PostDraw();
 	ParticleEmitter::GetInstance()->FlontDrawAll();
 
@@ -181,9 +171,7 @@ void FirstStageActor::ImGuiDraw() {
 		ImGui::Text("PUSH A!!!");
 	}
 	ImGui::End();
-	for (int i = 0; i < 2; i++) {
-		enemy[i]->ImGuiDraw();
-	}
+	enemy->ImGuiDraw();
 	Player::GetInstance()->ImGuiDraw();
 	Slow::GetInstance()->ImGuiDraw();
 

@@ -30,7 +30,7 @@ bool Player::Initialize()
 }
 //CSV読み込み
 void Player::LoadCSV() {
-	m_AddSpeed = static_cast<float>(std::any_cast<double>(LoadCSV::LoadCsvParam("Resources/csv/chara/player/player.csv", "speed")));
+	m_BaseSpeed = static_cast<float>(std::any_cast<double>(LoadCSV::LoadCsvParam("Resources/csv/chara/player/player.csv", "speed")));
 }
 //ステータスの初期化
 void Player::InitState(const XMFLOAT3& pos) {
@@ -97,11 +97,11 @@ void Player::Move() {
 		if (_MoveState == MOVE_UP || _MoveState == MOVE_DOWN) {
 			//右入力
 			if (input->TiltPushStick(Input::L_RIGHT, 0.0f) && (m_Position.x < 9.5f)) {
-				m_AddSpeed = 0.2f;
+				m_AddSpeed = m_BaseSpeed;
 			}
 			//左入力
 			else if (input->TiltPushStick(Input::L_LEFT, 0.0f) && (m_Position.x > -9.5f)) {
-				m_AddSpeed = -0.2f;
+				m_AddSpeed = -m_BaseSpeed;
 			}
 			//入力なし
 			else {
@@ -120,11 +120,11 @@ void Player::Move() {
 		else {
 			//上入力
 			if (input->TiltPushStick(Input::L_UP, 0.0f) && (m_Position.z < 8.0f)) {
-				m_AddSpeed = 0.2f;
+				m_AddSpeed = m_BaseSpeed;
 			}
 			//下入力
 			else if (input->TiltPushStick(Input::L_DOWN, 0.0f) && (m_Position.z > -8.0f)) {
-				m_AddSpeed = -0.2f;
+				m_AddSpeed = -m_BaseSpeed;
 			}
 			//入力なし
 			else {

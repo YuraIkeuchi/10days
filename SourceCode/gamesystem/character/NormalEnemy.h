@@ -35,5 +35,7 @@ private:
 	float m_radius = 0.8f;
 
 	int m_ResPornTimer = 0;
+
+	float m_BaseSpeed = {};
 };
 
