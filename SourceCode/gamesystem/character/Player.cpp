@@ -76,7 +76,7 @@ void Player::ImGuiDraw() {
 	ImGui::Text("POSZ:%f", m_Position.z);
 	ImGui::Text("Speed:%f", m_AddSpeed);
 	ImGui::Text("State:%d", _MoveState);
-	ImGui::Text("Line:%d", m_ChangeLine);
+	ImGui::Text("Zoom:%d", m_CameraZoom);
 	ImGui::End();
 }
 
@@ -144,6 +144,7 @@ void Player::Move() {
 	if ((input->TriggerButton(input->A))) {
 		_charaState = STATE_ATTACK;
 		m_Frame = {};
+		m_CameraZoom = true;
 		if (_MoveState == MOVE_UP || _MoveState == MOVE_DOWN) {
 			m_AfterPosZ = m_Position.z * -1.0f;
 			if (_MoveState == MOVE_UP) {
@@ -165,7 +166,7 @@ void Player::Move() {
 	}
 	//Helper::GetInstance()->Clamp(m_Position.x, -9.5f, 9.5f);
 }
-
+//攻撃
 void Player::Attack() {
 	const float l_AddFrame = 0.01f;
 	if (!Slow::GetInstance()->GetSlow()) {
@@ -178,6 +179,10 @@ void Player::Attack() {
 		}
 		else {
 			m_Position.x = Ease(In, Cubic, m_Frame, m_Position.x, m_AfterPosX);
+		}
+
+		if (m_Frame > 0.9f) {
+			m_CameraZoom = false;
 		}
 	}
 }

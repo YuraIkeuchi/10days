@@ -52,7 +52,7 @@ void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 		tex[i].reset(IKETexture::Create(ImageManager::AREA, { 0,0,0 }, { 0.5f,0.5f,0.5f }, { 1,1,1,1 }));
 		tex[i]->TextureCreate();
 		
-		tex[i]->SetIsBillboard(true);
+		tex[i]->SetRotation({ 90.0f,0.0f,0.0f });
 		tex[i]->SetColor({ 1.0f,0.0,0.0f,0.5f });
 	}
 
