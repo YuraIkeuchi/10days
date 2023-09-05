@@ -44,28 +44,34 @@ void EditorSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, 
 	Player::GetInstance()->InitState({ 0.0f,0.0f,8.0f });
 	Player::GetInstance()->Initialize();
 
-	//敵
-	Sample.reset(new NormalEnemy());
-	Sample->Initialize();
-
+	
 	//テクスチャ
 	for (int i = 0; i < AREA_NUM; i++) {
 		tex[i].reset(IKETexture::Create(ImageManager::AREA, { 0,0,0 }, { 0.5f,0.5f,0.5f }, { 1,1,1,1 }));
 		tex[i]->TextureCreate();
-		tex[i]->SetScale({ 2.0f,0.1f,0.1f });
-		tex[i]->SetIsBillboard(true);
+
+		tex[i]->SetRotation({ 90.0f,0.0f,0.0f });
 		tex[i]->SetColor({ 1.0f,0.0,0.0f,0.5f });
 	}
 
 	tex[0]->SetPosition({ 0.0f,2.0f,8.0f });
 	tex[1]->SetPosition({ 0.0f,2.0f,-8.0f });
+	tex[2]->SetPosition({ 9.3f,2.0f,0.0f });
+	tex[3]->SetPosition({ -9.3f,2.0f,0.0f });
+	tex[0]->SetScale({ 2.0f,0.1f,0.1f });
+	tex[1]->SetScale({ 2.0f,0.1f,0.1f });
+	tex[2]->SetScale({ 0.1f,1.6f,0.1f });
+	tex[3]->SetScale({ 0.1f,1.6f,0.1f });
+	//敵
+	Sample.reset(new NormalEnemy());
+	Sample->Initialize();
+	
 }
 
 void EditorSceneActor::Finalize() {
 }
 
 void EditorSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, LightGroup* lightgroup) {
-	//関数ポインタで状態管理
 	(this->*stateTable[static_cast<size_t>(m_SceneState)])(camera);
 
 	//各クラス更新
@@ -77,10 +83,11 @@ void EditorSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Ligh
 	ground->SetAddOffset(m_AddOffset.x);
 	Player::GetInstance()->Update();
 	Slow::GetInstance()->Update();
-
-	bool DelEnemy=enemys.size()>100;
-
-	Sample->SetResPos(ini_enmeypos);
+	
+	for (int i = 0; i < AREA_NUM; i++) {
+		tex[i]->Update();
+	}
+//	Sample->SetResPos(ini_enmeypos);
 	if (checkPos[2] || checkPos[3])
 		Sample->SetPosX(PosX);
 
@@ -91,8 +98,14 @@ void EditorSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Ligh
 	{
 		//初期化
 		InterEnemy* l_enemy = new NormalEnemy();
+		if(checkPos[0]||checkPos[1])
+		l_enemy->SetResPos(ini_enmeypos,PosY);
+
+		if (checkPos[2] || checkPos[3])
+			l_enemy->SetResPos(ini_enmeypos, PosX);
+
 		l_enemy->Initialize();
-		l_enemy->SetResPos(ini_enmeypos);
+		
 
 		enemys.emplace_back(l_enemy);
 		ArgF = false;
@@ -102,9 +115,7 @@ void EditorSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Ligh
 	enemys[i]->Update();
 
 	Sample->Update();
-	for (int i = 0; i < AREA_NUM; i++) {
-		tex[i]->Update();
-	}
+
 }
 
 void EditorSceneActor::Draw(DirectXCommon* dxCommon) {
@@ -140,12 +151,11 @@ void EditorSceneActor::BackDraw(DirectXCommon* dxCommon) {
 	IKEObject3d::PreDraw();
 	ground->Draw();
 	skydome->Draw();
-	Player::GetInstance()->Draw(dxCommon);
-
-//	for(auto i=0;i<enemys.size();i++)
-	//enemys[i]->Draw(dxCommon);
+	for (auto i = 0; i < enemys.size(); i++)
+		enemys[i]->Draw(dxCommon);
 
 	Sample->Draw(dxCommon);
+	Player::GetInstance()->Draw(dxCommon);
 	IKEObject3d::PostDraw();
 
 	IKETexture::PreDraw2(dxCommon, AlphaBlendType);
@@ -181,13 +191,13 @@ void EditorSceneActor::ImGuiDraw() {
 	}
 	//
 	ImGui::Checkbox("Z_Max", &checkPos[0]);
-
 	ImGui::Checkbox("Z_Min", &checkPos[1]);
-	ImGui::SliderFloat("PosX", &PosX, -10, 10);
 
 	ImGui::Checkbox("X_Max", &checkPos[2]);
-
 	ImGui::Checkbox("X_Min", &checkPos[3]);
+
+
+	ImGui::SliderFloat("PosX", &PosX, -10, 10);
 	ImGui::SliderFloat("PosZ", &PosY, -10, 10);
 	if (checkPos[0]) {
 		ini_enmeypos = InterEnemy::PosSt::UPRES;

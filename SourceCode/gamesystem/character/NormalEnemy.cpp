@@ -7,6 +7,13 @@
 #include "Easing.h"
 #include "Slow.h"
 #include "Collision.h"
+
+#define MapMinX -10
+#define MapMaxX 10
+
+#define MapMinZ -10
+#define MapMaxZ 10
+
 //モデル読み込み
 NormalEnemy::NormalEnemy() {
 	
@@ -23,7 +30,11 @@ bool NormalEnemy::Initialize() {
 	m_Color = { 1.0f,0.0f,0.0f,1.0f };
 	m_Object->VertexCheck();
 
-	//_charaState = STATE_LEFT;
+	if(StartState==0)
+	{
+	//	_charaState =
+	}
+	_charaState =  CharaState::STATE_LEFT;//StartState;
 	return true;
 }
 
@@ -31,11 +42,14 @@ void (NormalEnemy::* NormalEnemy::stateTable[])() = {
 	&NormalEnemy::Inter,//動きの合間
 	&NormalEnemy::RightMove,//右に移動
 	&NormalEnemy::LeftMove,//左に移動
+	& NormalEnemy::UpMove,//左に移動
+& NormalEnemy::BottomMove,//左に移動
+
 };
 
 //行動
 void NormalEnemy::Action() {
-//	(this->*stateTable[_charaState])();
+	(this->*stateTable[_charaState])();
 
 	//当たり判定
 	SlowCollide();
@@ -62,31 +76,52 @@ void NormalEnemy::Finalize() {
 void NormalEnemy::Inter() {
 	m_ResPornTimer++;
 	if (m_ResPornTimer == 100) {
-		m_Position.x = 15.0f;
 		m_ResPornTimer = {};
 		m_Slow = false;
-		_charaState = STATE_LEFT;
+		_charaState = StartState;
 	}
 }
 //右に動く
 void NormalEnemy::RightMove() {
-	const float l_MAX = 15.0f;
+	const float l_MAX = MapMaxX;
 	m_velocity = 0.05f;
 	m_Position.x += m_velocity * Slow::GetInstance()->GetSlowPower();
 
 	if (Helper::GetInstance()->CheckMin(m_Position.x, l_MAX, m_velocity)) {
-		m_Position.x = -15.0f;
+		m_Position.x = MapMinX;
 		m_Slow = false;
 	}
 }
 //左に動く
 void NormalEnemy::LeftMove() {
-	const float l_MIN = -15.0f;
+	const float l_MIN =MapMinX;
 	m_velocity = -0.05f;
 	m_Position.x += m_velocity * Slow::GetInstance()->GetSlowPower();
 
 	if (Helper::GetInstance()->CheckMax(m_Position.x, l_MIN, m_velocity)) {
-		m_Position.x = 15.0f;
+		m_Position.x = MapMaxX;
+		m_Slow = false;
+	}
+}
+//左に動く
+void NormalEnemy::BottomMove() {
+	const float l_MIN = MapMinZ;
+	m_velocity = -0.05f;
+	m_Position.z += m_velocity * Slow::GetInstance()->GetSlowPower();
+
+	if (Helper::GetInstance()->CheckMax(m_Position.z, l_MIN, m_velocity)) {
+		m_Position.z = MapMaxZ;
+		m_Slow = false;
+	}
+}
+//左に動く
+void NormalEnemy::UpMove() {
+	const float l_MIN =MapMaxZ;
+	m_velocity = 0.05f;
+	m_Position.z += m_velocity * Slow::GetInstance()->GetSlowPower();
+
+	if (Helper::GetInstance()->CheckMin(m_Position.z, l_MIN, m_velocity)) {
+		m_Position.z = MapMinZ;
 		m_Slow = false;
 	}
 }

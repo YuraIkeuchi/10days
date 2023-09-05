@@ -23,7 +23,7 @@ private:
 	void ImGuiDraw();
 
 private:
-	static const int AREA_NUM = 2;
+	static const int AREA_NUM = 4;
 private:
 	bool checkPos[4];
 	float IntervalRes;

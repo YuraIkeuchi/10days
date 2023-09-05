@@ -15,14 +15,7 @@ public:
 private:
 	void SlowCollide();
 private:
-	//キャラの状態
-	enum CharaState
-	{
-		STATE_INTER,
-		STATE_RIGHT,
-		STATE_LEFT,
-	};
-int _charaState = STATE_INTER;
+	
 	//関数ポインタ
 	static void(NormalEnemy::* stateTable[])();
 

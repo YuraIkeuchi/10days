@@ -19,8 +19,20 @@ public://getter setter
 		LEFTRES,
 		RIGHTRES
 	};
+	//ÉLÉÉÉâÇÃèÛë‘
+	enum CharaState
+	{
+		STATE_INTER,
+		STATE_RIGHT,
+		STATE_LEFT,
+		STATE_UP,
+		STATE_DOWN
+	};
+	int _charaState = STATE_INTER;
+	int StartState;
+	void SetState(int state) { StartState=state; }
 	bool CheckPos[4];
-	void SetResPos(PosSt pos);
+	void SetResPos(PosSt pos,float otpos);
 	void SetPosX(float posx) { m_Position.x = posx; }
 
 	void SetPosZ(float posz) { m_Position.z= posz; }
