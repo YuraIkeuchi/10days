@@ -7,6 +7,7 @@
 #include "Easing.h"
 #include "Slow.h"
 #include "Collision.h"
+#include "ParticleEmitter.h"
 
 #define MapMinX -10
 #define MapMaxX 10
@@ -153,6 +154,7 @@ void NormalEnemy::SlowCollide() {
 			if ((input->TriggerButton(input->A))) {
 				_charaState = STATE_INTER;
 				m_ResPornTimer = {};
+				ParticleEmitter::GetInstance()->SplatterEffect(120, Player::GetInstance()->GetPosition(), { 0, 0, 0 }, 1.0f, 1.0f, { 1, 0, 0, 1 });
 			}
 		}
 	}

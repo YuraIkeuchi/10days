@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "Helper.h"
 #include "Slow.h"
+
 void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, LightGroup* lightgroup) {
 	dxCommon->SetFullScreen(true);
 	//共通の初期化
@@ -99,6 +100,7 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 	for (int i = 0; i < AREA_NUM; i++) {
 		tex[i]->Update();
 	}
+	ParticleEmitter::GetInstance()->Update();
 }
 
 void FirstStageActor::Draw(DirectXCommon* dxCommon) {
@@ -139,6 +141,7 @@ void FirstStageActor::BackDraw(DirectXCommon* dxCommon) {
 		enemy[i]->Draw(dxCommon);
 	}
 	IKEObject3d::PostDraw();
+	ParticleEmitter::GetInstance()->FlontDrawAll();
 
 	IKETexture::PreDraw2(dxCommon, AlphaBlendType);
 	for (int i = 0; i < AREA_NUM; i++) {
