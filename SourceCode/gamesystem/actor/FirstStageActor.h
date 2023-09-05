@@ -27,7 +27,7 @@ private:
 	void ImGuiDraw();
 
 private:
-	static const int AREA_NUM = 2;
+	static const int AREA_NUM = 4;
 private:
 	unique_ptr<IKEObject3d> ground;
 	IKEModel* model;
