@@ -39,6 +39,7 @@ public://getter setter
 
 	void SetNum(size_t num) { Num = num; }
 protected:
+	bool StopF = false;
 	XMFLOAT3 RespawnPos;
 	size_t Num;
 public:
@@ -69,7 +70,10 @@ public:
 	virtual void ImGui_Origin() = 0;
 
 public://gettersetter
+	
+	void SetStopF(bool f) { StopF = f; }
 	void SetSlowMove(const bool SlowMove) { m_SlowMove = SlowMove; }
 protected:
+	
 	bool m_SlowMove = false;
 };

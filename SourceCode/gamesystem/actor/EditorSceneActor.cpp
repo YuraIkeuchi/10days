@@ -87,22 +87,23 @@ void EditorSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Ligh
 	for (int i = 0; i < AREA_NUM; i++) {
 		tex[i]->Update();
 	}
-//	Sample->SetResPos(ini_enmeypos);
 	if (checkPos[2] || checkPos[3])
-		Sample->SetPosX(PosX);
+		Sample->SetResPos(ini_enmeypos, PosY);
+		//	Sample->SetPosX(PosX);
 
 	if (checkPos[0] || checkPos[1])
-		Sample->SetPosZ(PosY);
+		Sample->SetResPos(ini_enmeypos, PosX);
+		//Sample->SetPosZ(PosY);
 
 	if(ArgF)
 	{
 		//初期化
 		InterEnemy* l_enemy = new NormalEnemy();
 		if(checkPos[0]||checkPos[1])
-		l_enemy->SetResPos(ini_enmeypos,PosY);
+		l_enemy->SetResPos(ini_enmeypos,PosX);
 
 		if (checkPos[2] || checkPos[3])
-			l_enemy->SetResPos(ini_enmeypos, PosX);
+			l_enemy->SetResPos(ini_enmeypos, PosY);
 
 		l_enemy->Initialize();
 		
@@ -115,6 +116,7 @@ void EditorSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Ligh
 	enemys[i]->Update();
 
 	Sample->Update();
+	Sample->SetStopF(true);
 
 }
 

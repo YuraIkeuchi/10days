@@ -34,7 +34,7 @@ bool NormalEnemy::Initialize() {
 	{
 	//	_charaState =
 	}
-	_charaState =  CharaState::STATE_LEFT;//StartState;
+	_charaState =  StartState;
 	return true;
 }
 
@@ -49,10 +49,12 @@ void (NormalEnemy::* NormalEnemy::stateTable[])() = {
 
 //s“®
 void NormalEnemy::Action() {
-	(this->*stateTable[_charaState])();
+	if (!StopF) {
+		(this->*stateTable[_charaState])();
 
-	//“–‚½‚è”»’è
-	SlowCollide();
+		//“–‚½‚è”»
+		SlowCollide();
+	}
 	Obj_SetParam();
 }
 //•`‰æ

@@ -19,7 +19,6 @@ private:
 	//関数ポインタ
 	static void(NormalEnemy::* stateTable[])();
 
-	
 
 private:
 	void Inter();//待機
@@ -33,7 +32,8 @@ private:
 	float m_velocity = 0.2f;
 	bool m_Slow = false;
 	float m_radius = 0.8f;
-
 	int m_ResPornTimer = 0;
+
+public:
 };
 
