@@ -29,6 +29,8 @@ private:
 	float IntervalRes;
 	float PosY, PosX;
 	bool ArgF;
+	bool timerstart;
+	int timer;
 	unique_ptr<InterEnemy>Sample;
 	InterEnemy::PosSt ini_enmeypos;
 	unique_ptr<IKEObject3d> ground;

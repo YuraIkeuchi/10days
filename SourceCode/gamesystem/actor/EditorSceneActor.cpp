@@ -6,6 +6,8 @@
 #include "Helper.h"
 #include "Slow.h"
 #include"NormalEnemy.h"
+#include "Timer.h"
+
 void EditorSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, LightGroup* lightgroup) {
 	dxCommon->SetFullScreen(true);
 	//共通の初期化
@@ -65,7 +67,9 @@ void EditorSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, 
 	//敵
 	Sample.reset(new NormalEnemy());
 	Sample->Initialize();
-	
+
+
+	Timer::GetInstance()->Initialize();
 }
 
 void EditorSceneActor::Finalize() {
@@ -105,8 +109,9 @@ void EditorSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Ligh
 		if (checkPos[2] || checkPos[3])
 			l_enemy->SetResPos(ini_enmeypos, PosY);
 
+
 		l_enemy->Initialize();
-		
+		l_enemy->SetMovingTime(timer);
 
 		enemys.emplace_back(l_enemy);
 		ArgF = false;
@@ -117,7 +122,8 @@ void EditorSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Ligh
 
 	Sample->Update();
 	Sample->SetStopF(true);
-
+	if(timerstart)
+	Timer::GetInstance()->Update();
 }
 
 void EditorSceneActor::Draw(DirectXCommon* dxCommon) {
@@ -201,6 +207,8 @@ void EditorSceneActor::ImGuiDraw() {
 
 	ImGui::SliderFloat("PosX", &PosX, -10, 10);
 	ImGui::SliderFloat("PosZ", &PosY, -10, 10);
+
+	ImGui::InputInt("Timer", &timer);
 	if (checkPos[0]) {
 		ini_enmeypos = InterEnemy::PosSt::UPRES;
 		for(auto i=0;i<4;i++)
@@ -237,8 +245,11 @@ void EditorSceneActor::ImGuiDraw() {
 		}
 	}
 
+	ImGui::Checkbox("Timerstart", &timerstart);
+
 	ImGui::End();
 
+	Timer::GetInstance()->ImGuiDraw();
 	//enemys->ImGuiDraw();
 	Player::GetInstance()->ImGuiDraw();
 	//Slow::GetInstance()->ImGuiDraw();

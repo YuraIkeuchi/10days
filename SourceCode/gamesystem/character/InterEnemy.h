@@ -38,7 +38,10 @@ public://getter setter
 	void SetPosZ(float posz) { m_Position.z= posz; }
 
 	void SetNum(size_t num) { Num = num; }
+
+	void SetMovingTime(int t) { MovingTime = t; }
 protected:
+	int MovingTime;
 	bool StopF = false;
 	XMFLOAT3 RespawnPos;
 	size_t Num;

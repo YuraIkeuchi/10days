@@ -8,7 +8,7 @@
 #include "Slow.h"
 #include "Collision.h"
 #include "ParticleEmitter.h"
-
+#include"Timer.h"
 #define MapMinX -10
 #define MapMaxX 10
 
@@ -36,7 +36,7 @@ bool NormalEnemy::Initialize() {
 	//	_charaState =
 	}
 	_charaState =  StartState;
-	_charaState =  CharaState::STATE_LEFT;//StartState;
+	//_charaState =  StartState;
 	m_BaseSpeed = static_cast<float>(std::any_cast<double>(LoadCSV::LoadCsvParam("Resources/csv/chara/enemy/enemy.csv", "speed")));
 	return true;
 }
@@ -52,7 +52,7 @@ void (NormalEnemy::* NormalEnemy::stateTable[])() = {
 
 //s“®
 void NormalEnemy::Action() {
-	if (!StopF) {
+	if (!StopF&&Timer::GetInstance()->getNowTime()<MovingTime) {
 		(this->*stateTable[_charaState])();
 
 		//“–‚½‚è”»
@@ -62,7 +62,8 @@ void NormalEnemy::Action() {
 }
 //•`‰æ
 void NormalEnemy::Draw(DirectXCommon* dxCommon) {
-	if (_charaState != STATE_INTER) {
+
+	if (StopF|| _charaState != STATE_INTER) {
 		Obj_Draw();
 	}
 }
