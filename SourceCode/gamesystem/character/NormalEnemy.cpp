@@ -43,8 +43,8 @@ void (NormalEnemy::* NormalEnemy::stateTable[])() = {
 	&NormalEnemy::Inter,//“®‚«‚Ì‡ŠÔ
 	&NormalEnemy::RightMove,//‰E‚ÉˆÚ“®
 	&NormalEnemy::LeftMove,//¶‚ÉˆÚ“®
-	& NormalEnemy::UpMove,//¶‚ÉˆÚ“®
-& NormalEnemy::BottomMove,//¶‚ÉˆÚ“®
+	&NormalEnemy::UpMove,//ã‚ÉˆÚ“®
+	&NormalEnemy::BottomMove,//‰º‚ÉˆÚ“®
 
 };
 
@@ -58,9 +58,9 @@ void NormalEnemy::Action() {
 }
 //•`‰æ
 void NormalEnemy::Draw(DirectXCommon* dxCommon) {
-	//if (_charaState != STATE_INTER) {
+	if (_charaState != STATE_INTER) {
 		Obj_Draw();
-	//}
+	}
 }
 //ImGui•`‰æ
 void NormalEnemy::ImGui_Origin() {
@@ -79,7 +79,7 @@ void NormalEnemy::Inter() {
 	if (m_ResPornTimer == 100) {
 		m_ResPornTimer = {};
 		m_Slow = false;
-		_charaState = StartState;
+		_charaState = CharaState::STATE_LEFT;
 	}
 }
 //‰E‚É“®‚­
