@@ -7,6 +7,7 @@
 #include "Easing.h"
 #include "Slow.h"
 #include "Collision.h"
+#include "ParticleEmitter.h"
 
 #define MapMinX -10
 #define MapMaxX 10
@@ -42,8 +43,8 @@ void (NormalEnemy::* NormalEnemy::stateTable[])() = {
 	&NormalEnemy::Inter,//“®‚«‚Ì‡ŠÔ
 	&NormalEnemy::RightMove,//‰E‚ÉˆÚ“®
 	&NormalEnemy::LeftMove,//¶‚ÉˆÚ“®
-	& NormalEnemy::UpMove,//¶‚ÉˆÚ“®
-& NormalEnemy::BottomMove,//¶‚ÉˆÚ“®
+	&NormalEnemy::UpMove,//ã‚ÉˆÚ“®
+	&NormalEnemy::BottomMove,//‰º‚ÉˆÚ“®
 
 };
 
@@ -59,9 +60,9 @@ void NormalEnemy::Action() {
 }
 //•`‰æ
 void NormalEnemy::Draw(DirectXCommon* dxCommon) {
-	//if (_charaState != STATE_INTER) {
+	if (_charaState != STATE_INTER) {
 		Obj_Draw();
-	//}
+	}
 }
 //ImGui•`‰æ
 void NormalEnemy::ImGui_Origin() {
@@ -80,7 +81,7 @@ void NormalEnemy::Inter() {
 	if (m_ResPornTimer == 100) {
 		m_ResPornTimer = {};
 		m_Slow = false;
-		_charaState = StartState;
+		_charaState = CharaState::STATE_LEFT;
 	}
 }
 //‰E‚É“®‚­
@@ -155,6 +156,7 @@ void NormalEnemy::SlowCollide() {
 			if ((input->TriggerButton(input->A))) {
 				_charaState = STATE_INTER;
 				m_ResPornTimer = {};
+				ParticleEmitter::GetInstance()->SplatterEffect(120, Player::GetInstance()->GetPosition(), { 0, 0, 0 }, 1.0f, 1.0f, { 1, 0, 0, 1 });
 			}
 		}
 	}

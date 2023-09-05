@@ -327,6 +327,9 @@
     <ClCompile Include="SourceCode\gamesystem\ui\UI.cpp">
       <Filter>gamesystem\ui</Filter>
     </ClCompile>
+    <ClCompile Include="SourceCode\gamesystem\ui\Timer.cpp">
+      <Filter>gamesystem\ui\Time</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCode\engine\camera\DebugCamera.h">
@@ -616,6 +619,9 @@
     <ClInclude Include="SourceCode\gamesystem\ui\UI.h">
       <Filter>gamesystem\ui</Filter>
     </ClInclude>
+    <ClInclude Include="SourceCode\gamesystem\ui\Timer.h">
+      <Filter>gamesystem\ui\Time</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\Basic.hlsli">
@@ -832,6 +838,9 @@
     </Filter>
     <Filter Include="gamesystem\ui">
       <UniqueIdentifier>{68cdc11a-3c74-4975-aa5f-9045a10122c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gamesystem\ui\Time">
+      <UniqueIdentifier>{89b7a7af-8415-41fa-8423-b5af17937cd7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

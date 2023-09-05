@@ -5,6 +5,9 @@
 #include "Player.h"
 #include "Helper.h"
 #include "Slow.h"
+#include "Timer.h"
+#include "SceneManager.h"
+
 void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, LightGroup* lightgroup) {
 	dxCommon->SetFullScreen(true);
 	//共通の初期化
@@ -69,6 +72,8 @@ void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 	tex[1]->SetScale({ 2.0f,0.1f,0.1f });
 	tex[2]->SetScale({ 0.1f,1.6f,0.1f });
 	tex[3]->SetScale({ 0.1f,1.6f,0.1f });
+
+	Timer::GetInstance()->Initialize();
 }
 
 void FirstStageActor::Finalize() {
@@ -87,6 +92,15 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 	ground->SetAddOffset(m_AddOffset.x);
 	Player::GetInstance()->Update();
 	Slow::GetInstance()->Update();
+	//タイマーを図る
+	if (!Slow::GetInstance()->GetSlow()) {
+		Timer::GetInstance()->Update();
+	}
+
+	//ゲーム終了
+	if (Timer::GetInstance()->GetEnd()) {
+		SceneManager::GetInstance()->ChangeScene("TITLE");
+	}
 	for (int i = 0; i < 2; i++) {
 		enemy[i]->Update();
 		if (Slow::GetInstance()->GetSlow()) {
@@ -99,6 +113,7 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 	for (int i = 0; i < AREA_NUM; i++) {
 		tex[i]->Update();
 	}
+	ParticleEmitter::GetInstance()->Update();
 }
 
 void FirstStageActor::Draw(DirectXCommon* dxCommon) {
@@ -139,6 +154,7 @@ void FirstStageActor::BackDraw(DirectXCommon* dxCommon) {
 		enemy[i]->Draw(dxCommon);
 	}
 	IKEObject3d::PostDraw();
+	ParticleEmitter::GetInstance()->FlontDrawAll();
 
 	IKETexture::PreDraw2(dxCommon, AlphaBlendType);
 	for (int i = 0; i < AREA_NUM; i++) {
@@ -170,4 +186,6 @@ void FirstStageActor::ImGuiDraw() {
 	}
 	Player::GetInstance()->ImGuiDraw();
 	Slow::GetInstance()->ImGuiDraw();
+
+	Timer::GetInstance()->ImGuiDraw();
 }

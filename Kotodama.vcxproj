@@ -197,6 +197,7 @@
     <ClCompile Include="SourceCode\gamesystem\scene\TutorialScene.cpp" />
     <ClCompile Include="SourceCode\gamesystem\text\Text.cpp" />
     <ClCompile Include="SourceCode\gamesystem\text\TextManager.cpp" />
+    <ClCompile Include="SourceCode\gamesystem\ui\Timer.cpp" />
     <ClCompile Include="SourceCode\gamesystem\ui\UI.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -295,6 +296,7 @@
     <ClInclude Include="SourceCode\gamesystem\scene\TutorialScene.h" />
     <ClInclude Include="SourceCode\gamesystem\text\Text.h" />
     <ClInclude Include="SourceCode\gamesystem\text\TextManager.h" />
+    <ClInclude Include="SourceCode\gamesystem\ui\Timer.h" />
     <ClInclude Include="SourceCode\gamesystem\ui\UI.h" />
   </ItemGroup>
   <ItemGroup>
