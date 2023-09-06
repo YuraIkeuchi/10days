@@ -13,7 +13,8 @@ void Slow::LoadCSV() {
 }
 void Slow::Update() {
 	if (m_Slow) {
-		m_SlowPower = 0.001f;
+		m_SlowPower = 0.2f;
+		m_PlayerSlowPower = 0.5f;
 		if (!m_Tutorial) {
 			m_SlowTimer++;
 		}
@@ -24,6 +25,7 @@ void Slow::Update() {
 	else {
 		m_SlowTimer = {};
 		m_SlowPower = 1.0f;
+		m_PlayerSlowPower = 1.0f;
 	}
 }
 void Slow::ImGuiDraw() {

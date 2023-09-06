@@ -67,4 +67,5 @@ private:
 	int m_MoveTimer = {};
 
 	bool m_Attack = false;
+	float m_AddFrame = {};
 };
