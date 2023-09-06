@@ -50,5 +50,14 @@ private:
 	int m_TexTimer = {};
 	int m_EndCount = {};
 	int m_ResetTimer = {};
+
+	enum AttackState {
+		ATTACK_INTRO,
+		ATTACK_EXPLAIN,
+		ENEMY_BIRTH,
+		ENEMY_DEATH,
+		ENEMY_SLOW,
+		ENEMY_END,
+	}_AttackState = ATTACK_INTRO;
 };
 

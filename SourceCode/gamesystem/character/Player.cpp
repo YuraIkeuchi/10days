@@ -6,6 +6,7 @@
 #include "Collision.h"
 #include "Slow.h"
 #include "ParticleEmitter.h"
+#include "TutorialTask.h"
 Player* Player::GetInstance()
 {
 	static Player instance;
@@ -54,6 +55,7 @@ void Player::Update()
 	(this->*stateTable[_charaState])();
 
 	Obj_SetParam();
+	m_MoveTimer = {};
 }
 //VECTOR
 XMFLOAT3 Player::MoveVECTOR(XMVECTOR v, float angle)
@@ -73,11 +75,7 @@ void Player::Draw(DirectXCommon* dxCommon)
 //ImGui
 void Player::ImGuiDraw() {
 	ImGui::Begin("Player");
-	ImGui::Text("POSX:%f", m_Position.x);
-	ImGui::Text("POSZ:%f", m_Position.z);
-	ImGui::Text("Speed:%f", m_AddSpeed);
-	ImGui::Text("State:%d", _MoveState);
-	ImGui::Text("Zoom:%d", m_CameraZoom);
+	ImGui::Text("Timer:%d", m_MoveTimer);
 	ImGui::End();
 }
 
@@ -98,10 +96,12 @@ void Player::Move() {
 			//右入力
 			if (input->TiltPushStick(Input::L_RIGHT, 0.0f) && (m_Position.x < 9.5f)) {
 				m_AddSpeed = m_BaseSpeed;
+				m_MoveTimer++;
 			}
 			//左入力
 			else if (input->TiltPushStick(Input::L_LEFT, 0.0f) && (m_Position.x > -9.5f)) {
 				m_AddSpeed = -m_BaseSpeed;
+				m_MoveTimer++;
 			}
 			//入力なし
 			else {
@@ -121,23 +121,28 @@ void Player::Move() {
 			//上入力
 			if (input->TiltPushStick(Input::L_UP, 0.0f) && (m_Position.z < 8.0f)) {
 				m_AddSpeed = m_BaseSpeed;
+				m_MoveTimer++;
 			}
 			//下入力
 			else if (input->TiltPushStick(Input::L_DOWN, 0.0f) && (m_Position.z > -8.0f)) {
 				m_AddSpeed = -m_BaseSpeed;
+				m_MoveTimer++;
 			}
 			//入力なし
 			else {
 				m_AddSpeed = {};
 			}
 
-			if (Helper::GetInstance()->CheckMax(m_Position.z, -8.0f, m_AddSpeed)) {
-				m_ChangeLine = true;
-				_MoveState = MOVE_DOWN;
-			}
-			else if (Helper::GetInstance()->CheckMin(m_Position.z, 8.0f, m_AddSpeed)) {
-				m_ChangeLine = true;
-				_MoveState = MOVE_UP;
+			//チュートリアルのタスクのときだけ移動できない
+			if (!TutorialTask::GetInstance()->GetMission()) {
+				if (Helper::GetInstance()->CheckMax(m_Position.z, -8.0f, m_AddSpeed)) {
+					m_ChangeLine = true;
+					_MoveState = MOVE_DOWN;
+				}
+				else if (Helper::GetInstance()->CheckMin(m_Position.z, 8.0f, m_AddSpeed)) {
+					m_ChangeLine = true;
+					_MoveState = MOVE_UP;
+				}
 			}
 		}
 	}
@@ -186,4 +191,11 @@ void Player::Attack() {
 			m_CameraZoom = false;
 		}
 	}
+}
+//チュートリアルの更新
+void Player::TutorialUpdate() {
+	//状態移行(charastateに合わせる)
+	(this->*stateTable[_charaState])();
+
+	Obj_SetParam();
 }

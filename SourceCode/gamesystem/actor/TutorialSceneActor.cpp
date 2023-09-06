@@ -1,5 +1,4 @@
 ﻿#include "TutorialSceneActor.h"
-#include"Easing.h"
 #include "ParticleEmitter.h"
 #include "ImageManager.h"
 #include "Player.h"
@@ -7,6 +6,7 @@
 #include "Slow.h"
 #include "Timer.h"
 #include "SceneManager.h"
+#include "TutorialTask.h"
 //状態遷移
 /*stateの並び順に合わせる*/
 void (TutorialSceneActor::* TutorialSceneActor::TutorialTable[])() = {
@@ -74,12 +74,16 @@ void TutorialSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera
 	tex[2]->SetScale({ 0.1f,1.6f,0.1f });
 	tex[3]->SetScale({ 0.1f,1.6f,0.1f });
 
+	//タイマー
 	Timer::GetInstance()->Initialize();
 
 	//テキスト
 	text_ = make_unique<TutorialText>();
 	text_->Initialize(dxCommon);
 	text_->SelectText(TextManager::INTRO);
+
+	//チュートリアルタスク
+	TutorialTask::GetInstance()->Initialize();
 }
 
 void TutorialSceneActor::Finalize() {
@@ -91,11 +95,13 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 	//状態移行(stateに合わせる)
 	(this->*TutorialTable[static_cast<size_t>(nowstate_)])();
 	//各クラス更新
-	camerawork->Update(camera);
+	camerawork->TutorialUpdate(camera);
 	lightgroup->Update();
 	skydome->Update();
-	Player::GetInstance()->Update();
-	Slow::GetInstance()->Update();
+	if (!TutorialTask::GetInstance()->GetStop()) {
+		Player::GetInstance()->TutorialUpdate();
+		Slow::GetInstance()->Update();
+	}
 	//スキップの更新
 	SkipUpdate();
 	//ゲーム終了
@@ -139,6 +145,10 @@ void TutorialSceneActor::FrontDraw(DirectXCommon* dxCommon) {
 	//完全に前に書くスプライト
 	IKESprite::PreDraw();
 	text_->SpriteDraw(dxCommon);
+
+	IKESprite::PostDraw();
+	IKESprite::PreDraw();
+	TutorialTask::GetInstance()->Draw();
 	IKESprite::PostDraw();
 }
 //ポストエフェクトかかる
@@ -176,6 +186,8 @@ void TutorialSceneActor::ImGuiDraw() {
 	}
 	ImGui::Text("EndCount:%d", m_EndCount);
 	ImGui::End();
+	Player::GetInstance()->ImGuiDraw();
+	camerawork->ImGuiDraw();
 }
 
 //移動
@@ -184,10 +196,51 @@ void TutorialSceneActor::MoveState() {
 	if (m_TexTimer == 100) {
 		text_->SelectText(TextManager::MOVE);
 	}
+
+	if (Player::GetInstance()->GetMoveTimer() == 300) {
+		nowstate_ = state::ATTACK;
+		text_->SelectText(TextManager::ATTACK);
+		m_TexTimer = 0;
+		TutorialTask::GetInstance()->SetStop(true);
+	}
 }
 //攻撃
 void TutorialSceneActor::AttackState() {
-
+	if (_AttackState == ATTACK_INTRO) {
+		m_TexTimer++;
+		if (m_TexTimer == 200) {
+			m_TexTimer = {};
+			_AttackState = ATTACK_EXPLAIN;
+			text_->SelectText(TextManager::ATTACK2);
+			TutorialTask::GetInstance()->SetStop(false);
+		}
+	}
+	else if (_AttackState == ATTACK_EXPLAIN) {
+		m_TexTimer++;
+		if (m_TexTimer == 200) {
+			m_TexTimer = {};
+			_AttackState = ENEMY_BIRTH;
+			TutorialTask::GetInstance()->SetMission(true);
+			camerawork->SetLookEnemy(true);
+		}
+	}
+	else if (_AttackState == ENEMY_BIRTH) {
+		m_TexTimer++;
+		if (m_TexTimer == 150) {
+			text_->SelectText(TextManager::ATTACK3);
+		}
+		if (m_TexTimer == 250) {
+			m_TexTimer = {};
+			_AttackState = ENEMY_DEATH;
+			TutorialTask::GetInstance()->SetMission(false);
+		}
+	}
+	else if (_AttackState == ENEMY_DEATH) {
+		m_TexTimer++;
+		if (m_TexTimer == 100) {
+			text_->SelectText(TextManager::ATTACK4);
+		}
+	}
 }
 //終わり
 void TutorialSceneActor::EndState() {

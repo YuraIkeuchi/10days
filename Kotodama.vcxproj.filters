@@ -333,6 +333,9 @@
     <ClCompile Include="SourceCode\gamesystem\scenetext\TutorialText.cpp">
       <Filter>gamesystem\scenetext\Tutorial</Filter>
     </ClCompile>
+    <ClCompile Include="SourceCode\gamesystem\ui\TutorialTask.cpp">
+      <Filter>gamesystem\ui\TutorialTask</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCode\engine\camera\DebugCamera.h">
@@ -628,6 +631,9 @@
     <ClInclude Include="SourceCode\gamesystem\scenetext\TutorialText.h">
       <Filter>gamesystem\scenetext\Tutorial</Filter>
     </ClInclude>
+    <ClInclude Include="SourceCode\gamesystem\ui\TutorialTask.h">
+      <Filter>gamesystem\ui\TutorialTask</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\Basic.hlsli">
@@ -850,6 +856,9 @@
     </Filter>
     <Filter Include="gamesystem\scenetext\Tutorial">
       <UniqueIdentifier>{fc031a7e-ee93-4d5e-927a-efa15b746455}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gamesystem\ui\TutorialTask">
+      <UniqueIdentifier>{23a72c52-5c81-4b5b-8a3a-0b55ce254ae0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

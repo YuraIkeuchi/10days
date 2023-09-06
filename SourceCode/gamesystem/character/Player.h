@@ -25,6 +25,7 @@ public:
 	void Draw(DirectXCommon* dxCommon)override;
 	//ImGui
 	void ImGuiDraw();
+	void TutorialUpdate();
 private:
 	static void (Player::* stateTable[])();
 
@@ -35,6 +36,7 @@ private:
 	XMFLOAT3 MoveVECTOR(XMVECTOR v, float angle);
 public:
 	const int GetMoveState() { return (int)_MoveState; }
+	const int GetMoveTimer() { return m_MoveTimer; }
 	const bool GetCameraZoom() { return m_CameraZoom; }
 private:
 	void LoadCSV();
@@ -61,4 +63,5 @@ private:
 	int _MoveState = {};
 	bool m_ChangeLine = false;
 	bool m_CameraZoom = false;
+	int m_MoveTimer = {};
 };
