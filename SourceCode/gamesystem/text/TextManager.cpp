@@ -38,7 +38,7 @@ void TextManager::Initialize(DirectXCommon* dxcomon)
 {
 	//ワード追加
 	//タイトル
-	CreateWord(FIRST, L"ジカン", L"Bボタンをおせば", L"ゲームシーンだよ反対");
+	CreateWord(FIRST, L"Bボタンでゲーム", L"Xボタンでチュートリアル", L"");
 	//チュートリアル
 	CreateTutorialWord(INTRO, L"いきなりだが", L"この戦いについて", L"説明しよう");
 	CreateTutorialWord(MOVE, L"まずスティックを動かして", L"このステージの外周を", L"移動してみろ");

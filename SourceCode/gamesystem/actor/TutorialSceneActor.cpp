@@ -51,9 +51,6 @@ void TutorialSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera
 	Player::GetInstance()->InitState({ 0.0f,0.0f,8.0f });
 	Player::GetInstance()->Initialize();
 
-	enemy.reset(new NormalEnemy());
-	enemy->Initialize();
-
 	//テクスチャ
 	for (int i = 0; i < AREA_NUM; i++) {
 		tex[i].reset(IKETexture::Create(ImageManager::AREA, { 0,0,0 }, { 0.5f,0.5f,0.5f }, { 1,1,1,1 }));
@@ -140,6 +137,22 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 		tex[i]->Update();
 	}
 	ParticleEmitter::GetInstance()->Update();
+
+	for (auto i = 0; i < enemys.size(); i++) {
+		enemys[i]->Update();
+	}
+	//敵の削除
+	//食料の削除(このステージのみ)
+	for (int i = 0; i < enemys.size(); i++) {
+		if (enemys[i] == nullptr) {
+			continue;
+		}
+
+		if (!enemys[i]->GetAlive()) {
+			enemys.erase(cbegin(enemys) + i);
+			m_EnemyCount--;
+		}
+	}
 }
 
 void TutorialSceneActor::Draw(DirectXCommon* dxCommon) {
@@ -172,7 +185,7 @@ void TutorialSceneActor::FrontDraw(DirectXCommon* dxCommon) {
 	//完全に前に書くスプライト
 	IKESprite::PreDraw();
 	window->Draw();
-	if (!m_Vanish) {
+	if (!m_Vanish && nowstate_ != state::END) {
 		text_->SpriteDraw(dxCommon);
 	}
 	
@@ -186,7 +199,9 @@ void TutorialSceneActor::BackDraw(DirectXCommon* dxCommon) {
 	IKEObject3d::PreDraw();
 	BackObj::GetInstance()->Draw();
 	Player::GetInstance()->Draw(dxCommon);
-	enemy->Draw(dxCommon);
+	for (auto i = 0; i < enemys.size(); i++) {
+		enemys[i]->Draw(dxCommon);
+	}
 	ground->Draw();
 	IKEObject3d::PostDraw();
 	ParticleEmitter::GetInstance()->FlontDrawAll();
@@ -212,12 +227,14 @@ void TutorialSceneActor::FinishUpdate(DebugCamera* camera) {
 
 void TutorialSceneActor::ImGuiDraw() {
 	ImGui::Begin("TUTORIAL");
-	ImGui::Text("SizeX:%f", window_size.x);
-	ImGui::Text("SizeY:%f", window_size.y);
 	ImGui::Text("Timer:%d", m_TexTimer);
+	ImGui::Text("Count:%d", m_EnemyCount);
 	ImGui::End();
 	Player::GetInstance()->ImGuiDraw();
 	camerawork->ImGuiDraw();
+	for (auto i = 0; i < enemys.size(); i++) {
+		enemys[i]->ImGuiDraw();
+	}
 }
 
 //移動
@@ -227,7 +244,7 @@ void TutorialSceneActor::MoveState() {
 		text_->SelectText(TextManager::MOVE);
 	}
 
-	if (Player::GetInstance()->GetMoveTimer() == 300) {
+	if (Player::GetInstance()->GetMoveTimer() >= 300 && !m_Vanish) {
 		nowstate_ = state::ATTACK;
 		text_->SelectText(TextManager::ATTACK);
 		m_TexTimer = 0;
@@ -244,7 +261,7 @@ void TutorialSceneActor::AttackState() {
 		if (!m_Vanish) {
 			m_TexTimer++;
 		}
-		if (m_TexTimer == 200) {
+		if (m_TexTimer == 100) {
 			m_TexTimer = {};
 			_AttackState = ATTACK_EXPLAIN;
 			text_->SelectText(TextManager::ATTACK2);//Aで攻撃ができるぞ
@@ -255,7 +272,8 @@ void TutorialSceneActor::AttackState() {
 		if (!m_Vanish) {
 			m_TexTimer++;
 		}
-		if (m_TexTimer >= 200 && !Player::GetInstance()->GetAttack()) {
+		if (m_TexTimer >= 150 && !Player::GetInstance()->GetAttack()) {
+			BirthEnemy(false,false);
 			m_TexTimer = {};
 			_AttackState = ENEMY_BIRTH;//敵が出てきたぞ
 			TutorialTask::GetInstance()->SetMission(true);
@@ -266,27 +284,69 @@ void TutorialSceneActor::AttackState() {
 		if (!m_Vanish) {
 			m_TexTimer++;
 		}
-		if (m_TexTimer == 150) {
+		if (m_TexTimer == 50) {
 			text_->SelectText(TextManager::ATTACK3);
 		}
-		if (m_TexTimer == 250) {
+		if (m_TexTimer == 200) {
 			m_TexTimer = {};
 			_AttackState = ENEMY_DEATH;
 			TutorialTask::GetInstance()->SetMission(false);
+			text_->SelectText(TextManager::ATTACK4);
 		}
 	}
 	else if (_AttackState == ENEMY_DEATH) {
 		if (!m_Vanish) {
 			m_TexTimer++;
 		}
-		if (m_TexTimer == 100) {
-			text_->SelectText(TextManager::ATTACK4);
+		
+		if (Slow::GetInstance()->GetSlow()) {
+			Slow::GetInstance()->SetTutorial(true);
+			text_->SelectText(TextManager::ATTACK5);
+
+			if (m_EnemyCount == 0) {
+				m_TexTimer = {};
+				Slow::GetInstance()->SetTutorial(false);
+				_AttackState = ENEMY_INTERVAL;
+				text_->SelectText(TextManager::ATTACK6);
+			}
+		}
+	}
+	else if (_AttackState == ENEMY_INTERVAL) {
+		if (!m_Vanish) {
+			m_TexTimer++;
+		}
+
+		if (m_TexTimer == 150) {
+			text_->SelectText(TextManager::ATTACK7);
+		}
+		else if (m_TexTimer == 300) {
+			text_->SelectText(TextManager::ATTACK8);
+		}
+		else if (m_TexTimer == 450) {
+			text_->SelectText(TextManager::ATTACK9);
+		}
+		else if (m_TexTimer == 600) {
+			text_->SelectText(TextManager::END);
+		}
+		else if (m_TexTimer == 750) {
+			nowstate_ = state::END;
+			m_TexTimer = {};
 		}
 	}
 }
 //終わり
 void TutorialSceneActor::EndState() {
+	window_size.x = Ease(In, Cubic, 0.8f, window_size.x, 0);
+	window_size.y = Ease(In, Cubic, 0.8f, window_size.y, 0);
+	Helper::GetInstance()->CheckMin(m_TexTimer, 200, 1);
+	if(m_TexTimer == 100){
+		BirthEnemy(false, true);
+	}
 
+	if (m_EnemyCount == 0 && m_TutorialEnd) {
+		m_TexTimer = {};
+		m_TutorialEnd = false;
+	}
 }
 //スキップの更新
 void TutorialSceneActor::SkipUpdate() {
@@ -303,5 +363,35 @@ void TutorialSceneActor::SkipUpdate() {
 	if (m_ResetTimer == 100) {
 		m_EndCount = {};
 		m_ResetTimer = {};
+	}
+}
+//敵の生成
+void TutorialSceneActor::BirthEnemy(bool Move,bool End) {
+	if (!End) {
+		InterEnemy* newEnemy;
+		newEnemy = new TutorialEnemy();
+		newEnemy->Initialize();
+		newEnemy->SetPosition({ 0.0f,0.0f,0.0f });
+		newEnemy->SetMove(Move);
+		enemys.push_back(newEnemy);
+		m_EnemyCount++;
+	}
+	else {
+		m_TutorialEnd = true;
+		for (int i = 0; i < ENEMY_MAX; i++) {
+			InterEnemy* newEnemy;
+			newEnemy = new TutorialEnemy();
+			newEnemy->Initialize();
+			if (i == 0) {
+				newEnemy->SetPosition({ 0.0f,0.0f,0.0f });
+			}else if (i == 1) {
+				newEnemy->SetPosition({ 3.0f,0.0f,0.0f });
+			}else if (i == 2) {
+				newEnemy->SetPosition({ -3.0f,0.0f,0.0f });
+			}
+			newEnemy->SetMove(Move);
+			enemys.push_back(newEnemy);
+			m_EnemyCount++;
+		}
 	}
 }

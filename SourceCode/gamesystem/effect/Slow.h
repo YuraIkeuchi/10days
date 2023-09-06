@@ -12,9 +12,11 @@ public:
 	bool GetSlow() { return  m_Slow; }
 	float GetSlowPower() { return  m_SlowPower; }
 	void SetSlow(bool Slow) { this->m_Slow = Slow; }
+	void SetTutorial(bool Tutorial) { this->m_Tutorial = Tutorial; }
 private:
 	bool m_Slow = false;//ヒットストップ
 	int m_SlowTimer = 0;//ヒットストップの時間
 	
 	float m_SlowPower = 1.0f;
+	bool m_Tutorial = false;
 };
