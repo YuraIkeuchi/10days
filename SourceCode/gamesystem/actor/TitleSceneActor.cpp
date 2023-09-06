@@ -19,6 +19,9 @@ void TitleSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 	camerawork->Update(camera);
 	Input* input = Input::GetInstance();
 	if ((input->TriggerButton(input->B))) {
+		SceneManager::GetInstance()->ChangeScene("FIRSTSTAGE");
+	}
+	if ((input->TriggerButton(input->X))) {
 		SceneManager::GetInstance()->ChangeScene("TUTORIAL");
 	}
 }

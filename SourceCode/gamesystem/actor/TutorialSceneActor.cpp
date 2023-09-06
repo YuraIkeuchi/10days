@@ -85,6 +85,12 @@ void TutorialSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera
 
 	//背景
 	BackObj::GetInstance()->Initialize();
+
+	window = IKESprite::Create(ImageManager::TUTORIAL, {});
+	window->SetAnchorPoint({ 0.5f,0.5f });
+	window->SetPosition({ WinApp::window_width / 2.f,WinApp::window_height - 100 });
+	window->SetSize({1300.0f, 220.0f});
+	window_size = { 0.f,0.f };
 }
 
 void TutorialSceneActor::Finalize() {
@@ -101,6 +107,8 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 	skydome->Update();
 	ground->Update();
 	ground->UpdateWorldMatrix();
+	window->SetSize(window_size);
+	window->SetColor({ 1.0f,1.0f,1.0f,m_Alpha });
 	BackObj::GetInstance()->Update();
 	if (!TutorialTask::GetInstance()->GetStop()) {
 		Player::GetInstance()->TutorialUpdate();
@@ -108,6 +116,21 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 	}
 	//スキップの更新
 	SkipUpdate();
+
+	//プレイヤーが手前に来たら消す
+	if (Player::GetInstance()->GetPosition().z <= -7.0f) {
+		m_Vanish = true;
+	}
+	else {
+		m_Vanish = false;
+	}
+
+	if (m_Vanish) {
+		m_Alpha = Ease(In, Cubic, 0.8f, m_Alpha, 0.0f);
+	}
+	else {
+		m_Alpha = Ease(In, Cubic, 0.8f, m_Alpha, 1.0f);
+	}
 	//ゲーム終了
 	if (m_EndCount == 2) {
 		SceneManager::GetInstance()->ChangeScene("FIRSTSTAGE");
@@ -148,8 +171,11 @@ void TutorialSceneActor::Draw(DirectXCommon* dxCommon) {
 void TutorialSceneActor::FrontDraw(DirectXCommon* dxCommon) {
 	//完全に前に書くスプライト
 	IKESprite::PreDraw();
-	text_->SpriteDraw(dxCommon);
-
+	window->Draw();
+	if (!m_Vanish) {
+		text_->SpriteDraw(dxCommon);
+	}
+	
 	IKESprite::PostDraw();
 	IKESprite::PreDraw();
 	TutorialTask::GetInstance()->Draw();
@@ -186,10 +212,9 @@ void TutorialSceneActor::FinishUpdate(DebugCamera* camera) {
 
 void TutorialSceneActor::ImGuiDraw() {
 	ImGui::Begin("TUTORIAL");
-	if (Slow::GetInstance()->GetSlow()) {
-		ImGui::Text("PUSH A!!!");
-	}
-	ImGui::Text("EndCount:%d", m_EndCount);
+	ImGui::Text("SizeX:%f", window_size.x);
+	ImGui::Text("SizeY:%f", window_size.y);
+	ImGui::Text("Timer:%d", m_TexTimer);
 	ImGui::End();
 	Player::GetInstance()->ImGuiDraw();
 	camerawork->ImGuiDraw();
@@ -208,29 +233,39 @@ void TutorialSceneActor::MoveState() {
 		m_TexTimer = 0;
 		TutorialTask::GetInstance()->SetStop(true);
 	}
+
+	window_size.x = Ease(In, Cubic, 0.8f, window_size.x, 1300);
+	window_size.y = Ease(In, Cubic, 0.8f, window_size.y, 223);
+	//window->SetSize(window_size);
 }
 //攻撃
 void TutorialSceneActor::AttackState() {
 	if (_AttackState == ATTACK_INTRO) {
-		m_TexTimer++;
+		if (!m_Vanish) {
+			m_TexTimer++;
+		}
 		if (m_TexTimer == 200) {
 			m_TexTimer = {};
 			_AttackState = ATTACK_EXPLAIN;
-			text_->SelectText(TextManager::ATTACK2);
+			text_->SelectText(TextManager::ATTACK2);//Aで攻撃ができるぞ
 			TutorialTask::GetInstance()->SetStop(false);
 		}
 	}
 	else if (_AttackState == ATTACK_EXPLAIN) {
-		m_TexTimer++;
-		if (m_TexTimer == 200) {
+		if (!m_Vanish) {
+			m_TexTimer++;
+		}
+		if (m_TexTimer >= 200 && !Player::GetInstance()->GetAttack()) {
 			m_TexTimer = {};
-			_AttackState = ENEMY_BIRTH;
+			_AttackState = ENEMY_BIRTH;//敵が出てきたぞ
 			TutorialTask::GetInstance()->SetMission(true);
 			camerawork->SetLookEnemy(true);
 		}
 	}
 	else if (_AttackState == ENEMY_BIRTH) {
-		m_TexTimer++;
+		if (!m_Vanish) {
+			m_TexTimer++;
+		}
 		if (m_TexTimer == 150) {
 			text_->SelectText(TextManager::ATTACK3);
 		}
@@ -241,7 +276,9 @@ void TutorialSceneActor::AttackState() {
 		}
 	}
 	else if (_AttackState == ENEMY_DEATH) {
-		m_TexTimer++;
+		if (!m_Vanish) {
+			m_TexTimer++;
+		}
 		if (m_TexTimer == 100) {
 			text_->SelectText(TextManager::ATTACK4);
 		}

@@ -38,6 +38,7 @@ public:
 	const int GetMoveState() { return (int)_MoveState; }
 	const int GetMoveTimer() { return m_MoveTimer; }
 	const bool GetCameraZoom() { return m_CameraZoom; }
+	const bool GetAttack() { return m_Attack; }
 private:
 	void LoadCSV();
 
@@ -64,4 +65,6 @@ private:
 	bool m_ChangeLine = false;
 	bool m_CameraZoom = false;
 	int m_MoveTimer = {};
+
+	bool m_Attack = false;
 };

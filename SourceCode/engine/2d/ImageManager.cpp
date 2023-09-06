@@ -11,6 +11,7 @@ void ImageManager::StartLoad2D()
 {
 	IKESprite::LoadTexture(NUMBER, L"Resources/2d/objicon/Num.png");
 	IKESprite::LoadTexture(BLACKWINDOW, L"Resources/2d/objicon/BlackWindow.png");
+	IKESprite::LoadTexture(TUTORIAL, L"Resources/2d/objicon/Tutorial.png");
 }
 
 //非同期処理で読み込むスプライト

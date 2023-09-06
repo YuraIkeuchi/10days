@@ -40,6 +40,7 @@ private:
 private:
 	static const int AREA_NUM = 4;
 private:
+	unique_ptr<IKESprite> window;
 	unique_ptr<TutorialText> text_;
 	unique_ptr<IKEObject3d> ground;
 	IKEModel* model;
@@ -59,5 +60,10 @@ private:
 		ENEMY_SLOW,
 		ENEMY_END,
 	}_AttackState = ATTACK_INTRO;
+
+	XMFLOAT2 window_size = { 0.f,0.f };
+	float m_Alpha = 1.0f;
+
+	bool m_Vanish = false;
 };
 
