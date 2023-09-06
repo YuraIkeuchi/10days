@@ -1,14 +1,13 @@
 ﻿#pragma once
-#include "BaseActor.h"
-#include"TextManager.h"
-#include <random>
-#include <vector>
-#include <windows.h>
+#include"BaseActor.h"
+#include"BossText.h"
+#include "MessageWindow.h"
+#include "NormalEnemy.h"
+#include<windows.h>
+#include<vector>
 
-/// タイトルシーン
-class TutorialSceneActor : public BaseActor {
-private:
-
+class TutorialSceneActor :public BaseActor
+{
 public:
 	/// 初期化
 	void Initialize(DirectXCommon* dxCommon, DebugCamera* camera, LightGroup* lightgroup) override;
@@ -20,5 +19,26 @@ public:
 	void Draw(DirectXCommon* dxCommon) override;
 	void FrontDraw(DirectXCommon* dxCommon);
 	void BackDraw(DirectXCommon* dxCommon);
-	void ImGuiDraw(DirectXCommon* dxCommon);
+private:
+	void IntroUpdate(DebugCamera* camera)override;		//登場シーン
+	void MainUpdate(DebugCamera* camera)override;		//バトルシーン
+	void FinishUpdate(DebugCamera* camera)override;		//撃破シーン
+
+	void ImGuiDraw();
+private:
+	enum class state {
+		INTORO = 0,
+		MOVE,
+		
+	}nowstate_ = state::INTORO;
+private:
+	static const int AREA_NUM = 4;
+private:
+	unique_ptr<IKEObject3d> ground;
+	IKEModel* model;
+	unique_ptr<IKEObject3d> skydome;
+	XMFLOAT2 m_AddOffset = {};
+	unique_ptr<InterEnemy> enemy;
+	unique_ptr<IKETexture> tex[AREA_NUM];
 };
+

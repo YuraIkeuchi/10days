@@ -38,7 +38,7 @@ void TextManager::Create(DirectXCommon* dxcomon)
 void TextManager::Initialize(DirectXCommon* dxcomon)
 {
 	//ワード追加
-	CreateWord(FIRST, L"タイトルだよ", L"Bボタンをおせば", L"ゲームシーンだよ");
+	CreateWord(FIRST, L"タイトルだよ", L"Bボタンをおせば", L"ゲームシーンだよ反対");
 	//コンヴァージョン初期化
 	Create(dxcomon);
 
