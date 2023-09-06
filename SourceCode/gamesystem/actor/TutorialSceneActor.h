@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include"BaseActor.h"
-#include"BossText.h"
+#include "TutorialText.h"
 #include "MessageWindow.h"
 #include "NormalEnemy.h"
 #include<windows.h>
@@ -27,18 +27,43 @@ private:
 	void ImGuiDraw();
 private:
 	enum class state {
-		INTORO = 0,
 		MOVE,
-		
-	}nowstate_ = state::INTORO;
+		ATTACK,
+		END,
+	}nowstate_ = state::MOVE;
+private:
+	static void (TutorialSceneActor::* TutorialTable[])();
+	void MoveState();
+	void AttackState();
+	void EndState();
+	void SkipUpdate();
 private:
 	static const int AREA_NUM = 4;
 private:
+	unique_ptr<IKESprite> window;
+	unique_ptr<TutorialText> text_;
 	unique_ptr<IKEObject3d> ground;
 	IKEModel* model;
 	unique_ptr<IKEObject3d> skydome;
 	XMFLOAT2 m_AddOffset = {};
 	unique_ptr<InterEnemy> enemy;
 	unique_ptr<IKETexture> tex[AREA_NUM];
+	int m_TexTimer = {};
+	int m_EndCount = {};
+	int m_ResetTimer = {};
+
+	enum AttackState {
+		ATTACK_INTRO,
+		ATTACK_EXPLAIN,
+		ENEMY_BIRTH,
+		ENEMY_DEATH,
+		ENEMY_SLOW,
+		ENEMY_END,
+	}_AttackState = ATTACK_INTRO;
+
+	XMFLOAT2 window_size = { 0.f,0.f };
+	float m_Alpha = 1.0f;
+
+	bool m_Vanish = false;
 };
 

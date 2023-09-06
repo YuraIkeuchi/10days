@@ -1,5 +1,4 @@
 ﻿#include "TutorialSceneActor.h"
-#include"Easing.h"
 #include "ParticleEmitter.h"
 #include "ImageManager.h"
 #include "Player.h"
@@ -7,6 +6,15 @@
 #include "Slow.h"
 #include "Timer.h"
 #include "SceneManager.h"
+#include "TutorialTask.h"
+#include "BackObj.h"
+//状態遷移
+/*stateの並び順に合わせる*/
+void (TutorialSceneActor::* TutorialSceneActor::TutorialTable[])() = {
+	&TutorialSceneActor::MoveState,//移動
+	&TutorialSceneActor::AttackState,//攻撃
+	& TutorialSceneActor::EndState,//終わり
+};
 
 void TutorialSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, LightGroup* lightgroup) {
 	dxCommon->SetFullScreen(true);
@@ -21,18 +29,15 @@ void TutorialSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera
 
 	m_SceneState = SceneState::IntroState;
 
-	lightgroup->SetCircleShadowActive(0, true);
-	lightgroup->SetCircleShadowActive(1, true);
-
+	
 	//地面
 	ground.reset(new IKEObject3d());
 	ground->Initialize();
 	ground->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::GROUND));
-	ground->SetScale({ 2.f,1.f,2.f });
-	ground->SetPosition({ 0.0f,-10.0f,0.0f });
-	ground->SetAddOffset(0.5f);
-	ground->VertexCheck();
-
+	ground->SetScale({ 1.f,1.f,1.f });
+	ground->SetPosition({ 0.0f,5.0f,0.0f });
+	ground->SetTiling(10.0f);
+	
 	//スカイドーム
 	skydome.reset(new IKEObject3d());
 	skydome->Initialize();
@@ -58,16 +63,34 @@ void TutorialSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera
 		tex[i]->SetColor({ 1.0f,0.0,0.0f,0.5f });
 	}
 
-	tex[0]->SetPosition({ 0.0f,2.0f,8.0f });
-	tex[1]->SetPosition({ 0.0f,2.0f,-8.0f });
-	tex[2]->SetPosition({ 9.3f,2.0f,0.0f });
-	tex[3]->SetPosition({ -9.3f,2.0f,0.0f });
+	tex[0]->SetPosition({ 0.0f,0.0f,8.0f });
+	tex[1]->SetPosition({ 0.0f,0.0f,-8.0f });
+	tex[2]->SetPosition({ 9.3f,0.0f,0.0f });
+	tex[3]->SetPosition({ -9.3f,0.0f,0.0f });
 	tex[0]->SetScale({ 2.0f,0.1f,0.1f });
 	tex[1]->SetScale({ 2.0f,0.1f,0.1f });
 	tex[2]->SetScale({ 0.1f,1.6f,0.1f });
 	tex[3]->SetScale({ 0.1f,1.6f,0.1f });
 
+	//タイマー
 	Timer::GetInstance()->Initialize();
+
+	//テキスト
+	text_ = make_unique<TutorialText>();
+	text_->Initialize(dxCommon);
+	text_->SelectText(TextManager::INTRO);
+
+	//チュートリアルタスク
+	TutorialTask::GetInstance()->Initialize();
+
+	//背景
+	BackObj::GetInstance()->Initialize();
+
+	window = IKESprite::Create(ImageManager::TUTORIAL, {});
+	window->SetAnchorPoint({ 0.5f,0.5f });
+	window->SetPosition({ WinApp::window_width / 2.f,WinApp::window_height - 100 });
+	window->SetSize({1300.0f, 220.0f});
+	window_size = { 0.f,0.f };
 }
 
 void TutorialSceneActor::Finalize() {
@@ -76,30 +99,41 @@ void TutorialSceneActor::Finalize() {
 void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, LightGroup* lightgroup) {
 	//関数ポインタで状態管理
 	(this->*stateTable[static_cast<size_t>(m_SceneState)])(camera);
-
+	//状態移行(stateに合わせる)
+	(this->*TutorialTable[static_cast<size_t>(nowstate_)])();
 	//各クラス更新
-	camerawork->Update(camera);
+	camerawork->TutorialUpdate(camera);
 	lightgroup->Update();
-	ground->Update();
 	skydome->Update();
-	ground->SetAddOffset(m_AddOffset.x);
-	if (!Timer::GetInstance()->GetStop()) {
-		Player::GetInstance()->Update();
+	ground->Update();
+	ground->UpdateWorldMatrix();
+	window->SetSize(window_size);
+	window->SetColor({ 1.0f,1.0f,1.0f,m_Alpha });
+	BackObj::GetInstance()->Update();
+	if (!TutorialTask::GetInstance()->GetStop()) {
+		Player::GetInstance()->TutorialUpdate();
 		Slow::GetInstance()->Update();
-		enemy->Update();
 	}
-	//タイマーを図る
-	if (!Slow::GetInstance()->GetSlow()) {
-		Timer::GetInstance()->Update();
-		enemy->SetSlowMove(false);
+	//スキップの更新
+	SkipUpdate();
+
+	//プレイヤーが手前に来たら消す
+	if (Player::GetInstance()->GetPosition().z <= -7.0f) {
+		m_Vanish = true;
 	}
 	else {
-		enemy->SetSlowMove(true);
+		m_Vanish = false;
 	}
 
+	if (m_Vanish) {
+		m_Alpha = Ease(In, Cubic, 0.8f, m_Alpha, 0.0f);
+	}
+	else {
+		m_Alpha = Ease(In, Cubic, 0.8f, m_Alpha, 1.0f);
+	}
 	//ゲーム終了
-	if (Timer::GetInstance()->GetEnd()) {
-		SceneManager::GetInstance()->ChangeScene("TITLE");
+	if (m_EndCount == 2) {
+		SceneManager::GetInstance()->ChangeScene("FIRSTSTAGE");
 	}
 
 	for (int i = 0; i < AREA_NUM; i++) {
@@ -135,15 +169,25 @@ void TutorialSceneActor::Draw(DirectXCommon* dxCommon) {
 }
 //ポストエフェクトかからない
 void TutorialSceneActor::FrontDraw(DirectXCommon* dxCommon) {
-
+	//完全に前に書くスプライト
+	IKESprite::PreDraw();
+	window->Draw();
+	if (!m_Vanish) {
+		text_->SpriteDraw(dxCommon);
+	}
+	
+	IKESprite::PostDraw();
+	IKESprite::PreDraw();
+	TutorialTask::GetInstance()->Draw();
+	IKESprite::PostDraw();
 }
 //ポストエフェクトかかる
 void TutorialSceneActor::BackDraw(DirectXCommon* dxCommon) {
 	IKEObject3d::PreDraw();
-	ground->Draw();
-	skydome->Draw();
+	BackObj::GetInstance()->Draw();
 	Player::GetInstance()->Draw(dxCommon);
 	enemy->Draw(dxCommon);
+	ground->Draw();
 	IKEObject3d::PostDraw();
 	ParticleEmitter::GetInstance()->FlontDrawAll();
 
@@ -167,14 +211,97 @@ void TutorialSceneActor::FinishUpdate(DebugCamera* camera) {
 }
 
 void TutorialSceneActor::ImGuiDraw() {
-	ImGui::Begin("FIRST");
-	if (Slow::GetInstance()->GetSlow()) {
-		ImGui::Text("PUSH A!!!");
-	}
+	ImGui::Begin("TUTORIAL");
+	ImGui::Text("SizeX:%f", window_size.x);
+	ImGui::Text("SizeY:%f", window_size.y);
+	ImGui::Text("Timer:%d", m_TexTimer);
 	ImGui::End();
-	enemy->ImGuiDraw();
 	Player::GetInstance()->ImGuiDraw();
-	Slow::GetInstance()->ImGuiDraw();
+	camerawork->ImGuiDraw();
+}
 
-	Timer::GetInstance()->ImGuiDraw();
+//移動
+void TutorialSceneActor::MoveState() {
+	m_TexTimer++;
+	if (m_TexTimer == 100) {
+		text_->SelectText(TextManager::MOVE);
+	}
+
+	if (Player::GetInstance()->GetMoveTimer() == 300) {
+		nowstate_ = state::ATTACK;
+		text_->SelectText(TextManager::ATTACK);
+		m_TexTimer = 0;
+		TutorialTask::GetInstance()->SetStop(true);
+	}
+
+	window_size.x = Ease(In, Cubic, 0.8f, window_size.x, 1300);
+	window_size.y = Ease(In, Cubic, 0.8f, window_size.y, 223);
+	//window->SetSize(window_size);
+}
+//攻撃
+void TutorialSceneActor::AttackState() {
+	if (_AttackState == ATTACK_INTRO) {
+		if (!m_Vanish) {
+			m_TexTimer++;
+		}
+		if (m_TexTimer == 200) {
+			m_TexTimer = {};
+			_AttackState = ATTACK_EXPLAIN;
+			text_->SelectText(TextManager::ATTACK2);//Aで攻撃ができるぞ
+			TutorialTask::GetInstance()->SetStop(false);
+		}
+	}
+	else if (_AttackState == ATTACK_EXPLAIN) {
+		if (!m_Vanish) {
+			m_TexTimer++;
+		}
+		if (m_TexTimer >= 200 && !Player::GetInstance()->GetAttack()) {
+			m_TexTimer = {};
+			_AttackState = ENEMY_BIRTH;//敵が出てきたぞ
+			TutorialTask::GetInstance()->SetMission(true);
+			camerawork->SetLookEnemy(true);
+		}
+	}
+	else if (_AttackState == ENEMY_BIRTH) {
+		if (!m_Vanish) {
+			m_TexTimer++;
+		}
+		if (m_TexTimer == 150) {
+			text_->SelectText(TextManager::ATTACK3);
+		}
+		if (m_TexTimer == 250) {
+			m_TexTimer = {};
+			_AttackState = ENEMY_DEATH;
+			TutorialTask::GetInstance()->SetMission(false);
+		}
+	}
+	else if (_AttackState == ENEMY_DEATH) {
+		if (!m_Vanish) {
+			m_TexTimer++;
+		}
+		if (m_TexTimer == 100) {
+			text_->SelectText(TextManager::ATTACK4);
+		}
+	}
+}
+//終わり
+void TutorialSceneActor::EndState() {
+
+}
+//スキップの更新
+void TutorialSceneActor::SkipUpdate() {
+	Input* input = Input::GetInstance();
+	//二回ボタンを押すとチュートリアル終了する
+	if ((input->TriggerButton(input->X))) {
+		m_EndCount++;
+	}
+	//一定時間立つとスキップ状態リセットされる
+	if (m_EndCount != 0) {
+		m_ResetTimer++;
+	}
+
+	if (m_ResetTimer == 100) {
+		m_EndCount = {};
+		m_ResetTimer = {};
+	}
 }

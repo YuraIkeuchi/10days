@@ -21,13 +21,24 @@ public:
 	CameraWork(XMFLOAT3 eye = { 2.0f, 30.0f, 2.0f }, XMFLOAT3 target = { 2.0f, 0.0f, 3.0f });
 	void SplineSet();
 	void Update(DebugCamera* camera);//更新
+	void TutorialUpdate(DebugCamera* camera);//チュートリアルの更新
 	void ImGuiDraw();
 
 private:
 	void SetAfterCamera(const XMFLOAT3& pos);
+public:
+	const bool GetLookEnd() { return m_LookEnd; }
+
+	void SetLookEnemy(const bool LookEnemy) { m_LookEnemy = LookEnemy; }
 private:
 	XMFLOAT3 m_eyePos = {};
 	XMFLOAT3 m_targetPos = {};
 	XMFLOAT3 m_AfterEye = {};
 	XMFLOAT3 m_AfterTarget = {};
+
+	//チュートリアルのカメラ
+	bool m_LookEnemy = false;
+	float m_Frame = {};
+	int m_LookTimer = {};
+	bool m_LookEnd = false;
 };

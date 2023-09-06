@@ -25,6 +25,22 @@ public:
 		FIRST,
 	};
 
+	enum TUTORIAL
+	{
+		INTRO,
+		MOVE,
+		ATTACK,
+		ATTACK2,
+		ATTACK3,
+		ATTACK4,
+		ATTACK5,
+		ATTACK6,
+		ATTACK7,
+		ATTACK8,
+		ATTACK9,
+		END,
+	};
+
 	static TextManager* GetInstance();
 
 	//
@@ -44,7 +60,11 @@ public:
 
 	void SetConversation(TITLE name= FIRST,const XMVECTOR& color={1.f,1.f,1.f,1.f});
 
+	void SetTutorialConversation(TUTORIAL name = INTRO, const XMVECTOR& color = { 1.f,1.f,1.f,1.f });
+
 	void NoneText();
+
+	void NoneTutorialText();
 
 	void GetWordSize(Word word);
 
@@ -53,6 +73,8 @@ private:
 	
 	//
 	void CreateWord(TITLE name, wchar_t* tex1, wchar_t* tex2 = L" ", wchar_t* tex3 = L" ");
+
+	void CreateTutorialWord(TUTORIAL name, wchar_t* tex1, wchar_t* tex2 = L" ", wchar_t* tex3 = L" ");
 	//
 	Word SetWord(wchar_t* tex1, wchar_t* tex2, wchar_t* tex3);
 	//
@@ -61,6 +83,8 @@ private:
 	void CreateCon(Conversation con, Word word);
 private:
 	std::map<TextManager::TITLE, Word> wordlist_;
+
+	std::map<TextManager::TUTORIAL, Word> Tutorialwordlist_;
 
 	Conversation conversation_ = {};
 	Conversation old_conversation_ = {};
@@ -80,5 +104,7 @@ private:
 	wchar_t* test2;
 
 	TITLE old= FIRST;
+
+	TUTORIAL oldTutorial = INTRO;
 };
 

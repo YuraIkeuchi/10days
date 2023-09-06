@@ -7,6 +7,7 @@
 #include "Slow.h"
 #include "Timer.h"
 #include "SceneManager.h"
+#include "BackObj.h"
 
 void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, LightGroup* lightgroup) {
 	dxCommon->SetFullScreen(true);
@@ -28,10 +29,9 @@ void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 	ground.reset(new IKEObject3d());
 	ground->Initialize();
 	ground->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::GROUND));
-	ground->SetScale({ 2.f,1.f,2.f });
-	ground->SetPosition({ 0.0f,-10.0f,0.0f });
-	ground->SetAddOffset(0.5f);
-	ground->VertexCheck();
+	ground->SetScale({ 1.f,1.f,1.f });
+	ground->SetPosition({ 0.0f,5.0f,0.0f });
+	ground->SetTiling(10.0f);
 
 	//スカイドーム
 	skydome.reset(new IKEObject3d());
@@ -58,16 +58,19 @@ void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 		tex[i]->SetColor({ 1.0f,0.0,0.0f,0.5f });
 	}
 
-	tex[0]->SetPosition({ 0.0f,2.0f,8.0f });
-	tex[1]->SetPosition({ 0.0f,2.0f,-8.0f });
-	tex[2]->SetPosition({ 9.3f,2.0f,0.0f });
-	tex[3]->SetPosition({ -9.3f,2.0f,0.0f });
+	tex[0]->SetPosition({ 0.0f,0.0f,8.0f });
+	tex[1]->SetPosition({ 0.0f,0.0f,-8.0f });
+	tex[2]->SetPosition({ 9.3f,0.0f,0.0f });
+	tex[3]->SetPosition({ -9.3f,0.0f,0.0f });
 	tex[0]->SetScale({ 2.0f,0.1f,0.1f });
 	tex[1]->SetScale({ 2.0f,0.1f,0.1f });
 	tex[2]->SetScale({ 0.1f,1.6f,0.1f });
 	tex[3]->SetScale({ 0.1f,1.6f,0.1f });
 
 	Timer::GetInstance()->Initialize();
+
+	//背景
+	BackObj::GetInstance()->Initialize();
 }
 
 void FirstStageActor::Finalize() {
@@ -80,9 +83,10 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 	//各クラス更新
 	camerawork->Update(camera);
 	lightgroup->Update();
-	ground->Update();
 	skydome->Update();
-	ground->SetAddOffset(m_AddOffset.x);
+	ground->Update();
+	ground->UpdateWorldMatrix();
+	BackObj::GetInstance()->Update();
 	if (!Timer::GetInstance()->GetStop()) {
 		Player::GetInstance()->Update();
 		Slow::GetInstance()->Update();
@@ -139,10 +143,10 @@ void FirstStageActor::FrontDraw(DirectXCommon* dxCommon) {
 //ポストエフェクトかかる
 void FirstStageActor::BackDraw(DirectXCommon* dxCommon) {
 	IKEObject3d::PreDraw();
-	ground->Draw();
-	skydome->Draw();
+	BackObj::GetInstance()->Draw();
 	Player::GetInstance()->Draw(dxCommon);
 	enemy->Draw(dxCommon);
+	ground->Draw();
 	IKEObject3d::PostDraw();
 	ParticleEmitter::GetInstance()->FlontDrawAll();
 

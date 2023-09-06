@@ -16,6 +16,8 @@ void ModelManager::StartInitialize()
 	LoadModel(GROUND, "ground");
 	LoadModel(PLAYERMODEL, "chr_knight");
 	LoadModel(SKYDOME, "skydome");
+	LoadModel(WALL_UP, "WallUp");
+	LoadModel(WALL_UNDER, "WallUnder");
 	LoadFBXModel(PLAYER, "kotoko");
 }
 
