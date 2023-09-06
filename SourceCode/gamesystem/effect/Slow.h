@@ -11,6 +11,7 @@ public:
 	//getter setter
 	bool GetSlow() { return  m_Slow; }
 	float GetSlowPower() { return  m_SlowPower; }
+	float GetPlayerSlowPower() { return  m_PlayerSlowPower; }
 	void SetSlow(bool Slow) { this->m_Slow = Slow; }
 	void SetTutorial(bool Tutorial) { this->m_Tutorial = Tutorial; }
 private:
@@ -18,5 +19,6 @@ private:
 	int m_SlowTimer = 0;//ヒットストップの時間
 	
 	float m_SlowPower = 1.0f;
+	float m_PlayerSlowPower = 1.0f;
 	bool m_Tutorial = false;
 };

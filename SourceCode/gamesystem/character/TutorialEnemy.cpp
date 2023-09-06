@@ -24,11 +24,10 @@ bool TutorialEnemy::Initialize() {
 
 	m_Object.reset(new IKEObject3d());
 	m_Object->Initialize();
-	m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::PLAYERMODEL));
+	m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::ENEMY));
 
 	m_Object->SetColor({ 1.0f,0.0f,0.0,1.0f });
 //	m_Position = { 15.0f,0.0f,0.0f };
-	m_Color = { 1.0f,0.0f,0.0f,1.0f };
 	m_Object->VertexCheck();
 
 	if(StartState==0)
@@ -104,6 +103,7 @@ void TutorialEnemy::RightMove() {
 }
 //ç∂Ç…ìÆÇ≠
 void TutorialEnemy::LeftMove() {
+	m_Rotation = { 0.0f,180.0f,0.0f };
 	const float l_MIN =MapMinX;
 	m_velocity = -m_BaseSpeed;
 	if (m_SlowMove) {

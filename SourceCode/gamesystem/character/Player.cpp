@@ -88,6 +88,7 @@ void Player::Draw(DirectXCommon* dxCommon)
 //ImGui
 void Player::ImGuiDraw() {
 	ImGui::Begin("Player");
+	ImGui::Text("POSZ%f", m_Position.z);
 	ImGui::Text("Timer:%d", m_MoveTimer);
 	ImGui::End();
 }
@@ -184,28 +185,43 @@ void Player::Move() {
 			}
 		}
 	}
+	if (_MoveState == MOVE_LEFT) {
+		m_Rotation = { 0.0f,90.0f,0.0f };
+	}
+	else if (_MoveState == MOVE_RIGHT) {
+		m_Rotation = { 0.0f,270.0f,0.0f };
+	}
+	else if (_MoveState == MOVE_UP) {
+		m_Rotation = { 0.0f, 180.0f, 0.0f };
+	}
+	else {
+		m_Rotation = { 0.0f, 0.0f, 0.0f };
+	}
 	//Helper::GetInstance()->Clamp(m_Position.x, -9.5f, 9.5f);
 }
 //攻撃
 void Player::Attack() {
 	const float l_AddFrame = 0.01f;
+	m_AddFrame = l_AddFrame;
 	if (!Slow::GetInstance()->GetSlow()) {
-		if (Helper::GetInstance()->FrameCheck(m_Frame, l_AddFrame)) {
+		if (Helper::GetInstance()->FrameCheck(m_Frame, m_AddFrame)) {
 			m_Frame = {};
 			_charaState = STATE_MOVE;
 			m_Attack = false;
 		}
-		if (_MoveState == MOVE_UP || _MoveState == MOVE_DOWN) {
-			m_Position.z = Ease(In, Cubic, m_Frame, m_Position.z, m_AfterPosZ);
-		}
-		else {
-			m_Position.x = Ease(In, Cubic, m_Frame, m_Position.x, m_AfterPosX);
-		}
-
-		if (m_Frame > 0.9f) {
-			m_CameraZoom = false;
-		}
 	}
+	
+	if (_MoveState == MOVE_UP || _MoveState == MOVE_DOWN) {
+		m_Position.z = Ease(In, Cubic, m_Frame * Slow::GetInstance()->GetPlayerSlowPower(), m_Position.z, m_AfterPosZ);
+	}
+	else {
+		m_Position.x = Ease(In, Cubic, m_Frame * Slow::GetInstance()->GetPlayerSlowPower(), m_Position.x, m_AfterPosX);
+	}
+
+	if (m_Frame > 0.9f) {
+		m_CameraZoom = false;
+	}
+	
 }
 //チュートリアルの更新
 void Player::TutorialUpdate() {
