@@ -181,6 +181,7 @@
     <ClCompile Include="SourceCode\gamesystem\ParticleManager\ParticleEmitter.cpp" />
     <ClCompile Include="SourceCode\gamesystem\ParticleManager\ParticleManager.cpp" />
     <ClCompile Include="SourceCode\gamesystem\scenetext\TitleText.cpp" />
+    <ClCompile Include="SourceCode\gamesystem\scenetext\TutorialText.cpp" />
     <ClCompile Include="SourceCode\gamesystem\scene\BaseScene.cpp" />
     <ClCompile Include="SourceCode\gamesystem\scene\ClearScene.cpp" />
     <ClCompile Include="SourceCode\gamesystem\scene\EditorScene.cpp" />
@@ -280,6 +281,7 @@
     <ClInclude Include="SourceCode\gamesystem\ParticleManager\ParticleEmitter.h" />
     <ClInclude Include="SourceCode\gamesystem\ParticleManager\ParticleManager.h" />
     <ClInclude Include="SourceCode\gamesystem\scenetext\TitleText.h" />
+    <ClInclude Include="SourceCode\gamesystem\scenetext\TutorialText.h" />
     <ClInclude Include="SourceCode\gamesystem\scene\BaseScene.h" />
     <ClInclude Include="SourceCode\gamesystem\scene\ClearScene.h" />
     <ClInclude Include="SourceCode\gamesystem\scene\EditorScene.h" />

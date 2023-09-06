@@ -7,6 +7,13 @@
 #include "Slow.h"
 #include "Timer.h"
 #include "SceneManager.h"
+//状態遷移
+/*stateの並び順に合わせる*/
+void (TutorialSceneActor::* TutorialSceneActor::TutorialTable[])() = {
+	&TutorialSceneActor::MoveState,//移動
+	&TutorialSceneActor::AttackState,//攻撃
+	& TutorialSceneActor::EndState,//終わり
+};
 
 void TutorialSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, LightGroup* lightgroup) {
 	dxCommon->SetFullScreen(true);
@@ -68,6 +75,11 @@ void TutorialSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera
 	tex[3]->SetScale({ 0.1f,1.6f,0.1f });
 
 	Timer::GetInstance()->Initialize();
+
+	//テキスト
+	text_ = make_unique<TutorialText>();
+	text_->Initialize(dxCommon);
+	text_->SelectText(TextManager::INTRO);
 }
 
 void TutorialSceneActor::Finalize() {
@@ -76,30 +88,19 @@ void TutorialSceneActor::Finalize() {
 void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, LightGroup* lightgroup) {
 	//関数ポインタで状態管理
 	(this->*stateTable[static_cast<size_t>(m_SceneState)])(camera);
-
+	//状態移行(stateに合わせる)
+	(this->*TutorialTable[static_cast<size_t>(nowstate_)])();
 	//各クラス更新
 	camerawork->Update(camera);
 	lightgroup->Update();
-	ground->Update();
 	skydome->Update();
-	ground->SetAddOffset(m_AddOffset.x);
-	if (!Timer::GetInstance()->GetStop()) {
-		Player::GetInstance()->Update();
-		Slow::GetInstance()->Update();
-		enemy->Update();
-	}
-	//タイマーを図る
-	if (!Slow::GetInstance()->GetSlow()) {
-		Timer::GetInstance()->Update();
-		enemy->SetSlowMove(false);
-	}
-	else {
-		enemy->SetSlowMove(true);
-	}
-
+	Player::GetInstance()->Update();
+	Slow::GetInstance()->Update();
+	//スキップの更新
+	SkipUpdate();
 	//ゲーム終了
-	if (Timer::GetInstance()->GetEnd()) {
-		SceneManager::GetInstance()->ChangeScene("TITLE");
+	if (m_EndCount == 2) {
+		SceneManager::GetInstance()->ChangeScene("FIRSTSTAGE");
 	}
 
 	for (int i = 0; i < AREA_NUM; i++) {
@@ -135,13 +136,15 @@ void TutorialSceneActor::Draw(DirectXCommon* dxCommon) {
 }
 //ポストエフェクトかからない
 void TutorialSceneActor::FrontDraw(DirectXCommon* dxCommon) {
-
+	//完全に前に書くスプライト
+	IKESprite::PreDraw();
+	text_->SpriteDraw(dxCommon);
+	IKESprite::PostDraw();
 }
 //ポストエフェクトかかる
 void TutorialSceneActor::BackDraw(DirectXCommon* dxCommon) {
 	IKEObject3d::PreDraw();
-	ground->Draw();
-	skydome->Draw();
+	//skydome->Draw();
 	Player::GetInstance()->Draw(dxCommon);
 	enemy->Draw(dxCommon);
 	IKEObject3d::PostDraw();
@@ -167,14 +170,43 @@ void TutorialSceneActor::FinishUpdate(DebugCamera* camera) {
 }
 
 void TutorialSceneActor::ImGuiDraw() {
-	ImGui::Begin("FIRST");
+	ImGui::Begin("TUTORIAL");
 	if (Slow::GetInstance()->GetSlow()) {
 		ImGui::Text("PUSH A!!!");
 	}
+	ImGui::Text("EndCount:%d", m_EndCount);
 	ImGui::End();
-	enemy->ImGuiDraw();
-	Player::GetInstance()->ImGuiDraw();
-	Slow::GetInstance()->ImGuiDraw();
+}
 
-	Timer::GetInstance()->ImGuiDraw();
+//移動
+void TutorialSceneActor::MoveState() {
+	m_TexTimer++;
+	if (m_TexTimer == 100) {
+		text_->SelectText(TextManager::MOVE);
+	}
+}
+//攻撃
+void TutorialSceneActor::AttackState() {
+
+}
+//終わり
+void TutorialSceneActor::EndState() {
+
+}
+//スキップの更新
+void TutorialSceneActor::SkipUpdate() {
+	Input* input = Input::GetInstance();
+	//二回ボタンを押すとチュートリアル終了する
+	if ((input->TriggerButton(input->X))) {
+		m_EndCount++;
+	}
+	//一定時間立つとスキップ状態リセットされる
+	if (m_EndCount != 0) {
+		m_ResetTimer++;
+	}
+
+	if (m_ResetTimer == 100) {
+		m_EndCount = {};
+		m_ResetTimer = {};
+	}
 }
