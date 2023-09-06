@@ -336,6 +336,9 @@
     <ClCompile Include="SourceCode\gamesystem\ui\TutorialTask.cpp">
       <Filter>gamesystem\ui\TutorialTask</Filter>
     </ClCompile>
+    <ClCompile Include="SourceCode\gamesystem\StageObj\BackObj.cpp">
+      <Filter>gamesystem\StageObj</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCode\engine\camera\DebugCamera.h">
@@ -634,6 +637,9 @@
     <ClInclude Include="SourceCode\gamesystem\ui\TutorialTask.h">
       <Filter>gamesystem\ui\TutorialTask</Filter>
     </ClInclude>
+    <ClInclude Include="SourceCode\gamesystem\StageObj\BackObj.h">
+      <Filter>gamesystem\StageObj</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\Basic.hlsli">
@@ -859,6 +865,9 @@
     </Filter>
     <Filter Include="gamesystem\ui\TutorialTask">
       <UniqueIdentifier>{23a72c52-5c81-4b5b-8a3a-0b55ce254ae0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gamesystem\StageObj">
+      <UniqueIdentifier>{8a3c8374-196a-4e72-9e23-9f0a74990784}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

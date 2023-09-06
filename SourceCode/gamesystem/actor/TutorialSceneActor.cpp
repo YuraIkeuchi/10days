@@ -7,6 +7,7 @@
 #include "Timer.h"
 #include "SceneManager.h"
 #include "TutorialTask.h"
+#include "BackObj.h"
 //状態遷移
 /*stateの並び順に合わせる*/
 void (TutorialSceneActor::* TutorialSceneActor::TutorialTable[])() = {
@@ -28,18 +29,15 @@ void TutorialSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera
 
 	m_SceneState = SceneState::IntroState;
 
-	lightgroup->SetCircleShadowActive(0, true);
-	lightgroup->SetCircleShadowActive(1, true);
-
+	
 	//地面
 	ground.reset(new IKEObject3d());
 	ground->Initialize();
 	ground->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::GROUND));
-	ground->SetScale({ 2.f,1.f,2.f });
-	ground->SetPosition({ 0.0f,-10.0f,0.0f });
-	ground->SetAddOffset(0.5f);
-	ground->VertexCheck();
-
+	ground->SetScale({ 1.f,1.f,1.f });
+	ground->SetPosition({ 0.0f,5.0f,0.0f });
+	ground->SetTiling(10.0f);
+	
 	//スカイドーム
 	skydome.reset(new IKEObject3d());
 	skydome->Initialize();
@@ -65,10 +63,10 @@ void TutorialSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera
 		tex[i]->SetColor({ 1.0f,0.0,0.0f,0.5f });
 	}
 
-	tex[0]->SetPosition({ 0.0f,2.0f,8.0f });
-	tex[1]->SetPosition({ 0.0f,2.0f,-8.0f });
-	tex[2]->SetPosition({ 9.3f,2.0f,0.0f });
-	tex[3]->SetPosition({ -9.3f,2.0f,0.0f });
+	tex[0]->SetPosition({ 0.0f,0.0f,8.0f });
+	tex[1]->SetPosition({ 0.0f,0.0f,-8.0f });
+	tex[2]->SetPosition({ 9.3f,0.0f,0.0f });
+	tex[3]->SetPosition({ -9.3f,0.0f,0.0f });
 	tex[0]->SetScale({ 2.0f,0.1f,0.1f });
 	tex[1]->SetScale({ 2.0f,0.1f,0.1f });
 	tex[2]->SetScale({ 0.1f,1.6f,0.1f });
@@ -84,6 +82,9 @@ void TutorialSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera
 
 	//チュートリアルタスク
 	TutorialTask::GetInstance()->Initialize();
+
+	//背景
+	BackObj::GetInstance()->Initialize();
 }
 
 void TutorialSceneActor::Finalize() {
@@ -98,6 +99,9 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 	camerawork->TutorialUpdate(camera);
 	lightgroup->Update();
 	skydome->Update();
+	ground->Update();
+	ground->UpdateWorldMatrix();
+	BackObj::GetInstance()->Update();
 	if (!TutorialTask::GetInstance()->GetStop()) {
 		Player::GetInstance()->TutorialUpdate();
 		Slow::GetInstance()->Update();
@@ -154,9 +158,10 @@ void TutorialSceneActor::FrontDraw(DirectXCommon* dxCommon) {
 //ポストエフェクトかかる
 void TutorialSceneActor::BackDraw(DirectXCommon* dxCommon) {
 	IKEObject3d::PreDraw();
-	//skydome->Draw();
+	BackObj::GetInstance()->Draw();
 	Player::GetInstance()->Draw(dxCommon);
 	enemy->Draw(dxCommon);
+	ground->Draw();
 	IKEObject3d::PostDraw();
 	ParticleEmitter::GetInstance()->FlontDrawAll();
 

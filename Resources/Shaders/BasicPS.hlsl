@@ -8,7 +8,7 @@ float4 main(VSOutput input) : SV_TARGET
 	// テクスチャマッピング
 	float2 offsetscroll = float2(offset.x, offset.y);
 	//float2 offset = float2(0.0f, );
-	float4 texcolor = tex.Sample(smp, input.uv + offsetscroll);
+	float4 texcolor = tex.Sample(smp, input.uv * Tiling + offsetscroll);
 
 
 	// 光沢度

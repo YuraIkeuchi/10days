@@ -58,10 +58,10 @@ void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 		tex[i]->SetColor({ 1.0f,0.0,0.0f,0.5f });
 	}
 
-	tex[0]->SetPosition({ 0.0f,2.0f,8.0f });
-	tex[1]->SetPosition({ 0.0f,2.0f,-8.0f });
-	tex[2]->SetPosition({ 9.3f,2.0f,0.0f });
-	tex[3]->SetPosition({ -9.3f,2.0f,0.0f });
+	tex[0]->SetPosition({ 0.0f,0.1f,8.0f });
+	tex[1]->SetPosition({ 0.0f,0.1f,-8.0f });
+	tex[2]->SetPosition({ 9.3f,0.1f,0.0f });
+	tex[3]->SetPosition({ -9.3f,0.1f,0.0f });
 	tex[0]->SetScale({ 2.0f,0.1f,0.1f });
 	tex[1]->SetScale({ 2.0f,0.1f,0.1f });
 	tex[2]->SetScale({ 0.1f,1.6f,0.1f });
@@ -82,7 +82,6 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 	lightgroup->Update();
 	ground->Update();
 	skydome->Update();
-	ground->SetAddOffset(m_AddOffset.x);
 	if (!Timer::GetInstance()->GetStop()) {
 		Player::GetInstance()->Update();
 		Slow::GetInstance()->Update();
