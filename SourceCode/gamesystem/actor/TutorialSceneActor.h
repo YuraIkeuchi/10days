@@ -2,7 +2,7 @@
 #include"BaseActor.h"
 #include "TutorialText.h"
 #include "MessageWindow.h"
-#include "NormalEnemy.h"
+#include "TutorialEnemy.h"
 #include<windows.h>
 #include<vector>
 
@@ -37,8 +37,10 @@ private:
 	void AttackState();
 	void EndState();
 	void SkipUpdate();
+	void BirthEnemy(bool Move,bool End);
 private:
 	static const int AREA_NUM = 4;
+	static const int ENEMY_MAX = 3;
 private:
 	unique_ptr<IKESprite> window;
 	unique_ptr<TutorialText> text_;
@@ -46,7 +48,7 @@ private:
 	IKEModel* model;
 	unique_ptr<IKEObject3d> skydome;
 	XMFLOAT2 m_AddOffset = {};
-	unique_ptr<InterEnemy> enemy;
+	std::vector<InterEnemy*> enemys;
 	unique_ptr<IKETexture> tex[AREA_NUM];
 	int m_TexTimer = {};
 	int m_EndCount = {};
@@ -58,6 +60,7 @@ private:
 		ENEMY_BIRTH,
 		ENEMY_DEATH,
 		ENEMY_SLOW,
+		ENEMY_INTERVAL,
 		ENEMY_END,
 	}_AttackState = ATTACK_INTRO;
 
@@ -65,5 +68,9 @@ private:
 	float m_Alpha = 1.0f;
 
 	bool m_Vanish = false;
+
+	int m_EnemyCount = {};
+
+	bool m_TutorialEnd = false;
 };
 

@@ -1,4 +1,4 @@
-#include "NormalEnemy.h"
+#include "TutorialEnemy.h"
 #include <random>
 #include "Player.h"
 #include "Helper.h"
@@ -16,11 +16,11 @@
 #define MapMaxZ 10
 
 //モデル読み込み
-NormalEnemy::NormalEnemy() {
+TutorialEnemy::TutorialEnemy() {
 	
 }
 //初期化
-bool NormalEnemy::Initialize() {
+bool TutorialEnemy::Initialize() {
 
 	m_Object.reset(new IKEObject3d());
 	m_Object->Initialize();
@@ -35,23 +35,21 @@ bool NormalEnemy::Initialize() {
 	{
 	//	_charaState =
 	}
-	m_Move = false;
 	_charaState =  CharaState::STATE_LEFT;//StartState;
 	m_BaseSpeed = static_cast<float>(std::any_cast<double>(LoadCSV::LoadCsvParam("Resources/csv/chara/enemy/enemy.csv", "speed")));
 	return true;
 }
 
-void (NormalEnemy::* NormalEnemy::stateTable[])() = {
-	&NormalEnemy::Inter,//動きの合間
-	&NormalEnemy::RightMove,//右に移動
-	&NormalEnemy::LeftMove,//左に移動
-	&NormalEnemy::UpMove,//上に移動
-	&NormalEnemy::BottomMove,//下に移動
-
+void (TutorialEnemy::* TutorialEnemy::stateTable[])() = {
+	&TutorialEnemy::Inter,//動きの合間
+	&TutorialEnemy::RightMove,//右に移動
+	&TutorialEnemy::LeftMove,//左に移動
+	&TutorialEnemy::UpMove,//上に移動
+	&TutorialEnemy::BottomMove,//下に移動
 };
 
 //行動
-void NormalEnemy::Action() {
+void TutorialEnemy::Action() {
 	(this->*stateTable[_charaState])();
 
 	//当たり判定
@@ -59,24 +57,24 @@ void NormalEnemy::Action() {
 	Obj_SetParam();
 }
 //描画
-void NormalEnemy::Draw(DirectXCommon* dxCommon) {
+void TutorialEnemy::Draw(DirectXCommon* dxCommon) {
 	if (_charaState != STATE_INTER) {
 		Obj_Draw();
 	}
 }
 //ImGui描画
-void NormalEnemy::ImGui_Origin() {
+void TutorialEnemy::ImGui_Origin() {
 	ImGui::Begin("Enemy");
 	ImGui::Text("Slow:%f", m_velocity);
 	ImGui::End();
 }
 //開放
-void NormalEnemy::Finalize() {
+void TutorialEnemy::Finalize() {
 
 }
 
 //リスポーン
-void NormalEnemy::Inter() {
+void TutorialEnemy::Inter() {
 	m_ResPornTimer++;
 	if (m_ResPornTimer == 100) {
 		m_ResPornTimer = {};
@@ -85,7 +83,7 @@ void NormalEnemy::Inter() {
 	}
 }
 //右に動く
-void NormalEnemy::RightMove() {
+void TutorialEnemy::RightMove() {
 
 	const float l_MAX = MapMaxX;
 	m_velocity = m_BaseSpeed;
@@ -96,15 +94,17 @@ void NormalEnemy::RightMove() {
 	else {
 		m_velocity = m_BaseSpeed;
 	}
-	
-	if (Helper::GetInstance()->CheckMin(m_Position.x, l_MAX, m_velocity)) {
-		m_Position.x = MapMinX;
-		m_Slow = false;
+
+	if (m_Move) {
+		if (Helper::GetInstance()->CheckMin(m_Position.x, l_MAX, m_velocity)) {
+			m_Position.x = MapMinX;
+			m_Slow = false;
+		}
 	}
 }
 //左に動く
-void NormalEnemy::LeftMove() {
-	const float l_MIN = MapMinX;
+void TutorialEnemy::LeftMove() {
+	const float l_MIN =MapMinX;
 	m_velocity = -m_BaseSpeed;
 	if (m_SlowMove) {
 		m_velocity = -m_BaseSpeed * Slow::GetInstance()->GetSlowPower();
@@ -113,34 +113,39 @@ void NormalEnemy::LeftMove() {
 		m_velocity = -m_BaseSpeed;
 	}
 
-	if (Helper::GetInstance()->CheckMax(m_Position.x, l_MIN, m_velocity)) {
-		m_Position.x = MapMaxX;
-		m_Slow = false;
+	if (m_Move) {
+		if (Helper::GetInstance()->CheckMax(m_Position.x, l_MIN, m_velocity)) {
+			m_Position.x = MapMaxX;
+			m_Slow = false;
+		}
 	}
-	
 }
-//下に動く
-void NormalEnemy::BottomMove() {
+//左に動く
+void TutorialEnemy::BottomMove() {
 	const float l_MIN = MapMinZ;
 	m_velocity = -m_BaseSpeed;
 
-	if (Helper::GetInstance()->CheckMax(m_Position.z, l_MIN, m_velocity)) {
-		m_Position.z = MapMaxZ;
-		m_Slow = false;
+	if (m_Move) {
+		if (Helper::GetInstance()->CheckMax(m_Position.z, l_MIN, m_velocity)) {
+			m_Position.z = MapMaxZ;
+			m_Slow = false;
+		}
 	}
 }
-//上に動く
-void NormalEnemy::UpMove() {
+//左に動く
+void TutorialEnemy::UpMove() {
 	const float l_MIN =MapMaxZ;
 	m_velocity = m_BaseSpeed;
 	
-	if (Helper::GetInstance()->CheckMin(m_Position.z, l_MIN, m_velocity)) {
-		m_Position.z = MapMinZ;
-		m_Slow = false;
+	if (m_Move) {
+		if (Helper::GetInstance()->CheckMin(m_Position.z, l_MIN, m_velocity)) {
+			m_Position.z = MapMinZ;
+			m_Slow = false;
+		}
 	}
 }
 
-void NormalEnemy::SlowCollide() {
+void TutorialEnemy::SlowCollide() {
 	Input* input = Input::GetInstance();
 	if (Collision::CircleCollision(m_Position.x, m_Position.z, m_radius, Player::GetInstance()->GetPosition().x, Player::GetInstance()->GetPosition().z, m_radius)) {
 		if (!m_Slow) {

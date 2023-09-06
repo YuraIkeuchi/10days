@@ -14,7 +14,9 @@ void Slow::LoadCSV() {
 void Slow::Update() {
 	if (m_Slow) {
 		m_SlowPower = 0.001f;
-		m_SlowTimer++;
+		if (!m_Tutorial) {
+			m_SlowTimer++;
+		}
 		if (m_SlowTimer == 20) {
 			m_Slow = false;
 		}
