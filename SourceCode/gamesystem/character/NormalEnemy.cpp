@@ -1,4 +1,4 @@
-#include "NormalEnemy.h"
+ï»¿#include "NormalEnemy.h"
 #include <random>
 #include "Player.h"
 #include "Helper.h"
@@ -8,6 +8,8 @@
 #include "Slow.h"
 #include "Collision.h"
 #include "ParticleEmitter.h"
+#include "SceneManager.h"
+#include"Timer.h"
 #include "Random.h"
 
 #define MapMinX -10
@@ -16,11 +18,11 @@
 #define MapMinZ -10
 #define MapMaxZ 10
 
-//ƒ‚ƒfƒ‹“Ç‚İ‚İ
+//ãƒ¢ãƒ‡ãƒ«èª­ã¿è¾¼ã¿
 NormalEnemy::NormalEnemy() {
 	
 }
-//‰Šú‰»
+//åˆæœŸåŒ–
 bool NormalEnemy::Initialize() {
 
 	m_Object.reset(new IKEObject3d());
@@ -31,47 +33,51 @@ bool NormalEnemy::Initialize() {
 	{
 	//	_charaState =
 	}
+	_charaState =  StartState;
+	//_charaState =  StartState;
 	m_Move = false;
-	_charaState =  CharaState::STATE_LEFT;//StartState;
 	m_BaseSpeed = static_cast<float>(std::any_cast<double>(LoadCSV::LoadCsvParam("Resources/csv/chara/enemy/enemy.csv", "speed")));
 	return true;
 }
 
 void (NormalEnemy::* NormalEnemy::stateTable[])() = {
-	&NormalEnemy::Inter,//“®‚«‚Ì‡ŠÔ
-	&NormalEnemy::RightMove,//‰E‚ÉˆÚ“®
-	&NormalEnemy::LeftMove,//¶‚ÉˆÚ“®
-	&NormalEnemy::UpMove,//ã‚ÉˆÚ“®
-	&NormalEnemy::BottomMove,//‰º‚ÉˆÚ“®
+	&NormalEnemy::Inter,//å‹•ãã®åˆé–“
+	&NormalEnemy::RightMove,//å³ã«ç§»å‹•
+	&NormalEnemy::LeftMove,//å·¦ã«ç§»å‹•
+	&NormalEnemy::UpMove,//ä¸Šã«ç§»å‹•
+	&NormalEnemy::BottomMove,//ä¸‹ã«ç§»å‹•
 
 };
 
-//s“®
+//è¡Œå‹•
 void NormalEnemy::Action() {
-	(this->*stateTable[_charaState])();
+	if (!StopF&&Timer::GetInstance()->getNowTime()<MovingTime) {
+		(this->*stateTable[_charaState])();
 
-	//“–‚½‚è”»’è
-	SlowCollide();
+		//å½“ãŸã‚Šåˆ¤
+		SlowCollide();
+	}
 	Obj_SetParam();
 }
-//•`‰æ
+//æç”»
 void NormalEnemy::Draw(DirectXCommon* dxCommon) {
-	if (_charaState != STATE_INTER) {
+
+	if (StopF||SceneManager::GetInstance()->GetEditF()||Timer::GetInstance()->getNowTime()<MovingTime) {
 		Obj_Draw();
 	}
 }
-//ImGui•`‰æ
+//ImGuiæç”»
 void NormalEnemy::ImGui_Origin() {
 	ImGui::Begin("Enemy");
 	ImGui::Text("Slow:%f", m_velocity);
 	ImGui::End();
 }
-//ŠJ•ú
+//é–‹æ”¾
 void NormalEnemy::Finalize() {
 
 }
 
-//ƒŠƒXƒ|[ƒ“
+//ãƒªã‚¹ãƒãƒ¼ãƒ³
 void NormalEnemy::Inter() {
 	m_ResPornTimer++;
 	if (m_ResPornTimer == 100) {
@@ -80,7 +86,7 @@ void NormalEnemy::Inter() {
 		_charaState = CharaState::STATE_LEFT;
 	}
 }
-//‰E‚É“®‚­
+//å³ã«å‹•ã
 void NormalEnemy::RightMove() {
 
 	const float l_MAX = MapMaxX;
@@ -98,7 +104,7 @@ void NormalEnemy::RightMove() {
 		m_Slow = false;
 	}
 }
-//¶‚É“®‚­
+//å·¦ã«å‹•ã
 void NormalEnemy::LeftMove() {
 	m_Rotation = { 0.0f,90.0f,0.0f };
 	const float l_MIN = MapMinX;
@@ -116,7 +122,7 @@ void NormalEnemy::LeftMove() {
 	}
 	
 }
-//‰º‚É“®‚­
+//ä¸‹ã«å‹•ã
 void NormalEnemy::BottomMove() {
 	const float l_MIN = MapMinZ;
 	m_velocity = -m_BaseSpeed;
@@ -126,7 +132,7 @@ void NormalEnemy::BottomMove() {
 		m_Slow = false;
 	}
 }
-//ã‚É“®‚­
+//ä¸Šã«å‹•ã
 void NormalEnemy::UpMove() {
 	const float l_MIN =MapMaxZ;
 	m_velocity = m_BaseSpeed;

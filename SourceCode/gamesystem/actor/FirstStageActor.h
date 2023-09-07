@@ -33,10 +33,13 @@ private:
 	IKEModel* model;
 	unique_ptr<IKEObject3d> skydome;
 	XMFLOAT2 m_AddOffset = {};
-	unique_ptr<InterEnemy> enemy;
+	std::vector <unique_ptr<InterEnemy>> enemy;
+	std::vector<int>EnemyMoveType;
+	std::vector<int>ResCount;
 	unique_ptr<IKETexture> tex[AREA_NUM];
 private:
 	float radPower = 0;
 	const float addPower = 0.0075f;
+	std::vector<XMFLOAT3>EPos;
 };
 

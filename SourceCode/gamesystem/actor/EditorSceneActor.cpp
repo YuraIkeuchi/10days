@@ -6,6 +6,8 @@
 #include "Helper.h"
 #include "Slow.h"
 #include"NormalEnemy.h"
+#include "Timer.h"
+
 void EditorSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, LightGroup* lightgroup) {
 	dxCommon->SetFullScreen(true);
 	//共通の初期化
@@ -65,7 +67,9 @@ void EditorSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, 
 	//敵
 	Sample.reset(new NormalEnemy());
 	Sample->Initialize();
-	
+
+
+	Timer::GetInstance()->Initialize();
 }
 
 void EditorSceneActor::Finalize() {
@@ -73,49 +77,61 @@ void EditorSceneActor::Finalize() {
 
 void EditorSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, LightGroup* lightgroup) {
 	(this->*stateTable[static_cast<size_t>(m_SceneState)])(camera);
-
-	//各クラス更新
-	camerawork->Update(camera);
+		camerawork->Update(camera);
 	lightgroup->Update();
 	ground->Update();
 	skydome->Update();
 	m_AddOffset.x = 0.001f;
+	Sample->SetColor({ 1,1,1,0.5f });
 	ground->SetAddOffset(m_AddOffset.x);
 	Player::GetInstance()->Update();
 	Slow::GetInstance()->Update();
-	
 	for (int i = 0; i < AREA_NUM; i++) {
 		tex[i]->Update();
 	}
-//	Sample->SetResPos(ini_enmeypos);
-	if (checkPos[2] || checkPos[3])
-		Sample->SetPosX(PosX);
-
-	if (checkPos[0] || checkPos[1])
-		Sample->SetPosZ(PosY);
-
-	if(ArgF)
-	{
-		//初期化
-		InterEnemy* l_enemy = new NormalEnemy();
-		if(checkPos[0]||checkPos[1])
-		l_enemy->SetResPos(ini_enmeypos,PosY);
-
-		if (checkPos[2] || checkPos[3])
-			l_enemy->SetResPos(ini_enmeypos, PosX);
-
-		l_enemy->Initialize();
+	if (!delf) {
+		//各クラス更新
 		
+		if (checkPos[2] || checkPos[3])
+			Sample->SetResPos(ini_enmeypos, PosY);
+		//	Sample->SetPosX(PosX);
 
-		enemys.emplace_back(l_enemy);
-		ArgF = false;
+		if (checkPos[0] || checkPos[1])
+			Sample->SetResPos(ini_enmeypos, PosX);
+		//Sample->SetPosZ(PosY);
+
+		if (ArgF)
+		{
+			//初期化
+			InterEnemy* l_enemy = new NormalEnemy();
+			if (checkPos[0] || checkPos[1])
+				l_enemy->SetResPos(ini_enmeypos, PosX);
+
+			if (checkPos[2] || checkPos[3])
+				l_enemy->SetResPos(ini_enmeypos, PosY);
+
+
+			l_enemy->Initialize();
+			l_enemy->SetMovingTime(timer);
+			l_enemy->EditPos(l_enemy->GetPosition());
+			enemys.emplace_back(l_enemy);
+			ArgF = false;
+		}
+
+		for (auto i = 0; i < enemys.size(); i++) {
+			if (enemys[i] == nullptr)continue;
+			enemys[i]->Update();
+		}
 	}
-
-	for(auto i=0;i<enemys.size();i++)
-	enemys[i]->Update();
-
+	else
+	{
+		enemys.pop_back();
+		delf = false;
+	}
 	Sample->Update();
-
+	Sample->SetStopF(true);
+	if(timerstart)
+	Timer::GetInstance()->Update();
 }
 
 void EditorSceneActor::Draw(DirectXCommon* dxCommon) {
@@ -151,8 +167,25 @@ void EditorSceneActor::BackDraw(DirectXCommon* dxCommon) {
 	IKEObject3d::PreDraw();
 	ground->Draw();
 	skydome->Draw();
-	for (auto i = 0; i < enemys.size(); i++)
+	if (viewf)
+	{
+		for (auto i = 0; i < enemys.size(); i++) {
+			if (enemys[i]->GetMovingT() == TimeRap)
+			{
+if (enemys[i] == nullptr)continue;
+
 		enemys[i]->Draw(dxCommon);
+			}
+		}
+	}
+
+	else {
+		for (auto i = 0; i < enemys.size(); i++) {
+			if (enemys[i] == nullptr)continue;
+
+			enemys[i]->Draw(dxCommon);
+		}
+	}
 
 	Sample->Draw(dxCommon);
 	Player::GetInstance()->Draw(dxCommon);
@@ -199,6 +232,8 @@ void EditorSceneActor::ImGuiDraw() {
 
 	ImGui::SliderFloat("PosX", &PosX, -10, 10);
 	ImGui::SliderFloat("PosZ", &PosY, -10, 10);
+
+	ImGui::InputInt("Timer", &timer);
 	if (checkPos[0]) {
 		ini_enmeypos = InterEnemy::PosSt::UPRES;
 		for(auto i=0;i<4;i++)
@@ -235,9 +270,55 @@ void EditorSceneActor::ImGuiDraw() {
 		}
 	}
 
+	ImGui::Checkbox("Timerstart", &timerstart);
+
+	if(enemys.size()>0&& ImGui::Button("deleteEnemy",ImVec2(50,20)))
+	{
+		delf = true;
+	}
+	if(ImGui::Button("Save",ImVec2(150,150)))
+	{
+		FileWriting();
+	}
+	ImGui::InputInt("viewEnemy TimeRap", &TimeRap);
+	//ImGui::SameLine();
+	ImGui::Checkbox("View", &viewf);
+
+	if (ImGui::Button("ResetP", ImVec2(50, 50))) {
+		ResetF = true;
+	}
 	ImGui::End();
 
+	Timer::GetInstance()->ImGuiDraw();
 	//enemys->ImGuiDraw();
 	Player::GetInstance()->ImGuiDraw();
 	//Slow::GetInstance()->ImGuiDraw();
 }
+void EditorSceneActor::FileWriting()
+{
+
+	file.open("esources/csv/enemy.csv");
+	popcom << file.rdbuf();
+
+	file.close();
+	//std::ofstream pofs("EnemyParam_CSV/position.csv");
+	std::ofstream ofs("Resources/csv/enemy.csv"); // ファイルパスを指定する
+	ofs << "Enemy_Quantity" << "," << enemys.size() << std::endl;
+
+	for (int i = 0; i < enemys.size(); i++)
+	{
+		ofs << "Number" << "," <<i << std::endl;
+		ofs << "POP" << "," <<enemys[i]->GetEditPos().x
+			<< "," << enemys[i]->GetEditPos().y
+			<< "," << enemys[i]->GetEditPos().z << std::endl;
+		ofs << "ResCount" << "," << enemys[i]->GetMovingT() << endl;
+		ofs << "MoveType" << "," << enemys[i]->GetState() << endl;
+		ofs << "/*--------------------------------*/" << endl;
+	}
+	if (ResetF) {
+		for (auto i = 0; i < enemys.size(); i++) {
+			enemys[i]->SetPosition(enemys[i]->GetEditPos());
+		}
+}
+}
+

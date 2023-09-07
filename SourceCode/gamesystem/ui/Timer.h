@@ -15,6 +15,7 @@ public:
 public:
 	const bool GetEnd() { return m_End; }
 	const bool GetStop() { return m_Stop; }
+	const int getNowTime() { return m_GameTimer; }
 private:
 	int m_GameTimer = 1800;
 	bool m_End = false;
