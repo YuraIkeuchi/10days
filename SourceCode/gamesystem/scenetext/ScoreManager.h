@@ -1,13 +1,19 @@
 #pragma once
-//スコア関係
+#include "IKESprite.h"
+#include <memory>
+#include <array>
 
+using namespace std;
+//スコア関係
 class ScoreManager {
 public:
 	static ScoreManager* GetInstance();
 	//初期化
+	void LoadResource();
 	void Initialize();
 	void Update();
 	void ImGuiDraw();
+	void SpriteDraw();
 private:
 	static const int NUMBER_MAX = 10;
 
@@ -31,4 +37,10 @@ private:
 	int m_ThirdNumber = 0;//三桁め
 	int m_FourthNumber = 0;//四桁目
 	int m_Magnification = 0;//倍率
+
+private:
+	array<unique_ptr<IKESprite>, NUMBER_MAX> Score_First;
+	array<unique_ptr<IKESprite>, NUMBER_MAX> Score_Second;
+	array<unique_ptr<IKESprite>, NUMBER_MAX> Score_Third;
+	array<unique_ptr<IKESprite>, NUMBER_MAX> Score_Fourth;
 };

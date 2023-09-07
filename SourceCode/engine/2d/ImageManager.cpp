@@ -15,6 +15,8 @@ void ImageManager::StartLoad2D()
 	IKESprite::LoadTexture(RESULT, L"Resources/2d/sceneback/Result.png");
 	IKESprite::LoadTexture(LEFTDOOR, L"Resources/2d/sceneback/Door.png");
 	IKESprite::LoadTexture(RIGHTDOOR, L"Resources/2d/sceneback/Door2.png");
+	IKESprite::LoadTexture(TIMEGAGE, L"Resources/2d/objicon/Emaki.png");
+	IKESprite::LoadTexture(SCOREGAGE, L"Resources/2d/objicon/Emaki2.png");
 }
 
 //非同期処理で読み込むスプライト

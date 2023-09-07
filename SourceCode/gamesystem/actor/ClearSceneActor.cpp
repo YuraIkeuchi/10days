@@ -61,6 +61,8 @@ void ClearSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 
 	back = IKESprite::Create(ImageManager::RESULT, { 0.0f,0.0f });
 	back->SetSize({ 1280.0f,720.0f });
+
+	PlayPostEffect = false;
 }
 //çXêV
 void ClearSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, LightGroup* lightgroup) {
