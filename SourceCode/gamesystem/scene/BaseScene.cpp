@@ -23,7 +23,7 @@ void BaseScene::BaseInitialize(DirectXCommon* dxCommon) {
 	IKEObject3d::SetLightGroup(lightGroup);
 
 	ParticleEmitter::GetInstance()->AllDelete();
-	//ŠÛ‰e‚Ì‚½‚ß‚Ì‚â‚Â
+	//•ÀsŒõŒ¹
 	lightGroup->SetDirLightActive(0, true);
 	lightGroup->SetDirLightActive(1, true);
 	lightGroup->SetDirLightActive(2, true);

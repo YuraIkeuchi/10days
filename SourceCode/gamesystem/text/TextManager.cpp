@@ -33,12 +33,25 @@ void TextManager::Create(DirectXCommon* dxcomon)
 	old_conversation_.ThirdFont->SetColor(color_);
 }
 
-
 //初期化
 void TextManager::Initialize(DirectXCommon* dxcomon)
 {
 	//ワード追加
-	CreateWord(FIRST, L"タイトルだよ", L"Bボタンをおせば", L"ゲームシーンだよ");
+	//タイトル
+	CreateWord(FIRST, L"Bボタンでゲーム", L"Xボタンでチュートリアル", L"");
+	//チュートリアル
+	CreateTutorialWord(INTRO, L"いきなりだが", L"この戦いについて", L"説明しよう");
+	CreateTutorialWord(MOVE, L"まずスティックを動かして", L"このステージの外周を", L"移動してみろ");
+	CreateTutorialWord(ATTACK, L"その調子だ", L"次に攻撃について説明する", L"");
+	CreateTutorialWord(ATTACK2, L"Aボタンを押すと", L"対角に移動しながら", L"攻撃をすることができる");
+	CreateTutorialWord(ATTACK3, L"敵が出てきたぞ", L"しかしさっきの操作だけでは", L"敵を倒せない");
+	CreateTutorialWord(ATTACK4, L"倒し方について説明する", L"敵に狙いを定めて", L"Aボタンを押してみろ");
+	CreateTutorialWord(ATTACK5, L"敵に近づくと", L"動きが遅くなる", L"その瞬間に指定のボタンを押すと");
+	CreateTutorialWord(ATTACK6, L"敵を倒すことができる", L"敵を倒すとスコア獲得だ", L"");
+	CreateTutorialWord(ATTACK7, L"一回の攻撃で敵を多く倒すと", L"より多くのスコアがもらえる", L"つまり・・・");
+	CreateTutorialWord(ATTACK8, L"敵が並んだ瞬間に", L"攻撃を仕掛けて", L"多くのスコアを獲得するのだ");
+	CreateTutorialWord(ATTACK9, L"この後複数体の敵を出すので", L"実際に試してみると良い", L"");
+	CreateTutorialWord(END, L"説明はここまでだ", L"健闘を祈る・・・", L"");
 	//コンヴァージョン初期化
 	Create(dxcomon);
 
@@ -117,7 +130,7 @@ void TextManager::SetOnceColor(int row, const XMVECTOR& color)
 	}
 }
 
-//名前から文字列を呼び出しセットする
+//名前から文字列を呼び出しセットする(タイトル)
 void TextManager::SetConversation(TITLE name,const XMVECTOR& color)
 {
 	std::map<TextManager::TITLE, Word>::iterator itr = wordlist_.find(name);
@@ -138,7 +151,30 @@ void TextManager::SetConversation(TITLE name,const XMVECTOR& color)
 	conversation_.FirstFont->SetColor(color);
 	conversation_.SecondFont->SetColor(color);
 	conversation_.ThirdFont->SetColor(color);
-	
+}
+
+//名前から文字列を呼び出しセットする(チュートリアル)
+void TextManager::SetTutorialConversation(TUTORIAL name, const XMVECTOR& color)
+{
+	std::map<TextManager::TUTORIAL, Word>::iterator itr = Tutorialwordlist_.find(name);
+
+	if (oldTutorial != itr->first) {
+		for (int i = 0; i < 3; i++) {
+			flag[i] = true;
+			next_f[i] = false;
+		}
+	}
+
+	oldTutorial = itr->first;
+
+	GetWordSize(itr->second);
+
+	CreateCon(conversation_, itr->second);
+
+	conversation_.FirstFont->SetColor(color);
+	conversation_.SecondFont->SetColor(color);
+	conversation_.ThirdFont->SetColor(color);
+
 }
 
 //名前と文字列セットで保存
@@ -147,6 +183,14 @@ void TextManager::CreateWord(TITLE name, wchar_t* tex1, wchar_t* tex2, wchar_t* 
 	Word temp = SetWord(tex1, tex2, tex3);
 
 	wordlist_.insert(std::make_pair(name, temp));
+}
+
+//名前と文字列セットで保存
+void TextManager::CreateTutorialWord(TUTORIAL name, wchar_t* tex1, wchar_t* tex2, wchar_t* tex3)
+{
+	Word temp = SetWord(tex1, tex2, tex3);
+
+	Tutorialwordlist_.insert(std::make_pair(name, temp));
 }
 
 void TextManager::SetRowPosition(float posX)
@@ -179,15 +223,13 @@ void TextManager::NoneText()
 	
 	CreateCon(conversation_, itr->second);
 }
-//文字列呼び出し
-//TextManager::Conversation TextManager::CreateConversation(Word word)
-//{
-//	/*Conversation* temp = {};
-//	temp->FirstFont->SetString(word.FirstWord);
-//	temp->SecondFont->SetString(word.SecondWord);
-//	temp->ThirdFont->SetString(word.ThirdWord);
-//	return temp;*/
-//}
+
+void TextManager::NoneTutorialText()
+{
+	std::map<TextManager::TUTORIAL, Word>::iterator itr = Tutorialwordlist_.find(INTRO);
+
+	CreateCon(conversation_, itr->second);
+}
 
 void TextManager::CreateCon(Conversation con, Word word)
 {

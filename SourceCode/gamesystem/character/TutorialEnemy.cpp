@@ -1,4 +1,4 @@
-#include "NormalEnemy.h"
+#include "TutorialEnemy.h"
 #include <random>
 #include "Player.h"
 #include "Helper.h"
@@ -8,20 +8,19 @@
 #include "Slow.h"
 #include "Collision.h"
 #include "ParticleEmitter.h"
-#include "SceneManager.h"
-#include"Timer.h"
+
 #define MapMinX -10
 #define MapMaxX 10
 
 #define MapMinZ -10
 #define MapMaxZ 10
 
-//ãƒ¢ãƒ‡ãƒ«èª­ã¿è¾¼ã¿
-NormalEnemy::NormalEnemy() {
+//ƒ‚ƒfƒ‹“Ç‚Ýž‚Ý
+TutorialEnemy::TutorialEnemy() {
 	
 }
-//åˆæœŸåŒ–
-bool NormalEnemy::Initialize() {
+//‰Šú‰»
+bool TutorialEnemy::Initialize() {
 
 	m_Object.reset(new IKEObject3d());
 	m_Object->Initialize();
@@ -31,52 +30,46 @@ bool NormalEnemy::Initialize() {
 	{
 	//	_charaState =
 	}
-	_charaState =  StartState;
-	//_charaState =  StartState;
-	m_Move = false;
+	_charaState =  CharaState::STATE_LEFT;//StartState;
 	m_BaseSpeed = static_cast<float>(std::any_cast<double>(LoadCSV::LoadCsvParam("Resources/csv/chara/enemy/enemy.csv", "speed")));
 	return true;
 }
 
-void (NormalEnemy::* NormalEnemy::stateTable[])() = {
-	&NormalEnemy::Inter,//å‹•ãã®åˆé–“
-	&NormalEnemy::RightMove,//å³ã«ç§»å‹•
-	&NormalEnemy::LeftMove,//å·¦ã«ç§»å‹•
-	&NormalEnemy::UpMove,//ä¸Šã«ç§»å‹•
-	&NormalEnemy::BottomMove,//ä¸‹ã«ç§»å‹•
-
+void (TutorialEnemy::* TutorialEnemy::stateTable[])() = {
+	&TutorialEnemy::Inter,//“®‚«‚Ì‡ŠÔ
+	&TutorialEnemy::RightMove,//‰E‚ÉˆÚ“®
+	&TutorialEnemy::LeftMove,//¶‚ÉˆÚ“®
+	&TutorialEnemy::UpMove,//ã‚ÉˆÚ“®
+	&TutorialEnemy::BottomMove,//‰º‚ÉˆÚ“®
 };
 
-//è¡Œå‹•
-void NormalEnemy::Action() {
-	if (!StopF&&Timer::GetInstance()->getNowTime()<MovingTime) {
-		(this->*stateTable[_charaState])();
+//s“®
+void TutorialEnemy::Action() {
+	(this->*stateTable[_charaState])();
 
-		//å½“ãŸã‚Šåˆ¤
-		SlowCollide();
-	}
+	//“–‚½‚è”»’è
+	SlowCollide();
 	Obj_SetParam();
 }
-//æç”»
-void NormalEnemy::Draw(DirectXCommon* dxCommon) {
-
-	if (StopF||SceneManager::GetInstance()->GetEditF()||Timer::GetInstance()->getNowTime()<MovingTime) {
+//•`‰æ
+void TutorialEnemy::Draw(DirectXCommon* dxCommon) {
+	if (_charaState != STATE_INTER) {
 		Obj_Draw();
 	}
 }
-//ImGuiæç”»
-void NormalEnemy::ImGui_Origin() {
+//ImGui•`‰æ
+void TutorialEnemy::ImGui_Origin() {
 	ImGui::Begin("Enemy");
 	ImGui::Text("Slow:%f", m_velocity);
 	ImGui::End();
 }
-//é–‹æ”¾
-void NormalEnemy::Finalize() {
+//ŠJ•ú
+void TutorialEnemy::Finalize() {
 
 }
 
-//ãƒªã‚¹ãƒãƒ¼ãƒ³
-void NormalEnemy::Inter() {
+//ƒŠƒXƒ|[ƒ“
+void TutorialEnemy::Inter() {
 	m_ResPornTimer++;
 	if (m_ResPornTimer == 100) {
 		m_ResPornTimer = {};
@@ -84,8 +77,8 @@ void NormalEnemy::Inter() {
 		_charaState = CharaState::STATE_LEFT;
 	}
 }
-//å³ã«å‹•ã
-void NormalEnemy::RightMove() {
+//‰E‚É“®‚­
+void TutorialEnemy::RightMove() {
 
 	const float l_MAX = MapMaxX;
 	m_velocity = m_BaseSpeed;
@@ -96,16 +89,18 @@ void NormalEnemy::RightMove() {
 	else {
 		m_velocity = m_BaseSpeed;
 	}
-	
-	if (Helper::GetInstance()->CheckMin(m_Position.x, l_MAX, m_velocity)) {
-		m_Position.x = MapMinX;
-		m_Slow = false;
+
+	if (m_Move) {
+		if (Helper::GetInstance()->CheckMin(m_Position.x, l_MAX, m_velocity)) {
+			m_Position.x = MapMinX;
+			m_Slow = false;
+		}
 	}
 }
-//å·¦ã«å‹•ã
-void NormalEnemy::LeftMove() {
-	m_Rotation = { 0.0f,90.0f,0.0f };
-	const float l_MIN = MapMinX;
+//¶‚É“®‚­
+void TutorialEnemy::LeftMove() {
+	m_Rotation = { 0.0f,180.0f,0.0f };
+	const float l_MIN =MapMinX;
 	m_velocity = -m_BaseSpeed;
 	if (m_SlowMove) {
 		m_velocity = -m_BaseSpeed * Slow::GetInstance()->GetSlowPower();
@@ -114,34 +109,39 @@ void NormalEnemy::LeftMove() {
 		m_velocity = -m_BaseSpeed;
 	}
 
-	if (Helper::GetInstance()->CheckMax(m_Position.x, l_MIN, m_velocity)) {
-		m_Position.x = MapMaxX;
-		m_Slow = false;
+	if (m_Move) {
+		if (Helper::GetInstance()->CheckMax(m_Position.x, l_MIN, m_velocity)) {
+			m_Position.x = MapMaxX;
+			m_Slow = false;
+		}
 	}
-	
 }
-//ä¸‹ã«å‹•ã
-void NormalEnemy::BottomMove() {
+//¶‚É“®‚­
+void TutorialEnemy::BottomMove() {
 	const float l_MIN = MapMinZ;
 	m_velocity = -m_BaseSpeed;
 
-	if (Helper::GetInstance()->CheckMax(m_Position.z, l_MIN, m_velocity)) {
-		m_Position.z = MapMaxZ;
-		m_Slow = false;
+	if (m_Move) {
+		if (Helper::GetInstance()->CheckMax(m_Position.z, l_MIN, m_velocity)) {
+			m_Position.z = MapMaxZ;
+			m_Slow = false;
+		}
 	}
 }
-//ä¸Šã«å‹•ã
-void NormalEnemy::UpMove() {
+//¶‚É“®‚­
+void TutorialEnemy::UpMove() {
 	const float l_MIN =MapMaxZ;
 	m_velocity = m_BaseSpeed;
 	
-	if (Helper::GetInstance()->CheckMin(m_Position.z, l_MIN, m_velocity)) {
-		m_Position.z = MapMinZ;
-		m_Slow = false;
+	if (m_Move) {
+		if (Helper::GetInstance()->CheckMin(m_Position.z, l_MIN, m_velocity)) {
+			m_Position.z = MapMinZ;
+			m_Slow = false;
+		}
 	}
 }
 
-void NormalEnemy::SlowCollide() {
+void TutorialEnemy::SlowCollide() {
 	Input* input = Input::GetInstance();
 	if (Collision::CircleCollision(m_Position.x, m_Position.z, m_radius, Player::GetInstance()->GetPosition().x, Player::GetInstance()->GetPosition().z, m_radius)) {
 		if (!m_Slow) {

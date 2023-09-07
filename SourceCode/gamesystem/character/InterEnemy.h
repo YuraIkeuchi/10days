@@ -85,7 +85,11 @@ public://gettersetter
 	
 	void SetStopF(bool f) { StopF = f; }
 	void SetSlowMove(const bool SlowMove) { m_SlowMove = SlowMove; }
+	void SetMove(const bool Move) { m_Move = Move; }
+	const bool GetAlive() { return m_Alive; }
 protected:
 	
 	bool m_SlowMove = false;
+	bool m_Move = true;
+	bool m_Alive = true;
 };

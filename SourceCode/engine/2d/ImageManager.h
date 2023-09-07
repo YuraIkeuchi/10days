@@ -20,6 +20,8 @@ public:
 	{
 		FEED,
 		NUMBER,
+		BLACKWINDOW,
+		TUTORIAL
 	};
 	//テクスチャの名前
 	enum tex2dName

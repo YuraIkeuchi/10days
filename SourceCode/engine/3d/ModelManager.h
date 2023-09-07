@@ -17,6 +17,9 @@ public:
 		GROUND,
 		PLAYERMODEL,
 		SKYDOME,
+		WALL_UP,
+		WALL_UNDER,
+		ENEMY,
 	};
 	//FBXの名前
 	enum FBXName {

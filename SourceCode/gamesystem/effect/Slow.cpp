@@ -13,8 +13,16 @@ void Slow::LoadCSV() {
 }
 void Slow::Update() {
 	if (m_Slow) {
-		m_SlowPower = 0.001f;
-		m_SlowTimer++;
+		m_SlowPower = 0.2f;
+		m_PlayerSlowPower = 0.5f;
+		if (!m_Tutorial) {
+			m_SlowTimer++;
+		}
+		else {
+			m_SlowPower = 0.0f;
+			m_PlayerSlowPower = 0.0f;
+		}
+
 		if (m_SlowTimer == 20) {
 			m_Slow = false;
 		}
@@ -22,6 +30,7 @@ void Slow::Update() {
 	else {
 		m_SlowTimer = {};
 		m_SlowPower = 1.0f;
+		m_PlayerSlowPower = 1.0f;
 	}
 }
 void Slow::ImGuiDraw() {

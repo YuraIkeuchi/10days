@@ -6,6 +6,7 @@
 #include "Collision.h"
 #include "Slow.h"
 #include "ParticleEmitter.h"
+#include "TutorialTask.h"
 Player* Player::GetInstance()
 {
 	static Player instance;
@@ -41,6 +42,19 @@ void Player::InitState(const XMFLOAT3& pos) {
 	velocity /= 5.0f;
 
 	_MoveState = MOVE_UP;
+
+	//移動加算値
+	m_AddSpeed = 0.0f;
+	
+	m_Frame = {};
+	m_AfterPosZ = {};
+	m_AfterPosX = {};
+
+	m_ChangeLine = false;
+	m_CameraZoom = false;
+	m_MoveTimer = {};
+
+	m_Attack = false;
 }
 /*CharaStateのState並び順に合わせる*/
 void (Player::* Player::stateTable[])() = {
@@ -54,6 +68,7 @@ void Player::Update()
 	(this->*stateTable[_charaState])();
 
 	Obj_SetParam();
+	m_MoveTimer = {};
 }
 //VECTOR
 XMFLOAT3 Player::MoveVECTOR(XMVECTOR v, float angle)
@@ -73,11 +88,8 @@ void Player::Draw(DirectXCommon* dxCommon)
 //ImGui
 void Player::ImGuiDraw() {
 	ImGui::Begin("Player");
-	ImGui::Text("POSX:%f", m_Position.x);
-	ImGui::Text("POSZ:%f", m_Position.z);
-	ImGui::Text("Speed:%f", m_AddSpeed);
-	ImGui::Text("State:%d", _MoveState);
-	ImGui::Text("Zoom:%d", m_CameraZoom);
+	ImGui::Text("POSZ%f", m_Position.z);
+	ImGui::Text("Timer:%d", m_MoveTimer);
 	ImGui::End();
 }
 
@@ -98,10 +110,12 @@ void Player::Move() {
 			//右入力
 			if (input->TiltPushStick(Input::L_RIGHT, 0.0f) && (m_Position.x < 9.5f)) {
 				m_AddSpeed = m_BaseSpeed;
+				m_MoveTimer++;
 			}
 			//左入力
 			else if (input->TiltPushStick(Input::L_LEFT, 0.0f) && (m_Position.x > -9.5f)) {
 				m_AddSpeed = -m_BaseSpeed;
+				m_MoveTimer++;
 			}
 			//入力なし
 			else {
@@ -121,29 +135,35 @@ void Player::Move() {
 			//上入力
 			if (input->TiltPushStick(Input::L_UP, 0.0f) && (m_Position.z < 8.0f)) {
 				m_AddSpeed = m_BaseSpeed;
+				m_MoveTimer++;
 			}
 			//下入力
 			else if (input->TiltPushStick(Input::L_DOWN, 0.0f) && (m_Position.z > -8.0f)) {
 				m_AddSpeed = -m_BaseSpeed;
+				m_MoveTimer++;
 			}
 			//入力なし
 			else {
 				m_AddSpeed = {};
 			}
 
-			if (Helper::GetInstance()->CheckMax(m_Position.z, -8.0f, m_AddSpeed)) {
-				m_ChangeLine = true;
-				_MoveState = MOVE_DOWN;
-			}
-			else if (Helper::GetInstance()->CheckMin(m_Position.z, 8.0f, m_AddSpeed)) {
-				m_ChangeLine = true;
-				_MoveState = MOVE_UP;
+			//チュートリアルのタスクのときだけ移動できない
+			if (!TutorialTask::GetInstance()->GetMission()) {
+				if (Helper::GetInstance()->CheckMax(m_Position.z, -8.0f, m_AddSpeed)) {
+					m_ChangeLine = true;
+					_MoveState = MOVE_DOWN;
+				}
+				else if (Helper::GetInstance()->CheckMin(m_Position.z, 8.0f, m_AddSpeed)) {
+					m_ChangeLine = true;
+					_MoveState = MOVE_UP;
+				}
 			}
 		}
 	}
 
 	if ((input->TriggerButton(input->A))) {
 		_charaState = STATE_ATTACK;
+		m_Attack = true;
 		m_Frame = {};
 		m_CameraZoom = true;
 		if (_MoveState == MOVE_UP || _MoveState == MOVE_DOWN) {
@@ -165,25 +185,48 @@ void Player::Move() {
 			}
 		}
 	}
+	if (_MoveState == MOVE_LEFT) {
+		m_Rotation = { 0.0f,90.0f,0.0f };
+	}
+	else if (_MoveState == MOVE_RIGHT) {
+		m_Rotation = { 0.0f,270.0f,0.0f };
+	}
+	else if (_MoveState == MOVE_UP) {
+		m_Rotation = { 0.0f, 180.0f, 0.0f };
+	}
+	else {
+		m_Rotation = { 0.0f, 0.0f, 0.0f };
+	}
 	//Helper::GetInstance()->Clamp(m_Position.x, -9.5f, 9.5f);
 }
 //攻撃
 void Player::Attack() {
 	const float l_AddFrame = 0.01f;
+	m_AddFrame = l_AddFrame;
 	if (!Slow::GetInstance()->GetSlow()) {
-		if (Helper::GetInstance()->FrameCheck(m_Frame, l_AddFrame)) {
+		if (Helper::GetInstance()->FrameCheck(m_Frame, m_AddFrame)) {
 			m_Frame = {};
 			_charaState = STATE_MOVE;
-		}
-		if (_MoveState == MOVE_UP || _MoveState == MOVE_DOWN) {
-			m_Position.z = Ease(In, Cubic, m_Frame, m_Position.z, m_AfterPosZ);
-		}
-		else {
-			m_Position.x = Ease(In, Cubic, m_Frame, m_Position.x, m_AfterPosX);
-		}
-
-		if (m_Frame > 0.9f) {
-			m_CameraZoom = false;
+			m_Attack = false;
 		}
 	}
+	
+	if (_MoveState == MOVE_UP || _MoveState == MOVE_DOWN) {
+		m_Position.z = Ease(In, Cubic, m_Frame * Slow::GetInstance()->GetPlayerSlowPower(), m_Position.z, m_AfterPosZ);
+	}
+	else {
+		m_Position.x = Ease(In, Cubic, m_Frame * Slow::GetInstance()->GetPlayerSlowPower(), m_Position.x, m_AfterPosX);
+	}
+
+	if (m_Frame > 0.9f) {
+		m_CameraZoom = false;
+	}
+	
+}
+//チュートリアルの更新
+void Player::TutorialUpdate() {
+	//状態移行(charastateに合わせる)
+	(this->*stateTable[_charaState])();
+
+	Obj_SetParam();
 }
