@@ -29,7 +29,8 @@ public:
 	//getter setter
 	void SetLoad(bool Load) { this->m_Load = Load; }
 	bool GetLoad() { return  m_Load; }
-
+	void SetEditF(bool f) { EditF = f; }
+	bool GetEditF() { return EditF; }
 private:
 	//今のシーン
 	BaseScene* scene_ = nullptr;
@@ -43,6 +44,7 @@ private:
 	SceneManager(const SceneManager&) = delete;
 	void operator =(const SceneManager&) = delete;
 
+	bool EditF;
 	// 非同期処理
 	std::thread m_th = {};
 	// ロード状態

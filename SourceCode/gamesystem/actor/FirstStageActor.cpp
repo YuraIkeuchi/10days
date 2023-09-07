@@ -7,7 +7,7 @@
 #include "Slow.h"
 #include "Timer.h"
 #include "SceneManager.h"
-
+#include"CsvLoader.h"
 void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, LightGroup* lightgroup) {
 	dxCommon->SetFullScreen(true);
 	//共通の初期化
@@ -46,14 +46,15 @@ void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 	Player::GetInstance()->InitState({ 0.0f,0.0f,8.0f });
 	Player::GetInstance()->Initialize();
 
-	enemy.reset(new NormalEnemy());
-	enemy->Initialize();
+//	enemy.reset(new NormalEnemy());
+//	enemy->Initialize();
+
 
 	//テクスチャ
 	for (int i = 0; i < AREA_NUM; i++) {
 		tex[i].reset(IKETexture::Create(ImageManager::AREA, { 0,0,0 }, { 0.5f,0.5f,0.5f }, { 1,1,1,1 }));
 		tex[i]->TextureCreate();
-		
+
 		tex[i]->SetRotation({ 90.0f,0.0f,0.0f });
 		tex[i]->SetColor({ 1.0f,0.0,0.0f,0.5f });
 	}
@@ -66,6 +67,27 @@ void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 	tex[1]->SetScale({ 2.0f,0.1f,0.1f });
 	tex[2]->SetScale({ 0.1f,1.6f,0.1f });
 	tex[3]->SetScale({ 0.1f,1.6f,0.1f });
+
+	int Quantity = static_cast<int>(std::any_cast<double>(LoadCSV::LoadCsvParam("Resources/csv/enemy.csv", "Enemy_Quantity")));
+
+	enemy.resize(Quantity);
+	EPos.resize(Quantity);
+	EnemyMoveType.resize(Quantity);
+	ResCount.resize(Quantity);
+LoadCSV::LoadCsvParam_XMFLOAT3("Resources/csv/enemy.csv", EPos, "POP");
+		LoadCSV::LoadCsvParam_Int("Resources/csv/enemy.csv", EnemyMoveType, "MoveType");
+		LoadCSV::LoadCsvParam_Int("Resources/csv/enemy.csv", ResCount, "ResCount");
+
+	for (auto i = 0; i < Quantity; i++) {
+		
+		enemy[i].reset(new NormalEnemy());
+		enemy[i]->SetMovingTime(ResCount[i]);
+		enemy[i]->SetState(EnemyMoveType[i]);
+		enemy[i]->SetPosition(EPos[i]);
+		enemy[i]->Initialize();
+
+	
+	}
 
 	Timer::GetInstance()->Initialize();
 }
@@ -86,15 +108,30 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 	if (!Timer::GetInstance()->GetStop()) {
 		Player::GetInstance()->Update();
 		Slow::GetInstance()->Update();
-		enemy->Update();
+		for(auto i=0;i<enemy.size();i++)
+		{
+			if (enemy[i] == nullptr)continue;
+			enemy[i]->Update();
+		}
+	//	enemy->Update();
 	}
 	//タイマーを図る
 	if (!Slow::GetInstance()->GetSlow()) {
 		Timer::GetInstance()->Update();
-		enemy->SetSlowMove(false);
+		for (auto i = 0; i < enemy.size(); i++)
+		{
+			if (enemy[i] == nullptr)continue;
+		
+		}
+	//	enemy->
 	}
 	else {
-		enemy->SetSlowMove(true);
+		for (auto i = 0; i < enemy.size(); i++)
+		{
+			if (enemy[i] == nullptr)continue;
+			enemy[i]->SetSlowMove(true);//Update();
+			}
+	////	enemy->SetSlowMove(true);
 	}
 
 	//ゲーム終了
@@ -142,7 +179,12 @@ void FirstStageActor::BackDraw(DirectXCommon* dxCommon) {
 	ground->Draw();
 	skydome->Draw();
 	Player::GetInstance()->Draw(dxCommon);
-	enemy->Draw(dxCommon);
+	for (auto i = 0; i < enemy.size(); i++)
+	{
+		if (enemy[i] == nullptr)continue;
+		enemy[i]->Draw(dxCommon);
+	}
+	//enemy->Draw(dxCommon);
 	IKEObject3d::PostDraw();
 	ParticleEmitter::GetInstance()->FlontDrawAll();
 
@@ -171,7 +213,7 @@ void FirstStageActor::ImGuiDraw() {
 		ImGui::Text("PUSH A!!!");
 	}
 	ImGui::End();
-	enemy->ImGuiDraw();
+	//enemy->ImGuiDraw();
 	Player::GetInstance()->ImGuiDraw();
 	Slow::GetInstance()->ImGuiDraw();
 

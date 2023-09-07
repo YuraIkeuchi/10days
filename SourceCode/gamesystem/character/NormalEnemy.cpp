@@ -8,6 +8,7 @@
 #include "Slow.h"
 #include "Collision.h"
 #include "ParticleEmitter.h"
+#include "SceneManager.h"
 #include"Timer.h"
 #define MapMinX -10
 #define MapMaxX 10
@@ -63,7 +64,7 @@ void NormalEnemy::Action() {
 //•`‰æ
 void NormalEnemy::Draw(DirectXCommon* dxCommon) {
 
-	if (StopF|| _charaState != STATE_INTER) {
+	if (StopF||SceneManager::GetInstance()->GetEditF()||Timer::GetInstance()->getNowTime()<MovingTime) {
 		Obj_Draw();
 	}
 }
