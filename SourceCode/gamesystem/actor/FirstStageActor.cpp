@@ -128,7 +128,7 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 		}
 		PlayPostEffect = false;
 		radPower -= addPower;
-		radPower = min(0, radPower);
+		radPower = max(0, radPower);
 		postEffect->SetRadPower(radPower);
 	}
 	else {
@@ -139,6 +139,7 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 		}
 		PlayPostEffect = true;
 		radPower += addPower;
+		radPower = min(radPower, 10.0f);
 		postEffect->SetRadPower(radPower);
 	}
 
