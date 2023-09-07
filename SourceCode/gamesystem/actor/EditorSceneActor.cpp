@@ -72,6 +72,8 @@ void EditorSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, 
 		enemy[i]->SetMovingTime(ResCount[i]);
 		enemy[i]->SetState(EnemyMoveType[i]);
 		enemy[i]->SetPosition(EPos[i]);
+
+		enemy[i]->EditPos(EPos[i]);
 		enemy[i]->Initialize();
 		enemys.emplace_back(enemy[i].get());
 	}
