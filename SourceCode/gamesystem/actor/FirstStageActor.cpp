@@ -9,6 +9,7 @@
 #include "SceneManager.h"
 #include"CsvLoader.h"
 #include "BackObj.h"
+#include "ScoreManager.h"
 
 void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, LightGroup* lightgroup) {
 	dxCommon->SetFullScreen(true);
@@ -32,7 +33,7 @@ void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 	ground->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::GROUND));
 	ground->SetScale({ 1.f,1.f,1.f });
 	ground->SetPosition({ 0.0f,5.0f,0.0f });
-	ground->SetTiling(10.0f);
+	ground->SetTiling(25.0f);
 
 	//スカイドーム
 	skydome.reset(new IKEObject3d());
@@ -75,7 +76,7 @@ void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 	EPos.resize(Quantity);
 	EnemyMoveType.resize(Quantity);
 	ResCount.resize(Quantity);
-LoadCSV::LoadCsvParam_XMFLOAT3("Resources/csv/enemy.csv", EPos, "POP");
+	LoadCSV::LoadCsvParam_XMFLOAT3("Resources/csv/enemy.csv", EPos, "POP");
 		LoadCSV::LoadCsvParam_Int("Resources/csv/enemy.csv", EnemyMoveType, "MoveType");
 		LoadCSV::LoadCsvParam_Int("Resources/csv/enemy.csv", ResCount, "ResCount");
 
@@ -92,6 +93,11 @@ LoadCSV::LoadCsvParam_XMFLOAT3("Resources/csv/enemy.csv", EPos, "POP");
 
 	//背景
 	BackObj::GetInstance()->Initialize();
+
+	//スコア
+	ScoreManager::GetInstance()->Initialize();
+	//スロー
+	Slow::GetInstance()->Initialize();
 }
 
 void FirstStageActor::Finalize() {
@@ -108,6 +114,8 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 	ground->Update();
 	ground->UpdateWorldMatrix();
 	BackObj::GetInstance()->Update();
+	ScoreManager::GetInstance()->Update();
+	Timer::GetInstance()->Update();
 	if (!Timer::GetInstance()->GetStop()) {
 		Player::GetInstance()->Update();
 		Slow::GetInstance()->Update();
@@ -120,7 +128,7 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 	}
 	//タイマーを図る
 	if (!Slow::GetInstance()->GetSlow()) {
-		Timer::GetInstance()->Update();
+		
 		for (auto i = 0; i < enemy.size(); i++)
 		{
 			if (enemy[i] == nullptr)continue;
@@ -145,7 +153,7 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 
 	//ゲーム終了
 	if (Timer::GetInstance()->GetEnd()) {
-		SceneManager::GetInstance()->ChangeScene("TITLE");
+		SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
 	}
 	
 	for (int i = 0; i < AREA_NUM; i++) {
@@ -160,6 +168,14 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 		}
 
 		if (!enemy[i]->GetAlive()) {
+			if (!enemy[i]->GetDestroy()) {
+				if (ScoreManager::GetInstance()->GetMagnification() < 5) {
+					ScoreManager::GetInstance()->SetMagnification(ScoreManager::GetInstance()->GetMagnification() + 1);
+				}
+				m_AddScore = (ScoreManager::GetInstance()->GetMagnification() * 1);
+				ScoreManager::GetInstance()->SetFirstNumber(ScoreManager::GetInstance()->GetFirstNumber() + m_AddScore);
+				m_AddScore = 0;
+			}
 			enemy.erase(cbegin(enemy) + i);
 		}
 	}
@@ -240,4 +256,5 @@ void FirstStageActor::ImGuiDraw() {
 	Slow::GetInstance()->ImGuiDraw();
 
 	Timer::GetInstance()->ImGuiDraw();
+	ScoreManager::GetInstance()->ImGuiDraw();
 }

@@ -92,6 +92,8 @@ void TutorialSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera
 
 	//スコア
 	ScoreManager::GetInstance()->Initialize();
+	//スロー
+	Slow::GetInstance()->Initialize();
 }
 
 void TutorialSceneActor::Finalize() {
@@ -358,6 +360,22 @@ void TutorialSceneActor::EndState() {
 		m_TexTimer = {};
 		m_TutorialEnd = false;
 	}
+
+	//タイマーを図る
+	if (!Slow::GetInstance()->GetSlow()) {
+		Timer::GetInstance()->Update();
+		PlayPostEffect = false;
+		radPower -= addPower;
+		radPower = max(0, radPower);
+		postEffect->SetRadPower(radPower);
+	}
+	else {
+		PlayPostEffect = true;
+		radPower += addPower;
+		radPower = min(radPower, 10.0f);
+		postEffect->SetRadPower(radPower);
+	}
+
 }
 //スキップの更新
 void TutorialSceneActor::SkipUpdate() {

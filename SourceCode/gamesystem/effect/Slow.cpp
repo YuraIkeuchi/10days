@@ -7,10 +7,20 @@ Slow* Slow::GetInstance()
 
 	return &instance;
 }
-
+//CSV
 void Slow::LoadCSV() {
 	//m_TargetTimer = static_cast<int>(std::any_cast<double>(LoadCSV::LoadCsvParam("Resources/csv/effect/Slow.csv", "Timer")));
 }
+//初期化
+void Slow::Initialize() {
+	m_Slow = false;//ヒットストップ
+	m_SlowTimer = 0;//ヒットストップの時間
+
+	m_SlowPower = 1.0f;
+	m_PlayerSlowPower = 1.0f;
+	m_Tutorial = false;
+}
+//更新
 void Slow::Update() {
 	if (m_Slow) {
 		m_SlowPower = 0.2f;
@@ -23,7 +33,7 @@ void Slow::Update() {
 			m_PlayerSlowPower = 0.0f;
 		}
 
-		if (m_SlowTimer == 20) {
+		if (m_SlowTimer >= 20) {
 			m_Slow = false;
 		}
 	}
@@ -34,8 +44,9 @@ void Slow::Update() {
 	}
 }
 void Slow::ImGuiDraw() {
-	ImGui::Begin("Hit");
-	ImGui::Text("Hit:%f", m_SlowPower);
+	ImGui::Begin("Slow");
+	ImGui::Text("Power:%f", m_SlowPower);
+	ImGui::Text("Timer:%d", m_SlowTimer);
 	
 	ImGui::End();
 }

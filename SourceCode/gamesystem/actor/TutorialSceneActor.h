@@ -73,5 +73,8 @@ private:
 
 	bool m_TutorialEnd = false;
 	int m_AddScore = {};
+
+	float radPower = 0;
+	const float addPower = 0.5f;
 };
 

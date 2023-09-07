@@ -3,6 +3,7 @@
 class Slow {
 public:
 	static Slow* GetInstance();
+	void Initialize();
 	void LoadCSV();
 	//XVˆ—‚Ì‚İ
 	void Update();
