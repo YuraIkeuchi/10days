@@ -212,10 +212,14 @@ void Player::Attack() {
 	}
 	
 	if (_MoveState == MOVE_UP || _MoveState == MOVE_DOWN) {
+		float oldZ = m_Position.z;
 		m_Position.z = Ease(In, Cubic, m_Frame * Slow::GetInstance()->GetPlayerSlowPower(), m_Position.z, m_AfterPosZ);
+		m_playerVec = {0, 0, m_Position.z - oldZ};
 	}
 	else {
+		float oldX = m_Position.x;
 		m_Position.x = Ease(In, Cubic, m_Frame * Slow::GetInstance()->GetPlayerSlowPower(), m_Position.x, m_AfterPosX);
+		m_playerVec = { m_Position.x - oldX, 0, 0 };
 	}
 
 	if (m_Frame > 0.9f) {
