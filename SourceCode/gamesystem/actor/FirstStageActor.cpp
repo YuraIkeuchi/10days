@@ -128,7 +128,7 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 		}
 		PlayPostEffect = false;
 		radPower -= addPower;
-		radPower = min(0, radPower);
+		radPower = max(0, radPower);
 		postEffect->SetRadPower(radPower);
 	}
 	else {
@@ -139,6 +139,7 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 		}
 		PlayPostEffect = true;
 		radPower += addPower;
+		radPower = min(radPower, 10.0f);
 		postEffect->SetRadPower(radPower);
 	}
 
@@ -151,6 +152,17 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 		tex[i]->Update();
 	}
 	ParticleEmitter::GetInstance()->Update();
+
+	//敵の削除
+	for (int i = 0; i < enemy.size(); i++) {
+		if (enemy[i] == nullptr) {
+			continue;
+		}
+
+		if (!enemy[i]->GetAlive()) {
+			enemy.erase(cbegin(enemy) + i);
+		}
+	}
 }
 
 void FirstStageActor::Draw(DirectXCommon* dxCommon) {
