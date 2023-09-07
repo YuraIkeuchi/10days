@@ -7,6 +7,7 @@
 #include "Slow.h"
 #include "ParticleEmitter.h"
 #include "TutorialTask.h"
+#include "ScoreManager.h"
 Player* Player::GetInstance()
 {
 	static Player instance;
@@ -208,6 +209,7 @@ void Player::Attack() {
 			m_Frame = {};
 			_charaState = STATE_MOVE;
 			m_Attack = false;
+			ScoreManager::GetInstance()->SetMagnification(0);
 		}
 	}
 	

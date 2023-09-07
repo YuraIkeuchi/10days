@@ -8,6 +8,7 @@
 #include "Timer.h"
 #include "SceneManager.h"
 #include "BackObj.h"
+#include  "ScoreManager.h"
 
 void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, LightGroup* lightgroup) {
 	dxCommon->SetFullScreen(true);
@@ -67,10 +68,14 @@ void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 	tex[2]->SetScale({ 0.1f,1.6f,0.1f });
 	tex[3]->SetScale({ 0.1f,1.6f,0.1f });
 
+	//時間
 	Timer::GetInstance()->Initialize();
 
 	//背景
 	BackObj::GetInstance()->Initialize();
+
+	//スコア
+	ScoreManager::GetInstance()->Initialize();
 }
 
 void FirstStageActor::Finalize() {
@@ -87,6 +92,7 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 	ground->Update();
 	ground->UpdateWorldMatrix();
 	BackObj::GetInstance()->Update();
+	ScoreManager::GetInstance()->Update();
 	if (!Timer::GetInstance()->GetStop()) {
 		Player::GetInstance()->Update();
 		Slow::GetInstance()->Update();
@@ -180,4 +186,5 @@ void FirstStageActor::ImGuiDraw() {
 	Slow::GetInstance()->ImGuiDraw();
 
 	Timer::GetInstance()->ImGuiDraw();
+	ScoreManager::GetInstance()->ImGuiDraw();
 }

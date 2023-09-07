@@ -8,6 +8,7 @@
 #include "SceneManager.h"
 #include "TutorialTask.h"
 #include "BackObj.h"
+#include "ScoreManager.h"
 //状態遷移
 /*stateの並び順に合わせる*/
 void (TutorialSceneActor::* TutorialSceneActor::TutorialTable[])() = {
@@ -88,6 +89,9 @@ void TutorialSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera
 	window->SetPosition({ WinApp::window_width / 2.f,WinApp::window_height - 100 });
 	window->SetSize({1300.0f, 220.0f});
 	window_size = { 0.f,0.f };
+
+	//スコア
+	ScoreManager::GetInstance()->Initialize();
 }
 
 void TutorialSceneActor::Finalize() {
@@ -107,6 +111,7 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 	window->SetSize(window_size);
 	window->SetColor({ 1.0f,1.0f,1.0f,m_Alpha });
 	BackObj::GetInstance()->Update();
+	ScoreManager::GetInstance()->Update();
 	if (!TutorialTask::GetInstance()->GetStop()) {
 		Player::GetInstance()->TutorialUpdate();
 		Slow::GetInstance()->Update();
@@ -151,6 +156,12 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 		if (!enemys[i]->GetAlive()) {
 			enemys.erase(cbegin(enemys) + i);
 			m_EnemyCount--;
+			if (ScoreManager::GetInstance()->GetMagnification() < 5) {
+				ScoreManager::GetInstance()->SetMagnification(ScoreManager::GetInstance()->GetMagnification() + 1);
+			}
+			m_AddScore = (ScoreManager::GetInstance()->GetMagnification() * 1);
+			ScoreManager::GetInstance()->SetFirstNumber(ScoreManager::GetInstance()->GetFirstNumber() + m_AddScore);
+			m_AddScore = 0;
 		}
 	}
 }
@@ -229,12 +240,14 @@ void TutorialSceneActor::ImGuiDraw() {
 	ImGui::Begin("TUTORIAL");
 	ImGui::Text("Timer:%d", m_TexTimer);
 	ImGui::Text("Count:%d", m_EnemyCount);
+	ImGui::Text("Score:%d", m_AddScore);
 	ImGui::End();
 	Player::GetInstance()->ImGuiDraw();
 	camerawork->ImGuiDraw();
 	for (auto i = 0; i < enemys.size(); i++) {
 		enemys[i]->ImGuiDraw();
 	}
+	ScoreManager::GetInstance()->ImGuiDraw();
 }
 
 //移動

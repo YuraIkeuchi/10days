@@ -30,7 +30,7 @@ private:
 		MOVE,
 		ATTACK,
 		END,
-	}nowstate_ = state::MOVE;
+	}nowstate_ = state::END;
 private:
 	static void (TutorialSceneActor::* TutorialTable[])();
 	void MoveState();
@@ -62,7 +62,7 @@ private:
 		ENEMY_SLOW,
 		ENEMY_INTERVAL,
 		ENEMY_END,
-	}_AttackState = ATTACK_INTRO;
+	}_AttackState = ENEMY_END;
 
 	XMFLOAT2 window_size = { 0.f,0.f };
 	float m_Alpha = 1.0f;
@@ -72,5 +72,6 @@ private:
 	int m_EnemyCount = {};
 
 	bool m_TutorialEnd = false;
+	int m_AddScore = {};
 };
 
