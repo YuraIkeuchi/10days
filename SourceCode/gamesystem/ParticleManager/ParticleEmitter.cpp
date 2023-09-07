@@ -3,6 +3,8 @@
 #include "ImageManager.h"
 #include "Helper.h"
 #include <random>
+#include "Random.h"
+
 ParticleEmitter* ParticleEmitter::GetInstance()
 {
 	static ParticleEmitter instance;
@@ -56,11 +58,11 @@ void ParticleEmitter::SplatterEffect(const int life, const XMFLOAT3& startpos, c
 
 	for (int i = 0; i < 10; i++)
 	{
-		XMFLOAT3 vel = {};
-		const float rnd_vel = 0.25f;
-		vel.x = (float)rand() / RAND_MAX * rnd_vel - rnd_vel / 2.0f;
-		vel.y = (float)rand() / RAND_MAX * rnd_vel - rnd_vel / 2.0f;
-		vel.z = (float)rand() / RAND_MAX * rnd_vel - rnd_vel / 2.0f;
+		XMFLOAT3 vel = vec;
+		const int rnd_vel = 5;
+		vel.x = static_cast<float>(Random::GetRanNum(0, rnd_vel));
+		vel.y = static_cast<float>(Random::GetRanNum(0, rnd_vel / 2));
+		vel.z = static_cast<float>(Random::GetRanNum(0, rnd_vel));
 
 		bloodParticle->Add(life, { pos.x, pos.y, pos.z }, vel, { -vel.x / life, -0.001f, -vel.z / life }, startscale, endscale, bloodcolor, bloodcolor, 1.0f);
 	}

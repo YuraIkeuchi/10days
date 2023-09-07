@@ -152,7 +152,7 @@ void NormalEnemy::SlowCollide() {
 				m_Alive = false;
 				_charaState = STATE_INTER;
 				m_ResPornTimer = {};
-				ParticleEmitter::GetInstance()->SplatterEffect(120, Player::GetInstance()->GetPosition(), { 0, 0, 0 }, 1.0f, 1.0f, { 1, 0, 0, 1 });
+				ParticleEmitter::GetInstance()->SplatterEffect(60, Player::GetInstance()->GetPosition(), { 0, 0, 0 }, 1.0f, 1.0f, { 1, 0, 0, 1 });
 			}
 		}
 	}
