@@ -190,7 +190,7 @@ void FirstStageActor::BackDraw(DirectXCommon* dxCommon) {
 		enemy[i]->Draw(dxCommon);
 	}
 	//enemy->Draw(dxCommon);
-	enemy->Draw(dxCommon);
+	//enemy->Draw(dxCommon);
 	ground->Draw();
 	IKEObject3d::PostDraw();
 	ParticleEmitter::GetInstance()->FlontDrawAll();

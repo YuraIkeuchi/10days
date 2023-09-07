@@ -1,4 +1,4 @@
-#include "NormalEnemy.h"
+﻿#include "NormalEnemy.h"
 #include <random>
 #include "Player.h"
 #include "Helper.h"

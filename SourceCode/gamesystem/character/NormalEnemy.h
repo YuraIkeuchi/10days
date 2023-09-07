@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include"InterEnemy.h"
 using namespace std;         //  名前空間指定
 //普通の敵
@@ -32,7 +32,7 @@ private:
 	float m_velocity = 0.2f;
 	bool m_Slow = false;
 	float m_radius = 0.8f;
-	float m_radius = 1.0f;
+	//float m_radius = 1.0f;
 
 	int m_ResPornTimer = 0;
 
