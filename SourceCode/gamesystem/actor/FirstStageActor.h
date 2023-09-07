@@ -6,6 +6,7 @@
 #include<windows.h>
 #include<vector>
 #include "UI.h"
+#include "MagText.h"
 
 class FirstStageActor :public BaseActor
 {
@@ -27,6 +28,7 @@ private:
 
 	void ImGuiDraw();
 
+	void BirthScoreText(const int EnemyCount, const int Magnification);
 private:
 	static const int AREA_NUM = 4;
 private:
@@ -35,6 +37,7 @@ private:
 	unique_ptr<IKEObject3d> skydome;
 	XMFLOAT2 m_AddOffset = {};
 	std::vector <unique_ptr<InterEnemy>> enemy;
+	std::vector<MagText*> magtext;
 	std::vector<int>EnemyMoveType;
 	std::vector<int>ResCount;
 	unique_ptr<IKETexture> tex[AREA_NUM];

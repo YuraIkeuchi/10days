@@ -58,7 +58,7 @@ void ClearSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 		Sprite_Fourth[i]->SetPosition({ 400.0f,200.0f });
 		Sprite_Fourth[i]->SetSize({ l_Width_Cut,l_Height_Cut });
 	}
-
+	
 	back = IKESprite::Create(ImageManager::RESULT, { 0.0f,0.0f });
 	back->SetSize({ 1280.0f,720.0f });
 

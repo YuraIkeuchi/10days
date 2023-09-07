@@ -181,6 +181,7 @@
     <ClCompile Include="SourceCode\gamesystem\MessageWindow\MessageWindow.cpp" />
     <ClCompile Include="SourceCode\gamesystem\ParticleManager\ParticleEmitter.cpp" />
     <ClCompile Include="SourceCode\gamesystem\ParticleManager\ParticleManager.cpp" />
+    <ClCompile Include="SourceCode\gamesystem\scenetext\MagText.cpp" />
     <ClCompile Include="SourceCode\gamesystem\scenetext\ScoreManager.cpp" />
     <ClCompile Include="SourceCode\gamesystem\scenetext\TitleText.cpp" />
     <ClCompile Include="SourceCode\gamesystem\scenetext\TutorialText.cpp" />
@@ -286,6 +287,7 @@
     <ClInclude Include="SourceCode\gamesystem\MessageWindow\MessageWindow.h" />
     <ClInclude Include="SourceCode\gamesystem\ParticleManager\ParticleEmitter.h" />
     <ClInclude Include="SourceCode\gamesystem\ParticleManager\ParticleManager.h" />
+    <ClInclude Include="SourceCode\gamesystem\scenetext\MagText.h" />
     <ClInclude Include="SourceCode\gamesystem\scenetext\ScoreManager.h" />
     <ClInclude Include="SourceCode\gamesystem\scenetext\TitleText.h" />
     <ClInclude Include="SourceCode\gamesystem\scenetext\TutorialText.h" />

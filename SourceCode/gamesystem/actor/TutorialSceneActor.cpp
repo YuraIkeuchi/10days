@@ -95,6 +95,10 @@ void TutorialSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera
 	ScoreManager::GetInstance()->Initialize();
 	//スロー
 	Slow::GetInstance()->Initialize();
+
+	//UI
+	ui = make_unique<UI>();
+	ui->Initialize();
 }
 
 void TutorialSceneActor::Finalize() {
@@ -160,17 +164,41 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 		}
 
 		if (!enemys[i]->GetAlive()) {
+			ui->SetMag(true);
 			enemys.erase(cbegin(enemys) + i);
 			m_EnemyCount--;
 			if (ScoreManager::GetInstance()->GetMagnification() < 5) {
 				ScoreManager::GetInstance()->SetMagnification(ScoreManager::GetInstance()->GetMagnification() + 1);
 			}
 			m_AddScore = (ScoreManager::GetInstance()->GetMagnification() * 1);
+			BirthScoreText(1, ScoreManager::GetInstance()->GetMagnification());
 			ScoreManager::GetInstance()->SetFirstNumber(ScoreManager::GetInstance()->GetFirstNumber() + m_AddScore);
 			m_AddScore = 0;
 		}
 	}
 
+	//倍率UIの表示
+	if (!Player::GetInstance()->GetAttack()) {
+		ui->SetMag(false);
+	}
+	ui->Update();
+
+	//倍率テキスト
+	for (auto i = 0; i < magtext.size(); i++)
+	{
+		if (magtext[i] == nullptr)continue;
+		magtext[i]->Update();
+	}
+	//テキストの削除
+	for (int i = 0; i < magtext.size(); i++) {
+		if (magtext[i] == nullptr) {
+			continue;
+		}
+
+		if (!magtext[i]->GetAlive()) {
+			magtext.erase(cbegin(magtext) + i);
+		}
+	}
 	SceneChanger::GetInstance()->Update();
 }
 
@@ -180,11 +208,10 @@ void TutorialSceneActor::Draw(DirectXCommon* dxCommon) {
 	if (PlayPostEffect) {
 		postEffect->PreDrawScene(dxCommon->GetCmdList());
 		BackDraw(dxCommon);
-		FrontDraw(dxCommon);
 		postEffect->PostDrawScene(dxCommon->GetCmdList());
-
 		dxCommon->PreDraw();
 		postEffect->Draw(dxCommon->GetCmdList());
+		FrontDraw(dxCommon);
 		ImGuiDraw();
 		dxCommon->PostDraw();
 	}
@@ -201,6 +228,16 @@ void TutorialSceneActor::Draw(DirectXCommon* dxCommon) {
 }
 //ポストエフェクトかからない
 void TutorialSceneActor::FrontDraw(DirectXCommon* dxCommon) {
+	IKESprite::PreDraw();
+	ui->FrontDraw();
+	//倍率テキスト
+	for (auto i = 0; i < magtext.size(); i++)
+	{
+		if (magtext[i] == nullptr)continue;
+		magtext[i]->Draw();
+	}
+	ui->BackDraw();
+	IKESprite::PostDraw();
 	//完全に前に書くスプライト
 	IKESprite::PreDraw();
 	window->Draw();
@@ -248,7 +285,7 @@ void TutorialSceneActor::FinishUpdate(DebugCamera* camera) {
 }
 
 void TutorialSceneActor::ImGuiDraw() {
-	ImGui::Begin("TUTORIAL");
+	/*ImGui::Begin("TUTORIAL");
 	ImGui::Text("Timer:%d", m_TexTimer);
 	ImGui::Text("Count:%d", m_EnemyCount);
 	ImGui::End();
@@ -257,7 +294,7 @@ void TutorialSceneActor::ImGuiDraw() {
 	for (auto i = 0; i < enemys.size(); i++) {
 		enemys[i]->ImGuiDraw();
 	}
-	ScoreManager::GetInstance()->ImGuiDraw();
+	ScoreManager::GetInstance()->ImGuiDraw();*/
 }
 
 //移動
@@ -373,7 +410,7 @@ void TutorialSceneActor::EndState() {
 
 	//タイマーを図る
 	if (!Slow::GetInstance()->GetSlow()) {
-		Timer::GetInstance()->Update();
+		//Timer::GetInstance()->Update();
 		PlayPostEffect = false;
 		radPower -= addPower;
 		radPower = max(0, radPower);
@@ -433,4 +470,11 @@ void TutorialSceneActor::BirthEnemy(bool Move,bool End) {
 			m_EnemyCount++;
 		}
 	}
+}
+//倍率スコアの生成
+void TutorialSceneActor::BirthScoreText(const int EnemyCount, const int Magnification) {
+	MagText* newtext;
+	newtext = new MagText(EnemyCount, Magnification);
+	newtext->Initialize();
+	magtext.push_back(newtext);
 }

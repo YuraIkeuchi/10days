@@ -51,26 +51,18 @@ void Timer::Update() {
 			if (Helper::GetInstance()->CheckMax(m_GameTimer, 0, -1)) {
 				m_End = true;
 			}
-			m_SlowTimer = {};
-		}
-		else {
-			m_SlowTimer++;
-			if (m_SlowTimer % 5 == 0 && m_SlowTimer != 0) {
-				if (Helper::GetInstance()->CheckMax(m_GameTimer, 0, -1)) {
-					m_End = true;
+
+			//タイマーに合わせてUIも減らす
+			if (m_GameTimer % 60 == 0) {
+				m_FirstCount--;
+				if (m_FirstCount < 0) {
+					m_FirstCount += 10;
+					m_SecondCount--;
 				}
 			}
 		}
 	}
 
-	//タイマーに合わせてUIも減らす
-	if (m_GameTimer % 60 == 0) {
-		m_FirstCount--;
-		if (m_FirstCount < 0) {
-			m_FirstCount += 10;
-			m_SecondCount--;
-		}
-	}
 }
 void Timer::SpriteDraw() {
 	if (m_GameTimer > 0) {

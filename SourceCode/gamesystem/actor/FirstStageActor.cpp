@@ -179,10 +179,12 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 
 		if (!enemy[i]->GetAlive()) {
 			if (!enemy[i]->GetDestroy()) {
+				ui->SetMag(true);
 				if (ScoreManager::GetInstance()->GetMagnification() < 5) {
 					ScoreManager::GetInstance()->SetMagnification(ScoreManager::GetInstance()->GetMagnification() + 1);
 				}
 				m_AddScore = (ScoreManager::GetInstance()->GetMagnification() * 1);
+				BirthScoreText(1, ScoreManager::GetInstance()->GetMagnification());
 				ScoreManager::GetInstance()->SetFirstNumber(ScoreManager::GetInstance()->GetFirstNumber() + m_AddScore);
 				m_AddScore = 0;
 			}
@@ -191,7 +193,29 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 	}
 
 	SceneChanger::GetInstance()->Update();
+
+	//倍率UIの表示
+	if (!Player::GetInstance()->GetAttack()) {
+		ui->SetMag(false);
+	}
 	ui->Update();
+
+	//倍率テキスト
+	for (auto i = 0; i < magtext.size(); i++)
+	{
+		if (magtext[i] == nullptr)continue;
+		magtext[i]->Update();
+	}
+	//テキストの削除
+	for (int i = 0; i < magtext.size(); i++) {
+		if (magtext[i] == nullptr) {
+			continue;
+		}
+
+		if (!magtext[i]->GetAlive()) {
+			magtext.erase(cbegin(magtext) + i);
+		}
+	}
 }
 
 void FirstStageActor::Draw(DirectXCommon* dxCommon) {
@@ -220,7 +244,14 @@ void FirstStageActor::Draw(DirectXCommon* dxCommon) {
 //ポストエフェクトかからない
 void FirstStageActor::FrontDraw(DirectXCommon* dxCommon) {
 	IKESprite::PreDraw();
-	ui->Draw();
+	ui->FrontDraw();
+	//倍率テキスト
+	for (auto i = 0; i < magtext.size(); i++)
+	{
+		if (magtext[i] == nullptr)continue;
+		magtext[i]->Draw();
+	}
+	ui->BackDraw();
 	IKESprite::PostDraw();
 	IKESprite::PreDraw();
 	SceneChanger::GetInstance()->Draw();
@@ -266,10 +297,17 @@ void FirstStageActor::ImGuiDraw() {
 		ImGui::Text("PUSH A!!!");
 	}
 	ImGui::End();
-	//enemy->ImGuiDraw();
-	Player::GetInstance()->ImGuiDraw();
-	Slow::GetInstance()->ImGuiDraw();
+	////enemy->ImGuiDraw();
+	//Player::GetInstance()->ImGuiDraw();
+	//Slow::GetInstance()->ImGuiDraw();
 
-	Timer::GetInstance()->ImGuiDraw();
-	ScoreManager::GetInstance()->ImGuiDraw();
+	//Timer::GetInstance()->ImGuiDraw();
+	//ScoreManager::GetInstance()->ImGuiDraw();
+}
+//倍率スコアの生成
+void FirstStageActor::BirthScoreText(const int EnemyCount, const int Magnification) {
+	MagText* newtext;
+	newtext = new MagText(EnemyCount, Magnification);
+	newtext->Initialize();
+	magtext.push_back(newtext);
 }
