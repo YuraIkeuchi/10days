@@ -99,6 +99,10 @@ void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 	ScoreManager::GetInstance()->Initialize();
 	//スロー
 	Slow::GetInstance()->Initialize();
+
+	//UI
+	ui = make_unique<UI>();
+	ui->Initialize();
 }
 
 void FirstStageActor::Finalize() {
@@ -187,6 +191,7 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 	}
 
 	SceneChanger::GetInstance()->Update();
+	ui->Update();
 }
 
 void FirstStageActor::Draw(DirectXCommon* dxCommon) {
@@ -195,11 +200,10 @@ void FirstStageActor::Draw(DirectXCommon* dxCommon) {
 	if (PlayPostEffect) {
 		postEffect->PreDrawScene(dxCommon->GetCmdList());
 		BackDraw(dxCommon);
-		FrontDraw(dxCommon);
 		postEffect->PostDrawScene(dxCommon->GetCmdList());
-
 		dxCommon->PreDraw();
 		postEffect->Draw(dxCommon->GetCmdList());
+		FrontDraw(dxCommon);
 		ImGuiDraw();
 		dxCommon->PostDraw();
 	} else {
@@ -216,6 +220,9 @@ void FirstStageActor::Draw(DirectXCommon* dxCommon) {
 //ポストエフェクトかからない
 void FirstStageActor::FrontDraw(DirectXCommon* dxCommon) {
 	IKESprite::PreDraw();
+	ui->Draw();
+	IKESprite::PostDraw();
+	IKESprite::PreDraw();
 	SceneChanger::GetInstance()->Draw();
 	IKESprite::PostDraw();
 }
@@ -230,8 +237,6 @@ void FirstStageActor::BackDraw(DirectXCommon* dxCommon) {
 		if (enemy[i] == nullptr)continue;
 		enemy[i]->Draw(dxCommon);
 	}
-	//enemy->Draw(dxCommon);
-	//enemy->Draw(dxCommon);
 	ground->Draw();
 	IKEObject3d::PostDraw();
 	ParticleEmitter::GetInstance()->FlontDrawAll();

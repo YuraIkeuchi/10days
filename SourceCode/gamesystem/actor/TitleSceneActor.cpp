@@ -4,6 +4,8 @@
 #include "ParticleEmitter.h"
 #include "SceneManager.h"
 #include "SceneChanger.h"
+#include "ScoreManager.h"
+#include "Timer.h"
 //初期化
 void TitleSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, LightGroup* lightgroup) {
 	//共通の初期化
@@ -15,6 +17,8 @@ void TitleSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 	text_->SelectText(TextManager::FIRST);
 	if (!s_GameLoop) {
 		SceneChanger::GetInstance()->Initialize();
+		ScoreManager::GetInstance()->LoadResource();
+		Timer::GetInstance()->LoadResource();
 		s_GameLoop = true;
 	}
 }

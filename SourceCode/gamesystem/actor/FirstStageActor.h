@@ -5,6 +5,7 @@
 #include "NormalEnemy.h"
 #include<windows.h>
 #include<vector>
+#include "UI.h"
 
 class FirstStageActor :public BaseActor
 {
@@ -38,6 +39,7 @@ private:
 	std::vector<int>ResCount;
 	unique_ptr<IKETexture> tex[AREA_NUM];
 private:
+	unique_ptr<UI> ui;
 	float radPower = 0;
 	const float addPower = 0.5f;
 	std::vector<XMFLOAT3>EPos;

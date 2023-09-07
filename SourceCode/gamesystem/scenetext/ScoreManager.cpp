@@ -1,11 +1,59 @@
 #include "ScoreManager.h"
 #include "imgui.h"
+#include "ImageManager.h"
 ScoreManager* ScoreManager::GetInstance() {
 	static ScoreManager instance;
 
 	return &instance;
 }
 
+//ì«Ç›çûÇ›
+void ScoreManager::LoadResource() {
+	const int NumberCount = NUMBER_MAX;
+	const float l_Width_Cut = 64.0f;
+	const float l_Height_Cut = 64.0f;
+
+	for (int i = 0; i < Score_First.size(); i++) {
+		//Ç–Ç∆ÇØÇΩñ⁄
+		Score_First[i] = IKESprite::Create(ImageManager::NUMBER, { 0.0f,0.0f });
+		int number_index_y = i / NumberCount;
+		int number_index_x = i % NumberCount;
+		Score_First[i]->SetTextureRect(
+			{ static_cast<float>(number_index_x) * l_Width_Cut, static_cast<float>(number_index_y) * l_Height_Cut },
+			{ static_cast<float>(l_Width_Cut), static_cast<float>(l_Height_Cut) });
+		Score_First[i]->SetAnchorPoint({ 0.5f,0.5f });
+		Score_First[i]->SetPosition({ 1250.0f,40.0f });
+		Score_First[i]->SetSize({ l_Width_Cut,l_Height_Cut });
+		Score_First[i]->SetScale(0.8f);
+		//ìÒåÖÇﬂ
+		Score_Second[i] = IKESprite::Create(ImageManager::NUMBER, { 0.0f,0.0f });
+		Score_Second[i]->SetTextureRect(
+			{ static_cast<float>(number_index_x) * l_Width_Cut, static_cast<float>(number_index_y) * l_Height_Cut },
+			{ static_cast<float>(l_Width_Cut), static_cast<float>(l_Height_Cut) });
+		Score_Second[i]->SetAnchorPoint({ 0.5f,0.5f });
+		Score_Second[i]->SetPosition({ 1210.0f,40.0f });
+		Score_Second[i]->SetSize({ l_Width_Cut,l_Height_Cut });
+		Score_Second[i]->SetScale(0.8f);
+		//éOåÖñ⁄
+		Score_Third[i] = IKESprite::Create(ImageManager::NUMBER, { 0.0f,0.0f });
+		Score_Third[i]->SetTextureRect(
+			{ static_cast<float>(number_index_x) * l_Width_Cut, static_cast<float>(number_index_y) * l_Height_Cut },
+			{ static_cast<float>(l_Width_Cut), static_cast<float>(l_Height_Cut) });
+		Score_Third[i]->SetAnchorPoint({ 0.5f,0.5f });
+		Score_Third[i]->SetPosition({ 1170.0f,40.0f });
+		Score_Third[i]->SetSize({ l_Width_Cut,l_Height_Cut });
+		Score_Third[i]->SetScale(0.8f);
+		//élåÖñ⁄
+		Score_Fourth[i] = IKESprite::Create(ImageManager::NUMBER, { 0.0f,0.0f });
+		Score_Fourth[i]->SetTextureRect(
+			{ static_cast<float>(number_index_x) * l_Width_Cut, static_cast<float>(number_index_y) * l_Height_Cut },
+			{ static_cast<float>(l_Width_Cut), static_cast<float>(l_Height_Cut) });
+		Score_Fourth[i]->SetAnchorPoint({ 0.5f,0.5f });
+		Score_Fourth[i]->SetPosition({ 1130.0f,40.0f });
+		Score_Fourth[i]->SetSize({ l_Width_Cut,l_Height_Cut });
+		Score_Fourth[i]->SetScale(0.8f);
+	}
+}
 //èâä˙âª
 void ScoreManager::Initialize() {
 	m_FirstNumber = 0;//àÍåÖñ⁄
@@ -42,4 +90,11 @@ void ScoreManager::ImGuiDraw() {
 	ImGui::Text("Fourth:%d", m_FourthNumber);
 	ImGui::Text("Magnification:%d", m_Magnification);
 	ImGui::End();
+}
+//ï`âÊ
+void ScoreManager::SpriteDraw() {
+	Score_First[m_FirstNumber]->Draw();
+	Score_Second[m_SecondNumber]->Draw();
+	Score_Third[m_ThirdNumber]->Draw();
+	Score_Fourth[m_FourthNumber]->Draw();
 }

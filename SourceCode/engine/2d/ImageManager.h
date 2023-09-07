@@ -24,7 +24,9 @@ public:
 		TUTORIAL,
 		RESULT,
 		LEFTDOOR,
-		RIGHTDOOR
+		RIGHTDOOR,
+		TIMEGAGE,
+		SCOREGAGE
 	};
 	//テクスチャの名前
 	enum tex2dName
