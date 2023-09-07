@@ -1,41 +1,42 @@
 #pragma once
 #include"InterEnemy.h"
-using namespace std;         //  –¼‘O‹óŠÔw’è
-//•’Ê‚Ì“G
+using namespace std;         //  åå‰ç©ºé–“æŒ‡å®š
+//æ™®é€šã®æ•µ
 class NormalEnemy :public InterEnemy {
 public:
 	NormalEnemy();
-	bool Initialize() override;//‰Šú‰»
-	void Finalize() override;//ŠJ•ú
-	void Action()override;//XV
+	bool Initialize() override;//åˆæœŸåŒ–
+	void Finalize() override;//é–‹æ”¾
+	void Action()override;//æ›´æ–°
 	void ImGui_Origin()override;
 
-	void Draw(DirectXCommon* dxCommon) override;//•`‰æ
+	void Draw(DirectXCommon* dxCommon) override;//æç”»
 
 private:
 	void SlowCollide();
 private:
 	
-	//ŠÖ”ƒ|ƒCƒ“ƒ^
+	//é–¢æ•°ãƒã‚¤ãƒ³ã‚¿
 	static void(NormalEnemy::* stateTable[])();
 
-	
 
 private:
-	void Inter();//‘Ò‹@
-	void RightMove();//‰EŒü‚«
-	void LeftMove();//¶Œü‚«
-	void UpMove();//‰EŒü‚«
-	void BottomMove();//¶Œü‚«
+	void Inter();//å¾…æ©Ÿ
+	void RightMove();//å³å‘ã
+	void LeftMove();//å·¦å‘ã
+	void UpMove();//å³å‘ã
+	void BottomMove();//å·¦å‘ã
 protected:
 
 private:
 	float m_velocity = 0.2f;
 	bool m_Slow = false;
+	float m_radius = 0.8f;
 	float m_radius = 1.0f;
 
 	int m_ResPornTimer = 0;
 
+public:
 	float m_BaseSpeed = {};
 };
 

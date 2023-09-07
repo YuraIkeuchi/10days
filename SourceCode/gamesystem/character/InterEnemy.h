@@ -12,7 +12,7 @@ protected:
 	using XMMATRIX = DirectX::XMMATRIX;
 
 public://getter setter
-	enum class PosSt
+	enum PosSt
 	{
 		UPRES,
 		BOTTOMRES,
@@ -30,18 +30,31 @@ public://getter setter
 	};
 	int _charaState = STATE_INTER;
 	int StartState;
+	int GetState() { return StartState; }
+
 	void SetState(int state) { StartState=state; }
 	bool CheckPos[4];
 	void SetResPos(PosSt pos,float otpos);
 	void SetPosX(float posx) { m_Position.x = posx; }
 
+	void InitState() { _charaState = CharaState::STATE_INTER; }
 	void SetPosZ(float posz) { m_Position.z= posz; }
 
 	void SetNum(size_t num) { Num = num; }
+
+	void SetMovingTime(int t) { MovingTime = t; }
+
+	const int GetMovingT() { return MovingTime; }
 protected:
+	int MovingTime;
+	bool StopF = false;
 	XMFLOAT3 RespawnPos;
 	size_t Num;
+	XMFLOAT3 EditStartPos;;
 public:
+
+	inline void EditPos(XMFLOAT3 pos) { EditStartPos = pos; }
+	const XMFLOAT3 GetEditPos() {return EditStartPos; }
 	//virtual ~InterEnemy() = default;
 
 	/// <summary>
@@ -69,10 +82,13 @@ public:
 	virtual void ImGui_Origin() = 0;
 
 public://gettersetter
+	
+	void SetStopF(bool f) { StopF = f; }
 	void SetSlowMove(const bool SlowMove) { m_SlowMove = SlowMove; }
 	void SetMove(const bool Move) { m_Move = Move; }
 	const bool GetAlive() { return m_Alive; }
 protected:
+	
 	bool m_SlowMove = false;
 	bool m_Move = true;
 	bool m_Alive = true;

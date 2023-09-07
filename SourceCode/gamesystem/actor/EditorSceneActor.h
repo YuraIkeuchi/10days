@@ -1,5 +1,11 @@
 #pragma once
 #include "BaseActor.h"
+
+#include<fstream>
+#include<string>
+#include<sstream>
+#include<ostream>
+#include <iostream>
 class LoadBox;
 
 /// タイトルシーン
@@ -21,14 +27,18 @@ private:
 	void FinishUpdate(DebugCamera* camera)override;		//撃破シーン
 
 	void ImGuiDraw();
-
+	void FileWriting();
 private:
 	static const int AREA_NUM = 4;
 private:
+	std::ifstream file;
+	std::stringstream popcom;
 	bool checkPos[4];
 	float IntervalRes;
 	float PosY, PosX;
 	bool ArgF;
+	bool timerstart;
+	int timer;
 	unique_ptr<InterEnemy>Sample;
 	InterEnemy::PosSt ini_enmeypos;
 	unique_ptr<IKEObject3d> ground;
@@ -37,4 +47,9 @@ private:
 	XMFLOAT2 m_AddOffset = {};
 	std::vector<unique_ptr<InterEnemy>> enemys;
 	unique_ptr<IKETexture> tex[AREA_NUM];
+	bool delf;
+	int TimeRap;
+	bool viewf;
+
+	bool ResetF;
 };
