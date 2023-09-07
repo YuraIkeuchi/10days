@@ -9,6 +9,7 @@
 #include "TutorialTask.h"
 #include "BackObj.h"
 #include "ScoreManager.h"
+#include "SceneChanger.h"
 //状態遷移
 /*stateの並び順に合わせる*/
 void (TutorialSceneActor::* TutorialSceneActor::TutorialTable[])() = {
@@ -92,6 +93,8 @@ void TutorialSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera
 
 	//スコア
 	ScoreManager::GetInstance()->Initialize();
+	//スロー
+	Slow::GetInstance()->Initialize();
 }
 
 void TutorialSceneActor::Finalize() {
@@ -135,7 +138,11 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 	}
 	//ゲーム終了
 	if (m_EndCount == 2) {
+		SceneChanger::GetInstance()->SetChangeStart(true);
+	}
+	if (SceneChanger::GetInstance()->GetChange()) {
 		SceneManager::GetInstance()->ChangeScene("FIRSTSTAGE");
+		SceneChanger::GetInstance()->SetChange(false);
 	}
 
 	for (int i = 0; i < AREA_NUM; i++) {
@@ -163,6 +170,8 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 			m_AddScore = 0;
 		}
 	}
+
+	SceneChanger::GetInstance()->Update();
 }
 
 void TutorialSceneActor::Draw(DirectXCommon* dxCommon) {
@@ -202,6 +211,9 @@ void TutorialSceneActor::FrontDraw(DirectXCommon* dxCommon) {
 	IKESprite::PostDraw();
 	IKESprite::PreDraw();
 	TutorialTask::GetInstance()->Draw();
+	IKESprite::PostDraw();
+	IKESprite::PreDraw();
+	SceneChanger::GetInstance()->Draw();
 	IKESprite::PostDraw();
 }
 //ポストエフェクトかかる
@@ -251,7 +263,7 @@ void TutorialSceneActor::ImGuiDraw() {
 //移動
 void TutorialSceneActor::MoveState() {
 	m_TexTimer++;
-	if (m_TexTimer == 100) {
+	if (m_TexTimer == 200) {
 		text_->SelectText(TextManager::MOVE);
 	}
 
@@ -358,6 +370,22 @@ void TutorialSceneActor::EndState() {
 		m_TexTimer = {};
 		m_TutorialEnd = false;
 	}
+
+	//タイマーを図る
+	if (!Slow::GetInstance()->GetSlow()) {
+		Timer::GetInstance()->Update();
+		PlayPostEffect = false;
+		radPower -= addPower;
+		radPower = max(0, radPower);
+		postEffect->SetRadPower(radPower);
+	}
+	else {
+		PlayPostEffect = true;
+		radPower += addPower;
+		radPower = min(radPower, 10.0f);
+		postEffect->SetRadPower(radPower);
+	}
+
 }
 //スキップの更新
 void TutorialSceneActor::SkipUpdate() {

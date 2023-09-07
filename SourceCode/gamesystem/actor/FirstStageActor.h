@@ -41,5 +41,9 @@ private:
 	float radPower = 0;
 	const float addPower = 0.5f;
 	std::vector<XMFLOAT3>EPos;
+
+	//スコアのためのやつ
+	int m_EnemyCount = {};
+	int m_AddScore = {};
 };
 

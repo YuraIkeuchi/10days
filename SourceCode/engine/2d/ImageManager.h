@@ -21,7 +21,10 @@ public:
 		FEED,
 		NUMBER,
 		BLACKWINDOW,
-		TUTORIAL
+		TUTORIAL,
+		RESULT,
+		LEFTDOOR,
+		RIGHTDOOR
 	};
 	//テクスチャの名前
 	enum tex2dName

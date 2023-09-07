@@ -18,6 +18,7 @@ public:
 	const int getNowTime() { return m_GameTimer; }
 private:
 	int m_GameTimer = 1800;
+	int m_SlowTimer = {};
 	bool m_End = false;
 	bool m_Stop = false;
 };
