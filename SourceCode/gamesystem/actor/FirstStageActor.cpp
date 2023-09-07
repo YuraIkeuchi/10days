@@ -151,6 +151,17 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 		tex[i]->Update();
 	}
 	ParticleEmitter::GetInstance()->Update();
+
+	//敵の削除
+	for (int i = 0; i < enemy.size(); i++) {
+		if (enemy[i] == nullptr) {
+			continue;
+		}
+
+		if (!enemy[i]->GetAlive()) {
+			enemy.erase(cbegin(enemy) + i);
+		}
+	}
 }
 
 void FirstStageActor::Draw(DirectXCommon* dxCommon) {

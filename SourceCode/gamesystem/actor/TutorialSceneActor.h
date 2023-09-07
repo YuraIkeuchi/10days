@@ -72,5 +72,6 @@ private:
 	int m_EnemyCount = {};
 
 	bool m_TutorialEnd = false;
+	int m_AddScore = {};
 };
 

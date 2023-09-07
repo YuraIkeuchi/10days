@@ -649,6 +649,7 @@
     <ClInclude Include="SourceCode\gamesystem\character\TutorialEnemy.h">
       <Filter>gamesystem\charactor\Enemy\Other</Filter>
     </ClInclude>
+    <ClInclude Include="SourceCode\engine\helper\Random.h" />
     <ClInclude Include="SourceCode\gamesystem\scenetext\ScoreManager.h">
       <Filter>gamesystem\scenetext\Game</Filter>
     </ClInclude>
