@@ -27,17 +27,40 @@ UI::UI() {
 	ScoreGage = IKESprite::Create(ImageManager::SCOREGAGE, {});
 	ScoreGage->SetPosition({ 1080.0f,-10.0f });
 	ScoreGage->SetSize({ 200.0f,100.0f });
+	MagGage = IKESprite::Create(ImageManager::MAGGAGE, {});
+	MagGage->SetPosition({ 1080.0f,-10.0f });
+	MagGage->SetSize({ 200.0f,100.0f });
+	m_MagPos = { 1080.0f,-20.0f };
 }
 //‰Šú‰»
 void UI::Initialize() {
 
 }
+//XV
 void UI::Update() {
-
+	MagMove();
 }
-void UI::Draw() {
+//•`‰æ(‘O–Ê)
+void UI::FrontDraw() {
+	if (m_MagPos.y >= -5.0f) {
+		MagGage->Draw();
+	}
+}
+//•`‰æ(Œã‚ë)
+void UI::BackDraw() {
 	TimeGage->Draw();
 	ScoreGage->Draw();
 	Timer::GetInstance()->SpriteDraw();
 	ScoreManager::GetInstance()->SpriteDraw();
+}
+//”{—¦•\Ž¦‚Ì“®‚«
+void UI::MagMove() {
+	if (m_Mag) {
+		m_MagPos.y = Ease(In, Cubic, 0.5f, m_MagPos.y, 75.0f);
+	}
+	else {
+		m_MagPos.y = Ease(In, Cubic, 0.5f, m_MagPos.y, -20.0f);
+	}
+
+	MagGage->SetPosition(m_MagPos);
 }

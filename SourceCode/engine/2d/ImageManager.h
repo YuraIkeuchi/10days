@@ -26,7 +26,9 @@ public:
 		LEFTDOOR,
 		RIGHTDOOR,
 		TIMEGAGE,
-		SCOREGAGE
+		SCOREGAGE,
+		MAGGAGE,
+		MAGNIFICATION,
 	};
 	//テクスチャの名前
 	enum tex2dName
