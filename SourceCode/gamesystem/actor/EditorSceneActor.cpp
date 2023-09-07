@@ -1,4 +1,6 @@
 ﻿#include "EditorSceneActor.h"
+
+#include "CsvLoader.h"
 #include"Easing.h"
 #include "ParticleEmitter.h"
 #include "ImageManager.h"
@@ -56,6 +58,24 @@ void EditorSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, 
 		tex[i]->SetColor({ 1.0f,0.0,0.0f,0.5f });
 	}
 
+	int Quantity = static_cast<int>(std::any_cast<double>(LoadCSV::LoadCsvParam("Resources/csv/enemy.csv", "Enemy_Quantity")));
+
+	enemy.resize(Quantity);
+	EPos.resize(Quantity);
+	EnemyMoveType.resize(Quantity);
+	ResCount.resize(Quantity);
+	LoadCSV::LoadCsvParam_XMFLOAT3("Resources/csv/enemy.csv", EPos, "POP");
+	LoadCSV::LoadCsvParam_Int("Resources/csv/enemy.csv", EnemyMoveType, "MoveType");
+	LoadCSV::LoadCsvParam_Int("Resources/csv/enemy.csv", ResCount, "ResCount");
+
+	for (auto i = 0; i < Quantity; i++) {
+		enemy[i].reset(new NormalEnemy());
+		enemy[i]->SetMovingTime(ResCount[i]);
+		enemy[i]->SetState(EnemyMoveType[i]);
+		enemy[i]->SetPosition(EPos[i]);
+		enemy[i]->Initialize();
+		enemys.emplace_back(enemy[i].get());
+	}
 	tex[0]->SetPosition({ 0.0f,2.0f,8.0f });
 	tex[1]->SetPosition({ 0.0f,2.0f,-8.0f });
 	tex[2]->SetPosition({ 9.3f,2.0f,0.0f });

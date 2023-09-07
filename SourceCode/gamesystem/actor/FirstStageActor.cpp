@@ -86,8 +86,6 @@ LoadCSV::LoadCsvParam_XMFLOAT3("Resources/csv/enemy.csv", EPos, "POP");
 		enemy[i]->SetState(EnemyMoveType[i]);
 		enemy[i]->SetPosition(EPos[i]);
 		enemy[i]->Initialize();
-
-	
 	}
 
 	Timer::GetInstance()->Initialize();
