@@ -29,4 +29,10 @@ private:
 	array<unique_ptr<IKESprite>,NUMBER_MAX> Sprite_Second;
 	array<unique_ptr<IKESprite>,NUMBER_MAX> Sprite_Third;
 	array<unique_ptr<IKESprite>,NUMBER_MAX> Sprite_Fourth;
+
+	enum SceneType {
+		PLAY,
+		TUTORIAL,
+		EDITOR,
+	}_SceneType = PLAY;
 };

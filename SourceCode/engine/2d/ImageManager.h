@@ -23,6 +23,8 @@ public:
 		BLACKWINDOW,
 		TUTORIAL,
 		RESULT,
+		LEFTDOOR,
+		RIGHTDOOR
 	};
 	//テクスチャの名前
 	enum tex2dName

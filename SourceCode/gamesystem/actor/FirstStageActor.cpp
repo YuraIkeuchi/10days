@@ -10,6 +10,7 @@
 #include"CsvLoader.h"
 #include "BackObj.h"
 #include "ScoreManager.h"
+#include "SceneChanger.h"
 
 void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, LightGroup* lightgroup) {
 	dxCommon->SetFullScreen(true);
@@ -153,9 +154,14 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 
 	//ゲーム終了
 	if (Timer::GetInstance()->GetEnd()) {
-		SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
+		SceneChanger::GetInstance()->SetChangeStart(true);
 	}
 	
+	if (SceneChanger::GetInstance()->GetChange() && Timer::GetInstance()->GetEnd()) {
+		SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
+		SceneChanger::GetInstance()->SetChange(false);
+	}
+
 	for (int i = 0; i < AREA_NUM; i++) {
 		tex[i]->Update();
 	}
@@ -179,6 +185,8 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 			enemy.erase(cbegin(enemy) + i);
 		}
 	}
+
+	SceneChanger::GetInstance()->Update();
 }
 
 void FirstStageActor::Draw(DirectXCommon* dxCommon) {
@@ -207,7 +215,9 @@ void FirstStageActor::Draw(DirectXCommon* dxCommon) {
 }
 //ポストエフェクトかからない
 void FirstStageActor::FrontDraw(DirectXCommon* dxCommon) {
-
+	IKESprite::PreDraw();
+	SceneChanger::GetInstance()->Draw();
+	IKESprite::PostDraw();
 }
 //ポストエフェクトかかる
 void FirstStageActor::BackDraw(DirectXCommon* dxCommon) {

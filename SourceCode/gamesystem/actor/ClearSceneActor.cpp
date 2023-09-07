@@ -5,6 +5,7 @@
 #include "VariableCommon.h"
 #include "Audio.h"
 #include "ScoreManager.h"
+#include "SceneChanger.h"
 //‰Šú‰»
 void ClearSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, LightGroup* lightgroup) {
 	//‹¤’Ê‚Ì‰Šú‰»
@@ -65,10 +66,14 @@ void ClearSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 void ClearSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, LightGroup* lightgroup) {
 	Input* input = Input::GetInstance();
 	if ((input->TriggerButton(input->B))) {
+		SceneChanger::GetInstance()->SetChangeStart(true);
+	}
+	if (SceneChanger::GetInstance()->GetChange()) {
 		SceneManager::GetInstance()->ChangeScene("TITLE");
+		SceneChanger::GetInstance()->SetChange(false);
 	}
 	lightgroup->Update();
-	
+	SceneChanger::GetInstance()->Update();
 }
 //•`‰æ
 void ClearSceneActor::Draw(DirectXCommon* dxCommon) {
@@ -102,6 +107,9 @@ void ClearSceneActor::FrontDraw() {
 	Sprite_Second[ScoreManager::GetInstance()->GetSecondNumber()]->Draw();
 	Sprite_Third[ScoreManager::GetInstance()->GetThirdNumber()]->Draw();
 	Sprite_Fourth[ScoreManager::GetInstance()->GetFourthNumber()]->Draw();
+	IKESprite::PostDraw();
+	IKESprite::PreDraw();
+	SceneChanger::GetInstance()->Draw();
 	IKESprite::PostDraw();
 }
 //”w–Ê
