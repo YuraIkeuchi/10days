@@ -3,6 +3,8 @@
 #include "ImageManager.h"
 #include "Helper.h"
 #include <random>
+#include "Random.h"
+
 ParticleEmitter* ParticleEmitter::GetInstance()
 {
 	static ParticleEmitter instance;
@@ -50,19 +52,34 @@ void ParticleEmitter::FireEffect(const int life, const XMFLOAT3& l_pos, const fl
 	circleParticle->Add(life, { pos.x,pos.y,pos.z }, vel, {}, startscale, endscale, startcolor, endcolor, 1.0f);
 }
 
-void ParticleEmitter::SplatterEffect(const int life, const XMFLOAT3& startpos, const XMFLOAT3& vec, const float startscale, const float endscale, const XMFLOAT4& bloodcolor)
+void ParticleEmitter::SplatterEffect(const int life, const int num, const XMFLOAT3& startpos, const XMFLOAT3& vec, const float startscale, const float endscale, const XMFLOAT4& bloodcolor)
 {
 	XMFLOAT3 pos = startpos;
 
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < num; i++)
 	{
-		XMFLOAT3 vel = {};
-		const float rnd_vel = 0.25f;
-		vel.x = (float)rand() / RAND_MAX * rnd_vel - rnd_vel / 2.0f;
-		vel.y = (float)rand() / RAND_MAX * rnd_vel - rnd_vel / 2.0f;
-		vel.z = (float)rand() / RAND_MAX * rnd_vel - rnd_vel / 2.0f;
+		XMFLOAT3 vel = vec;
+		float div = 10;
+		const int rnd_vel = 5;
+		if (vec.x == 0)
+		{
+			vel.x += static_cast<float>(Random::GetRanNum(0, rnd_vel) - rnd_vel / 2) / div;
+		}
+		else
+		{
+			vel.x += static_cast<float>(Random::GetRanNum(0, rnd_vel / 2)) / div;
+		}
+		vel.y += static_cast<float>(Random::GetRanNum(2, 4)) / div;
+		if (vec.z == 0)
+		{
+			vel.z += static_cast<float>(Random::GetRanNum(0, rnd_vel) - rnd_vel / 2) / div;
+		}
+		else
+		{
+			vel.z += static_cast<float>(Random::GetRanNum(0, rnd_vel / 2)) / div;
+		}
 
-		bloodParticle->Add(life, { pos.x, pos.y, pos.z }, vel, { -vel.x / life, -0.001f, -vel.z / life }, startscale, endscale, bloodcolor, bloodcolor, 1.0f);
+		bloodParticle->Add(life, { pos.x, pos.y, pos.z }, vel, { -vel.x / life, -0.04f, -vel.z / life }, startscale, endscale, bloodcolor, bloodcolor, 1.0f);
 	}
 }
 

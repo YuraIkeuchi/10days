@@ -10,6 +10,8 @@
 #include "ParticleEmitter.h"
 #include "SceneManager.h"
 #include"Timer.h"
+#include "Random.h"
+
 #define MapMinX -10
 #define MapMaxX 10
 
@@ -153,7 +155,7 @@ void NormalEnemy::SlowCollide() {
 				m_Alive = false;
 				_charaState = STATE_INTER;
 				m_ResPornTimer = {};
-				ParticleEmitter::GetInstance()->SplatterEffect(120, Player::GetInstance()->GetPosition(), { 0, 0, 0 }, 1.0f, 1.0f, { 1, 0, 0, 1 });
+				ParticleEmitter::GetInstance()->SplatterEffect(20, Random::GetRanNum(3, 6), m_Position, Player::GetInstance()->GetPlayerVec(), 1.0f, 1.0f, {1, 0, 0, 1});
 			}
 		}
 	}

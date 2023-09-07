@@ -891,4 +891,8 @@
 	<ItemGroup>
 		<Image Include="Resources\2d\objicon\Kotodama.ico" />
 	</ItemGroup>
+<<<<<<< HEAD
 </Project>
+=======
+</Project>
+>>>>>>> main

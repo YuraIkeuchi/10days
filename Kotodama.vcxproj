@@ -253,6 +253,7 @@
     <ClInclude Include="SourceCode\engine\enginebase\XorShift.h" />
     <ClInclude Include="SourceCode\engine\FpsManager\FPSManager.h" />
     <ClInclude Include="SourceCode\engine\helper\Helper.h" />
+    <ClInclude Include="SourceCode\engine\helper\Random.h" />
     <ClInclude Include="SourceCode\engine\helper\Spline.h" />
     <ClInclude Include="SourceCode\engine\helper\VariableCommon.h" />
     <ClInclude Include="SourceCode\engine\input\Input.h" />

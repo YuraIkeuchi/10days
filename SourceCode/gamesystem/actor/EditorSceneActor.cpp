@@ -30,10 +30,9 @@ void EditorSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, 
 	ground.reset(new IKEObject3d());
 	ground->Initialize();
 	ground->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::GROUND));
-	ground->SetScale({ 2.f,1.f,2.f });
-	ground->SetPosition({ 0.0f,-10.0f,0.0f });
-	ground->SetAddOffset(0.5f);
-	ground->VertexCheck();
+	ground->SetScale({ 1.f,1.f,1.f });
+	ground->SetPosition({ 0.0f,5.0f,0.0f });
+	ground->SetTiling(10.0f);
 
 	//スカイドーム
 	skydome.reset(new IKEObject3d());
@@ -101,9 +100,7 @@ void EditorSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Ligh
 	lightgroup->Update();
 	ground->Update();
 	skydome->Update();
-	m_AddOffset.x = 0.001f;
 	Sample->SetColor({ 1,1,1,0.5f });
-	ground->SetAddOffset(m_AddOffset.x);
 	Player::GetInstance()->Update();
 	Slow::GetInstance()->Update();
 	for (int i = 0; i < AREA_NUM; i++) {

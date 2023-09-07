@@ -124,17 +124,22 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 		for (auto i = 0; i < enemy.size(); i++)
 		{
 			if (enemy[i] == nullptr)continue;
-		
+			enemy[i]->SetSlowMove(false);//Update();
 		}
-	//	enemy->
+		PlayPostEffect = false;
+		radPower -= addPower;
+		radPower = min(0, radPower);
+		postEffect->SetRadPower(radPower);
 	}
 	else {
 		for (auto i = 0; i < enemy.size(); i++)
 		{
 			if (enemy[i] == nullptr)continue;
 			enemy[i]->SetSlowMove(true);//Update();
-			}
-	////	enemy->SetSlowMove(true);
+		}
+		PlayPostEffect = true;
+		radPower += addPower;
+		postEffect->SetRadPower(radPower);
 	}
 
 	//ゲーム終了

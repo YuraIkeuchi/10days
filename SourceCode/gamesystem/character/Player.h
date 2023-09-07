@@ -39,6 +39,7 @@ public:
 	const int GetMoveTimer() { return m_MoveTimer; }
 	const bool GetCameraZoom() { return m_CameraZoom; }
 	const bool GetAttack() { return m_Attack; }
+	const XMFLOAT3& GetPlayerVec() { return m_playerVec; }
 private:
 	void LoadCSV();
 
@@ -49,6 +50,8 @@ private:
 	float m_AddSpeed = 0.0f;
 	//csv用
 	float m_BaseSpeed = {};
+	//ベクトル
+	XMFLOAT3 m_playerVec = { 0, 0, 0 };
 
 	//キャラの状態
 	enum CharaState

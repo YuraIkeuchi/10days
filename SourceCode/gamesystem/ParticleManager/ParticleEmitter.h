@@ -40,7 +40,7 @@ public: //メンバ関数
 	//炎エフェクト
 	void FireEffect(const int life,const XMFLOAT3& pos,const float startscale, const float endscale,const XMFLOAT4& startcolor,const XMFLOAT4& endcolor);
 	//血しぶきエフェクト
-	void SplatterEffect(const int life, const XMFLOAT3& startpos, const XMFLOAT3& vec, const float startscale, const float endscale, const XMFLOAT4& bloodcolor);
+	void SplatterEffect(const int life, const int num, const XMFLOAT3& startpos, const XMFLOAT3& vec, const float startscale, const float endscale, const XMFLOAT4& bloodcolor);
 
 	void AllDelete();
 private: //メンバ関数

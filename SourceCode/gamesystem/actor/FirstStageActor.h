@@ -37,6 +37,9 @@ private:
 	std::vector<int>EnemyMoveType;
 	std::vector<int>ResCount;
 	unique_ptr<IKETexture> tex[AREA_NUM];
+private:
+	float radPower = 0;
+	const float addPower = 0.0075f;
 	std::vector<XMFLOAT3>EPos;
 };
 
