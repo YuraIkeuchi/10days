@@ -35,5 +35,8 @@ private:
 	XMFLOAT2 m_AddOffset = {};
 	unique_ptr<InterEnemy> enemy;
 	unique_ptr<IKETexture> tex[AREA_NUM];
+private:
+	float radPower = 0;
+	const float addPower = 0.0075f;
 };
 

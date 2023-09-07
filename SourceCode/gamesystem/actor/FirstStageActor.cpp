@@ -96,9 +96,16 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 	if (!Slow::GetInstance()->GetSlow()) {
 		Timer::GetInstance()->Update();
 		enemy->SetSlowMove(false);
+		PlayPostEffect = false;
+		radPower -= addPower;
+		radPower = min(0, radPower);
+		postEffect->SetRadPower(radPower);
 	}
 	else {
 		enemy->SetSlowMove(true);
+		PlayPostEffect = true;
+		radPower += addPower;
+		postEffect->SetRadPower(radPower);
 	}
 
 	//ゲーム終了

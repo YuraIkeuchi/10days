@@ -184,7 +184,7 @@ protected: // メンバ変数
 	// テクスチャ幅、高さ
 	XMFLOAT2 texSize = {100.0f, 100.0f};
 
-	float RadPowers;
+	float RadPowers = 0;
 	XMFLOAT2 RadCenterPos;
 private: // メンバ関数
 	/// 頂点データ転送
