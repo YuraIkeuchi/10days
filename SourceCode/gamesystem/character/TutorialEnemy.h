@@ -32,7 +32,7 @@ protected:
 private:
 	float m_velocity = 0.2f;
 	bool m_Slow = false;
-	float m_radius = 0.8f;
+	float m_radius = 1.2f;
 
 	int m_ResPornTimer = 0;
 

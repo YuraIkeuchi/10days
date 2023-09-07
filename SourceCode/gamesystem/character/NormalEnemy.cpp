@@ -25,11 +25,7 @@ bool NormalEnemy::Initialize() {
 	m_Object.reset(new IKEObject3d());
 	m_Object->Initialize();
 	m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::ENEMY));
-
-	m_Object->SetColor({ 1.0f,0.0f,0.0,1.0f });
-//	m_Position = { 15.0f,0.0f,0.0f };
-	m_Object->VertexCheck();
-
+	m_Color = { 1.0f,0.5f,0.0f,1.0f };
 	if(StartState==0)
 	{
 	//	_charaState =
