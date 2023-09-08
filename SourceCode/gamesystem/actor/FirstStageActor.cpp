@@ -95,7 +95,6 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 	lightgroup->Update();
 	skydome->Update();
 	BackObj::GetInstance()->Update();
-	ScoreManager::GetInstance()->Update();
 	Timer::GetInstance()->Update();
 	if (!Timer::GetInstance()->GetStop()) {
 		Player::GetInstance()->Update();
@@ -237,6 +236,7 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 	{
 		m->object->Update();
 	}
+	ScoreManager::GetInstance()->Update();
 }
 
 void FirstStageActor::Draw(DirectXCommon* dxCommon) {

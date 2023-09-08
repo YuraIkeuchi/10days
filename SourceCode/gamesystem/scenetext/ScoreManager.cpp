@@ -1,6 +1,7 @@
 #include "ScoreManager.h"
 #include "imgui.h"
 #include "ImageManager.h"
+#include "Helper.h"
 ScoreManager* ScoreManager::GetInstance() {
 	static ScoreManager instance;
 
@@ -66,20 +67,22 @@ void ScoreManager::Initialize() {
 void ScoreManager::Update() {
 	//ŒJ‚èã‚°ˆ—
 	//‚Ð‚Æ‚¯‚½–Ú
-	if (m_FirstNumber > NUMBER_MAX) {
+	if (m_FirstNumber > NUMBER_MAX - 1) {
 		m_FirstNumber = m_FirstNumber - NUMBER_MAX;
 		m_SecondNumber++;
 	}
 	//“ñŒ…‚ß
-	if (m_SecondNumber > NUMBER_MAX) {
+	if (m_SecondNumber > NUMBER_MAX - 1) {
 		m_SecondNumber = m_SecondNumber - NUMBER_MAX;
 		m_ThirdNumber++;
 	}
 	//ŽOŒ…–Ú
-	if (m_ThirdNumber > NUMBER_MAX) {
+	if (m_ThirdNumber > NUMBER_MAX - 1) {
 		m_ThirdNumber = m_FourthNumber - NUMBER_MAX;
 		m_FourthNumber++;
 	}
+
+	//Helper::GetInstance()->Clamp(m_FirstNumber, 0, NUMBER_MAX - 1);
 }
 //ImGui
 void ScoreManager::ImGuiDraw() {

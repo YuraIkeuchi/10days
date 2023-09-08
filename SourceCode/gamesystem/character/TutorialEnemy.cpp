@@ -239,8 +239,6 @@ void TutorialEnemy::SlowCollide() {
 					float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
 					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
 					BirthEffect();
-					Slow::GetInstance()->SetSlow(false);
-					Slow::GetInstance()->SetSlowTimer(0);
 				}
 			}
 			else if (m_EnemyType == GREEN_ENEMY) {
@@ -250,8 +248,6 @@ void TutorialEnemy::SlowCollide() {
 					float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
 					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
 					BirthEffect();
-					Slow::GetInstance()->SetSlow(false);
-					Slow::GetInstance()->SetSlowTimer(0);
 				}
 			}
 			else {
@@ -261,8 +257,6 @@ void TutorialEnemy::SlowCollide() {
 					float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
 					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
 					BirthEffect();
-					Slow::GetInstance()->SetSlow(false);
-					Slow::GetInstance()->SetSlowTimer(0);
 				}
 			}
 		}

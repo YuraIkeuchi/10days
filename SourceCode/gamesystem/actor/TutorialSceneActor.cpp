@@ -89,7 +89,7 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 	window->SetSize(window_size);
 	window->SetColor({ 1.0f,1.0f,1.0f,m_Alpha });
 	BackObj::GetInstance()->Update();
-	ScoreManager::GetInstance()->Update();
+
 	if (!TutorialTask::GetInstance()->GetStop()) {
 		Player::GetInstance()->TutorialUpdate();
 		Slow::GetInstance()->Update();
@@ -183,7 +183,7 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 		radPower = min(radPower, 10.0f);
 		postEffect->SetRadPower(radPower);
 	}
-
+	ScoreManager::GetInstance()->Update();
 }
 
 void TutorialSceneActor::Draw(DirectXCommon* dxCommon) {

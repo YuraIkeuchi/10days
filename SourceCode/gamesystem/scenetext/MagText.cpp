@@ -49,7 +49,7 @@ void MagText::Update() {
 	const int l_TimerMax = 30;//•\Ž¦‚³‚ê‚éŽžŠÔ
 	//ã‚©‚ç‰º‚É—Ž‚¿‚Ä‚­‚é
 	if (_TextType == BIRTH_TEXT) {
-		if (Helper::GetInstance()->CheckMin(m_Timer, 50, 1)) {
+		if (Helper::GetInstance()->CheckMin(m_Timer, 20, 1)) {
 			_TextType = VANISH_TEXT;
 		}
 		m_CountPos.y = Ease(In, Cubic, 0.5f, m_CountPos.y, 130.0f);
