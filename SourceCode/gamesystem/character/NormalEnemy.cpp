@@ -364,8 +364,4 @@ void NormalEnemy::DeathMove() {
 	m_DownPos.x = Ease(In, Cubic, m_Frame, m_DownPos.x, 1000.0f);
 	m_Alpha = Ease(In, Cubic, m_Frame, m_Alpha, 0.0f);
 
-	SlowStopTimer++;
-	if (SlowStopTimer == 10) {
-		//Slow::GetInstance()->SetSlow(false);
-	}
 }

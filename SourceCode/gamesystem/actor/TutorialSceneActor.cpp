@@ -407,6 +407,7 @@ void TutorialSceneActor::AttackState() {
 			m_TexTimer = {};
 			_AttackState = ENEMY_INTERVAL;
 			text_->SelectText(TextManager::ATTACK6);
+			Slow::GetInstance()->SetSlow(false);
 		}
 	}
 	else if (_AttackState == ENEMY_INTERVAL) {
@@ -473,6 +474,7 @@ void TutorialSceneActor::BirthEnemy(bool Move,bool End) {
 		newEnemy->SetPosition({ 0.0f,0.0f,0.0f });
 		newEnemy->SetMove(Move);
 		newEnemy->SetEnemyType(0);
+		newEnemy->SetEffectMove(false);
 		enemys.push_back(newEnemy);
 		m_EnemyCount++;
 

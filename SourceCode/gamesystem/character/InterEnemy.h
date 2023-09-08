@@ -49,6 +49,7 @@ public://getter setter
 	void SetMovingTime(int t) { MovingTime = t; }
 
 	const int GetMovingT() { return MovingTime; }
+	void SetEffectMove(bool EffectMove) { m_EffectMove = EffectMove; }
 protected:
 	int MovingTime;
 	bool StopF = false;
@@ -117,6 +118,7 @@ protected:
 	bool m_Alive = true;
 	bool m_Destroy = false;
 	bool m_HitCheck = false;
+	bool m_EffectMove = true;
 
 	enum EnemyType {
 		RED_ENEMY,
