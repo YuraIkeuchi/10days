@@ -85,7 +85,16 @@ void TutorialEnemy::Action() {
 	if (!m_Death) {
 		SlowCollide();
 	}
-	Obj_SetParam();
+	
+	//エフェクト関係
+	gauge_up->SetPosition(m_UpPos);
+	gauge_down->SetPosition(m_DownPos);
+	effect_up->SetPosition(m_UpPos);
+	effect_down->SetPosition(m_DownPos);
+	gauge_up->SetColor({ m_Color.x,m_Color.y,m_Color.z,m_Alpha });
+	gauge_down->SetColor({ m_Color.x,m_Color.y,m_Color.z,m_Alpha });
+	effect_up->SetColor({ 1.0f,1.0f,1.0f,m_Alpha });
+	effect_down->SetColor({ 1.0f,1.0f,1.0f,m_Alpha });
 
 	//斬撃エフェクト
 	for (auto i = 0; i < slash.size(); i++)
@@ -103,14 +112,12 @@ void TutorialEnemy::Action() {
 			slash.erase(cbegin(slash) + i);
 		}
 	}
+
+	Obj_SetParam();
 }
 //描画
 void TutorialEnemy::Draw(DirectXCommon* dxCommon) {
-	if (_charaState != STATE_INTER) {
-		Obj_Draw();
-	}
-
-	
+	Obj_Draw();
 }
 //エフェクト描画
 void TutorialEnemy::EffectDraw(DirectXCommon* dxCommon) {
@@ -120,17 +127,21 @@ void TutorialEnemy::EffectDraw(DirectXCommon* dxCommon) {
 		if (slash[i] == nullptr)continue;
 		slash[i]->Draw(dxCommon);
 	}
-	if (m_Slow) {
+
+	IKESprite::PreDraw();
+	if (m_ViewEffect) {
 		gauge_up->Draw();
 		gauge_down->Draw();
 		effect_up->Draw();
 		effect_down->Draw();
 	}
+	IKESprite::PostDraw();
 }
 //ImGui描画
 void TutorialEnemy::ImGui_Origin() {
 	ImGui::Begin("Enemy");
-	ImGui::Text("Slow:%f", m_velocity);
+	ImGui::Text("Alpha:%f", m_Alpha);
+	ImGui::Text("UpPos:%f", m_UpPos.x);
 	ImGui::End();
 }
 //開放
@@ -218,12 +229,12 @@ void TutorialEnemy::SlowCollide() {
 			Slow::GetInstance()->SetSlow(true);
 			Slow::GetInstance()->SetSlowTimer(60);
 			m_Slow = true;
+			m_ViewEffect = true;
 		}
 		else {
 			if (m_EnemyType == RED_ENEMY) {
 				if ((input->TriggerButton(input->B))) {
 					m_Death = true;
-					_charaState = STATE_INTER;
 					int num = Random::GetRanNum(30, 40);
 					float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
 					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
@@ -235,7 +246,6 @@ void TutorialEnemy::SlowCollide() {
 			else if (m_EnemyType == GREEN_ENEMY) {
 				if ((input->TriggerButton(input->A))) {
 					m_Death = true;
-					_charaState = STATE_INTER;
 					int num = Random::GetRanNum(30, 40);
 					float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
 					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
@@ -247,7 +257,6 @@ void TutorialEnemy::SlowCollide() {
 			else {
 				if ((input->TriggerButton(input->X))) {
 					m_Death = true;
-					_charaState = STATE_INTER;
 					int num = Random::GetRanNum(30, 40);
 					float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
 					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
@@ -259,11 +268,13 @@ void TutorialEnemy::SlowCollide() {
 		}
 	}
 	else {
+		m_ViewEffect = false;
 		m_Slow = false;
 	}
 }
 //死んだときの動き
 void TutorialEnemy::DeathMove() {
+	const float l_AddFrame = 0.05f;
 	m_Slow = false;
 	m_Rotation.y += 2.0f;
 	m_Scale = { Ease(In,Cubic,0.5f * Slow::GetInstance()->GetSlowPower(),m_Scale.x,0.0f),
@@ -273,6 +284,13 @@ void TutorialEnemy::DeathMove() {
 	if (m_Scale.x <= 0.1f) {
 		m_Alive = false;
 	}
+
+	if (Helper::GetInstance()->FrameCheck(m_Frame, l_AddFrame)) {
+		m_ViewEffect = false;
+	}
+	m_UpPos.x = Ease(In, Cubic, m_Frame, m_UpPos.x, 700.0f);
+	m_DownPos.x = Ease(In, Cubic, m_Frame, m_DownPos.x, 900.0f);
+	m_Alpha = Ease(In, Cubic, m_Frame, m_Alpha, 0.0f);
 }
 //エフェクトの生成
 void TutorialEnemy::BirthEffect() {
