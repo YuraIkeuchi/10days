@@ -29,8 +29,10 @@ public:
 		SCOREGAGE,
 		MAGGAGE,
 		MAGNIFICATION,
-		CUTEFFECT,
-		CUTGAGE,
+		CUT_UP,
+		CUT_DOWN,
+		CUTGAGE_UP,
+		CUTGAGE_DOWN,
 	};
 	//テクスチャの名前
 	enum tex2dName

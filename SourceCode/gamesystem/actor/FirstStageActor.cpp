@@ -183,7 +183,7 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 		if (enemy[i] == nullptr) {
 			continue;
 		}
-		if (!enemy[i]->GetAlive()) {
+		if (enemy[i]->GetDeath() && !enemy[i]->GetDamage()) {
 			if (!enemy[i]->GetDestroy()) {
 				for (auto& m : blood)
 			{
@@ -203,6 +203,10 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 				ScoreManager::GetInstance()->SetFirstNumber(ScoreManager::GetInstance()->GetFirstNumber() + m_AddScore);
 				m_AddScore = 0;
 			}
+			enemy[i]->SetDamage(true);
+		}
+
+		if (!enemy[i]->GetAlive()) {
 			enemy.erase(cbegin(enemy) + i);
 		}
 	}

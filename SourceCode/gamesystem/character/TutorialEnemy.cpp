@@ -26,27 +26,39 @@ bool TutorialEnemy::Initialize() {
 	m_Object.reset(new IKEObject3d());
 	m_Object->Initialize();
 	m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::ENEMY));
-	effect = IKESprite::Create(ImageManager::CUTEFFECT, {});
-	gauge = IKESprite::Create(ImageManager::CUTGAGE, {});
+	effect_up = IKESprite::Create(ImageManager::CUT_UP, {});
+	effect_down = IKESprite::Create(ImageManager::CUT_DOWN, {});
+	gauge_up = IKESprite::Create(ImageManager::CUTGAGE_UP, {});
+	gauge_down = IKESprite::Create(ImageManager::CUTGAGE_DOWN, {});
 	_charaState = StartState;
 	_EnemyType = m_EnemyType;
 
 	if (_EnemyType == RED_ENEMY) {
 		m_Color = { 1.0f,0.2f,0.0f,1.0f };
-		effect->SetPosition({ 800.0f,250.0f });
+		m_UpPos = { 800.0f,200.0f };
+		m_DownPos = { 800.0f,195.0f };
 	}
 	else if (_EnemyType == GREEN_ENEMY) {
 		m_Color = { 0.0f,1.0f,0.2f,1.0f };
-		effect->SetPosition({ 800.0f,350.0f });
+		m_UpPos = { 800.0f,280.0f };
+		m_DownPos = { 800.0f,275.0f };
 	}
 	else {
 		m_Color = { 0.2f,0.0f,1.0f,1.0f };
-		effect->SetPosition({ 800.0f,450.0f });
+		m_UpPos = { 800.0f,360.0f };
+		m_DownPos = { 800.0f,355.0f };
 	}
-	gauge->SetScale(0.15f);
-	effect->SetScale(0.15f);
-	gauge->SetColor(m_Color);
-	gauge->SetPosition(effect->GetPosition());
+	gauge_up->SetScale(0.3f);
+	gauge_down->SetScale(0.3f);
+	effect_up->SetScale(0.3f);
+	effect_down->SetScale(0.3f);
+	gauge_up->SetColor(m_Color);
+	gauge_down->SetColor(m_Color);
+
+	gauge_up->SetPosition(m_UpPos);
+	gauge_down->SetPosition(m_DownPos);
+	effect_up->SetPosition(m_UpPos);
+	effect_down->SetPosition(m_DownPos);
 	m_BaseSpeed = static_cast<float>(std::any_cast<double>(LoadCSV::LoadCsvParam("Resources/csv/chara/enemy/enemy.csv", "speed")));
 	return true;
 }
@@ -84,7 +96,10 @@ void TutorialEnemy::Draw(DirectXCommon* dxCommon) {
 //エフェクト描画
 void TutorialEnemy::EffectDraw(DirectXCommon* dxCommon) {
 	if (m_Slow) {
-		effect->Draw();
+		gauge_up->Draw();
+		gauge_down->Draw();
+		effect_up->Draw();
+		effect_down->Draw();
 	}
 }
 //ImGui描画
