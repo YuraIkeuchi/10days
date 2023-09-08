@@ -11,13 +11,16 @@ public:
 public:
 	//getter setter
 	bool GetSlow() { return  m_Slow; }
+	bool GetCheck() { return  m_Check; }
 	float GetSlowPower() { return  m_SlowPower; }
 	float GetPlayerSlowPower() { return  m_PlayerSlowPower; }
 	float GetMovePower() { return  m_MovePower; }
 	void SetSlow(bool Slow) { this->m_Slow = Slow; }
+	void SetCheck(bool Check) { this->m_Check = Check; }
 	void SetSlowTimer(int SlowTimer) { this->m_SlowTimer = SlowTimer; }
 	void SetTutorial(bool Tutorial) { this->m_Tutorial = Tutorial; }
 private:
+	bool m_Check = false;
 	bool m_Slow = false;//ヒットストップ
 	int m_SlowTimer = 0;//ヒットストップの時間
 	

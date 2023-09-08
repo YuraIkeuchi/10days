@@ -86,14 +86,19 @@ public:
 	void ImGuiDraw();
 
 	virtual void ImGui_Origin() = 0;
-
+public:
+	bool CheckCollide();
+	void AttackCollide();
+	void BirthEffect();
 public://gettersetter
 	
+	void SetHitCheck(bool HitCheck) { m_HitCheck = HitCheck; }
 	void SetStopF(bool f) { StopF = f; }
 	void SetSlowMove(const bool SlowMove) { m_SlowMove = SlowMove; }
 	void SetMove(const bool Move) { m_Move = Move; }
 	void SetDamage(const bool Damage) { m_Damage = Damage; }
 	const bool GetAlive() { return m_Alive; }
+	const bool GetHitCheck() { return m_HitCheck; }
 	const bool GetDeath() { return m_Death; }
 	const bool GetDamage() { return m_Damage; }
 	const bool GetDestroy() { return m_Destroy; }
@@ -109,6 +114,7 @@ protected:
 	bool m_Move = true;
 	bool m_Alive = true;
 	bool m_Destroy = false;
+	bool m_HitCheck = false;
 
 	enum EnemyType {
 		RED_ENEMY,
@@ -130,4 +136,7 @@ protected:
 
 	bool m_Miss = false;
 	int SlowStopTimer = {};
+	bool m_Slow = false;
+	float m_radius = 1.2f;
+
 };

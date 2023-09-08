@@ -254,7 +254,7 @@ void TutorialEnemy::SlowCollide() {
 					int num = Random::GetRanNum(30, 40);
 					float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
 					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
-					BirthEffect();
+					TutoBirthEffect();
 				}
 			}
 			else if (m_EnemyType == GREEN_ENEMY) {
@@ -263,7 +263,7 @@ void TutorialEnemy::SlowCollide() {
 					int num = Random::GetRanNum(30, 40);
 					float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
 					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
-					BirthEffect();
+					TutoBirthEffect();
 				}
 			}
 			else {
@@ -272,7 +272,7 @@ void TutorialEnemy::SlowCollide() {
 					int num = Random::GetRanNum(30, 40);
 					float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
 					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
-					BirthEffect();
+					TutoBirthEffect();
 				}
 			}
 		}
@@ -307,7 +307,7 @@ void TutorialEnemy::DeathMove() {
 	m_Alpha = Ease(In, Cubic, m_Frame, m_Alpha, 0.0f);
 }
 //エフェクトの生成
-void TutorialEnemy::BirthEffect() {
+void TutorialEnemy::TutoBirthEffect() {
 	SlashEffect* effect;
 	effect = new SlashEffect(m_Position);
 	effect->Initialize();

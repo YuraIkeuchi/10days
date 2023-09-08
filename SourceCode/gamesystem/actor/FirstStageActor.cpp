@@ -107,6 +107,24 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 		}
 
 	}
+	if (!Slow::GetInstance()->GetCheck()) {
+		for (auto i = 0; i < enemy.size(); i++)
+		{
+			if (enemy[i] == nullptr)continue;
+			if (enemy[i]->CheckCollide() && !enemy[i]->GetHitCheck()) {
+				enemy[i]->SetHitCheck(true);
+				Slow::GetInstance()->SetCheck(true);
+				break;
+			}
+		}
+	}
+
+	//for (auto i = 0; i < enemy.size(); i++) {
+	//	if (enemy[i] == nullptr)continue;
+	//	if (enemy[i]->GetHitCheck()) {
+	//		enemy[i]->AttackCollide();
+	//	}
+	//}
 	//タイマーを図る
 	if (!Slow::GetInstance()->GetSlow()) {
 		
@@ -323,12 +341,15 @@ void FirstStageActor::ImGuiDraw() {
 		ImGui::Text("PUSH A!!!");
 	}
 	ImGui::End();
+	
+	}*/
+	Slow::GetInstance()->ImGuiDraw();
+	Player::GetInstance()->ImGuiDraw();
 	for (auto i = 0; i < enemy.size(); i++)
 	{
 		if (enemy[i] == nullptr)continue;
 		enemy[i]->ImGuiDraw();
-	}*/
-	Player::GetInstance()->ImGuiDraw();
+	}
 }
 //倍率スコアの生成
 void FirstStageActor::BirthScoreText(const int EnemyCount, const int Magnification) {

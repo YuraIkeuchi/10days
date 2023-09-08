@@ -7,10 +7,10 @@
 #include "Easing.h"
 #include "Slow.h"
 #include "Collision.h"
-#include "ParticleEmitter.h"
+
 #include "SceneManager.h"
 #include"Timer.h"
-#include "Random.h"
+
 #include "ImageManager.h"
 
 #define MapMinX -10
@@ -90,7 +90,7 @@ void NormalEnemy::Action() {
 
 		//当たり判
 		if (!m_Death) {
-			SlowCollide();
+			//SlowCollide();
 		}
 	}
 	Obj_SetParam();
@@ -120,6 +120,15 @@ void NormalEnemy::Action() {
 		if (!slash[i]->GetAlive()) {
 			slash.erase(cbegin(slash) + i);
 		}
+	}
+
+	if (m_HitCheck) {
+		AttackCollide();
+	}
+	if (!Player::GetInstance()->GetAttack()) {
+		m_Slow = false;
+		m_Miss = false;
+		m_ViewEffect = false;
 	}
 }
 //描画
@@ -154,7 +163,7 @@ void NormalEnemy::EffectDraw(DirectXCommon* dxCommon) {
 //ImGui描画
 void NormalEnemy::ImGui_Origin() {
 	ImGui::Begin("Enemy");
-	ImGui::Text("Slow:%f", m_velocity);
+	ImGui::Text("Hit:%d", SlowStopTimer);
 	ImGui::End();
 }
 //開放
@@ -322,68 +331,12 @@ void NormalEnemy::SlowCollide() {
 		m_ViewEffect = false;
 	}
 
-	if(m_Slow) {
-		if ((input->TriggerButton(input->B))) {		//Bボタンパターン
-			if (m_EnemyType == RED_ENEMY) {
-				m_Death = true;
-				_charaState = STATE_INTER;
-				int num = Random::GetRanNum(30, 40);
-				float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
-				ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
-				BirthEffect();
-			}
-			else {		//違ったボタンを押すとミス
-				m_Miss = true;
-				Player::GetInstance()->SetDamage(true);
-				Slow::GetInstance()->SetSlow(false);
-			}
-		}
-		else if ((input->TriggerButton(input->A))) {
-			if (m_EnemyType == GREEN_ENEMY) {
-				m_Death = true;
-					_charaState = STATE_INTER;
-					int num = Random::GetRanNum(30, 40);
-					float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
-					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
-					BirthEffect();
-			}
-			else {		//違ったボタンを押すとミス
-				m_Miss = true;
-				Player::GetInstance()->SetDamage(true);
-				Slow::GetInstance()->SetSlow(false);
-			}
-		}
-		else if ((input->TriggerButton(input->X))) {
-			if (m_EnemyType == BLUE_ENEMY) {
-				m_Death = true;
-				_charaState = STATE_INTER;
-				int num = Random::GetRanNum(30, 40);
-				float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
-				ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
-				BirthEffect();
-			}
-			else {		//違ったボタンを押すとミス
-				m_Miss = true;
-				Player::GetInstance()->SetDamage(true);
-				Slow::GetInstance()->SetSlow(false);
-			}
-		}
-		if (Collision::CircleCollision(m_Position.x, m_Position.z, l_DamageRadius, Player::GetInstance()->GetPosition().x, Player::GetInstance()->GetPosition().z, l_DamageRadius)
-			&& !m_Death) {
-			m_Miss = true;
-			Player::GetInstance()->SetDamage(true);
-			Slow::GetInstance()->SetSlow(false);
-		}
-	}
-
-	if (!Player::GetInstance()->GetAttack()) {
-		m_Slow = false;
-	}
 }
 //死んだときの動き
 void NormalEnemy::DeathMove() {
 	const float l_AddFrame = 0.05f;
 	m_Slow = false;
+	m_HitCheck = false;
 	m_AddPower -= m_Gravity;
 	if (Helper::GetInstance()->CheckMax(m_Position.y, {}, m_AddPower * Slow::GetInstance()->GetSlowPower())) {
 		m_Scale = { Ease(In,Cubic,0.5f * Slow::GetInstance()->GetSlowPower(),m_Scale.x,0.0f),
@@ -406,13 +359,6 @@ void NormalEnemy::DeathMove() {
 
 	SlowStopTimer++;
 	if (SlowStopTimer == 10) {
-		Slow::GetInstance()->SetSlow(false);
+		//Slow::GetInstance()->SetSlow(false);
 	}
-}
-//エフェクトの生成
-void NormalEnemy::BirthEffect() {
-	SlashEffect* effect;
-	effect = new SlashEffect(m_Position);
-	effect->Initialize();
-	slash.push_back(effect);
 }

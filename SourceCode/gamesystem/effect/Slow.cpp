@@ -25,8 +25,8 @@ void Slow::Update() {
 	if (m_Slow) {
 		if (!m_Tutorial) {
 			m_SlowPower = 0.2f;
-			m_PlayerSlowPower = 0.4f;
-			m_MovePower = 0.2f;
+			m_PlayerSlowPower = 0.2f;
+			m_MovePower = 0.1f;
 			//m_SlowTimer--;
 		}
 		else {
@@ -45,6 +45,6 @@ void Slow::ImGuiDraw() {
 	ImGui::Begin("Slow");
 	ImGui::Text("Power:%f", m_SlowPower);
 	ImGui::Text("Timer:%d", m_SlowTimer);
-	
+	ImGui::Text("SlowFrag:%d", m_Slow);
 	ImGui::End();
 }
