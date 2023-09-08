@@ -319,7 +319,7 @@ void FirstStageActor::FinishUpdate(DebugCamera* camera) {
 }
 
 void FirstStageActor::ImGuiDraw() {
-	ImGui::Begin("FIRST");
+	/*ImGui::Begin("FIRST");
 	if (Slow::GetInstance()->GetSlow()) {
 		ImGui::Text("PUSH A!!!");
 	}
@@ -328,7 +328,8 @@ void FirstStageActor::ImGuiDraw() {
 	{
 		if (enemy[i] == nullptr)continue;
 		enemy[i]->ImGuiDraw();
-	}
+	}*/
+	Player::GetInstance()->ImGuiDraw();
 }
 //倍率スコアの生成
 void FirstStageActor::BirthScoreText(const int EnemyCount, const int Magnification) {

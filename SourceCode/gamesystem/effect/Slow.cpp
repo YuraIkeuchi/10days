@@ -23,9 +23,9 @@ void Slow::Initialize() {
 //çXêV
 void Slow::Update() {
 	if (m_Slow) {
-		m_SlowPower = 0.2f;
-		m_PlayerSlowPower = 0.5f;
 		if (!m_Tutorial) {
+			m_SlowPower = 0.2f;
+			m_PlayerSlowPower = 0.5f;
 			m_SlowTimer--;
 		}
 		else {

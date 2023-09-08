@@ -122,16 +122,13 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 
 	ParticleEmitter::GetInstance()->Update();
 
-	for (auto i = 0; i < enemys.size(); i++) {
-		enemys[i]->Update();
-	}
 	//敵の削除
 	for (int i = 0; i < enemys.size(); i++) {
 		if (enemys[i] == nullptr) {
 			continue;
 		}
 
-		if (!enemys[i]->GetAlive() && !enemys[i]->GetDamage()) {
+		if (enemys[i]->GetDeath() && !enemys[i]->GetDamage()) {
 			ui->SetMag(true);
 			m_EnemyCount--;
 			if (ScoreManager::GetInstance()->GetMagnification() < 5) {
@@ -141,8 +138,17 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 			BirthScoreText(1, ScoreManager::GetInstance()->GetMagnification());
 			ScoreManager::GetInstance()->SetFirstNumber(ScoreManager::GetInstance()->GetFirstNumber() + m_AddScore);
 			m_AddScore = 0;
+			enemys[i]->SetDamage(true);
+		}
+
+		if (!enemys[i]->GetAlive()) {
 			enemys.erase(cbegin(enemys) + i);
 		}
+	}
+
+
+	for (auto i = 0; i < enemys.size(); i++) {
+		enemys[i]->Update();
 	}
 
 	//倍率UIの表示
@@ -275,6 +281,12 @@ void TutorialSceneActor::ImGuiDraw() {
 	for (auto i = 0; i < enemys.size(); i++) {
 		enemys[i]->ImGuiDraw();
 	}
+
+	ImGui::Begin("Tuto");
+	ImGui::Text("Timer:%d", m_TexTimer);
+	ImGui::Text("Count:%d", m_EnemyCount);
+	ImGui::Text("State:%d", _AttackState);
+	ImGui::End();
 }
 
 //移動
@@ -343,9 +355,10 @@ void TutorialSceneActor::AttackState() {
 			Slow::GetInstance()->SetTutorial(true);
 			text_->SelectText(TextManager::ATTACK5);
 		}
+
 		if (m_EnemyCount == 0) {	//敵を倒した瞬間
-			m_TexTimer = {};
 			Slow::GetInstance()->SetTutorial(false);
+			m_TexTimer = {};
 			_AttackState = ENEMY_INTERVAL;
 			text_->SelectText(TextManager::ATTACK6);
 		}

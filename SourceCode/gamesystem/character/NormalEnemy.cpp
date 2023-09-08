@@ -304,6 +304,7 @@ void NormalEnemy::SlowCollide() {
 	else {
 		m_ViewEffect = false;
 		m_Slow = false;
+		Player::GetInstance()->SetDamage(true);
 	}
 }
 //死んだときの動き

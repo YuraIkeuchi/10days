@@ -113,6 +113,7 @@ void TutorialEnemy::Action() {
 		}
 	}
 
+
 	Obj_SetParam();
 }
 //•`‰æ
@@ -140,8 +141,11 @@ void TutorialEnemy::EffectDraw(DirectXCommon* dxCommon) {
 //ImGui•`‰æ
 void TutorialEnemy::ImGui_Origin() {
 	ImGui::Begin("Enemy");
-	ImGui::Text("Alpha:%f", m_Alpha);
-	ImGui::Text("UpPos:%f", m_UpPos.x);
+	ImGui::Text("Damage:%d", m_Damage);
+	ImGui::Text("Death:%d", m_Death);
+	ImGui::Text("Scale.x:%f", m_Scale.x);
+	ImGui::Text("AddPower:%f", m_AddPower);
+	ImGui::Text("PosY:%f", m_Position.y);
 	ImGui::End();
 }
 //ŠJ•ú
@@ -170,7 +174,10 @@ void TutorialEnemy::RightMove() {
 	else {
 		m_velocity = m_BaseSpeed;
 	}
-
+	m_AddPower -= m_Gravity;
+	if (Helper::GetInstance()->CheckMax(m_Position.y, {}, m_AddPower * Slow::GetInstance()->GetSlowPower())) {
+		m_AddPower = 0.2f;
+	}
 	if (m_Move) {
 		if (Helper::GetInstance()->CheckMin(m_Position.x, l_MAX, m_velocity)) {
 			m_Position.x = MapMinX;
@@ -189,7 +196,10 @@ void TutorialEnemy::LeftMove() {
 	else {
 		m_velocity = -m_BaseSpeed;
 	}
-
+	m_AddPower -= m_Gravity;
+	if (Helper::GetInstance()->CheckMax(m_Position.y, {}, m_AddPower * Slow::GetInstance()->GetSlowPower())) {
+		m_AddPower = 0.2f;
+	}
 	if (m_Move) {
 		if (Helper::GetInstance()->CheckMax(m_Position.x, l_MIN, m_velocity)) {
 			m_Position.x = MapMaxX;
@@ -201,7 +211,10 @@ void TutorialEnemy::LeftMove() {
 void TutorialEnemy::BottomMove() {
 	const float l_MIN = MapMinZ;
 	m_velocity = -m_BaseSpeed;
-
+	m_AddPower -= m_Gravity;
+	if (Helper::GetInstance()->CheckMax(m_Position.y, {}, m_AddPower * Slow::GetInstance()->GetSlowPower())) {
+		m_AddPower = 0.2f;
+	}
 	if (m_Move) {
 		if (Helper::GetInstance()->CheckMax(m_Position.z, l_MIN, m_velocity)) {
 			m_Position.z = MapMaxZ;
@@ -213,7 +226,10 @@ void TutorialEnemy::BottomMove() {
 void TutorialEnemy::UpMove() {
 	const float l_MIN =MapMaxZ;
 	m_velocity = m_BaseSpeed;
-	
+	m_AddPower -= m_Gravity;
+	if (Helper::GetInstance()->CheckMax(m_Position.y, {}, m_AddPower * Slow::GetInstance()->GetSlowPower())) {
+		m_AddPower = 0.2f;
+	}
 	if (m_Move) {
 		if (Helper::GetInstance()->CheckMin(m_Position.z, l_MIN, m_velocity)) {
 			m_Position.z = MapMinZ;
@@ -270,13 +286,17 @@ void TutorialEnemy::SlowCollide() {
 void TutorialEnemy::DeathMove() {
 	const float l_AddFrame = 0.05f;
 	m_Slow = false;
-	m_Rotation.y += 2.0f;
-	m_Scale = { Ease(In,Cubic,0.5f * Slow::GetInstance()->GetSlowPower(),m_Scale.x,0.0f),
-				Ease(In,Cubic,0.5f * Slow::GetInstance()->GetSlowPower(),m_Scale.y,0.0f),
-				Ease(In,Cubic,0.5f * Slow::GetInstance()->GetSlowPower(),m_Scale.z,0.0f), };
+	m_AddPower -= m_Gravity;
+	if (Helper::GetInstance()->CheckMax(m_Position.y, {}, m_AddPower * Slow::GetInstance()->GetSlowPower())) {
+		m_Scale = { Ease(In,Cubic,0.5f * Slow::GetInstance()->GetSlowPower(),m_Scale.x,0.0f),
+					Ease(In,Cubic,0.5f * Slow::GetInstance()->GetSlowPower(),m_Scale.y,0.0f),
+					Ease(In,Cubic,0.5f * Slow::GetInstance()->GetSlowPower(),m_Scale.z,0.0f), };
 
-	if (m_Scale.x <= 0.1f) {
-		m_Alive = false;
+		m_Rotation.y += 2.0f;
+
+		if (m_Scale.x <= 0.1f) {
+			m_Alive = false;
+		}
 	}
 
 	if (Helper::GetInstance()->FrameCheck(m_Frame, l_AddFrame)) {

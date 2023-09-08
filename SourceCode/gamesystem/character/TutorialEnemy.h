@@ -39,6 +39,7 @@ private:
 	int m_ResPornTimer = 0;
 
 	float m_BaseSpeed = {};
-	bool m_Death = false;
+	float m_Gravity = 0.01f;
+	float m_AddPower = {};
 };
 
