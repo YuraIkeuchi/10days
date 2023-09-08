@@ -72,6 +72,14 @@ void Player::Update()
 
 	Obj_SetParam();
 	m_MoveTimer = {};
+
+	if (m_Damage) {
+		m_DamageTimer++;
+		if (m_DamageTimer >= 10) {
+			m_Damage = false;
+			m_DamageTimer = {};
+		}
+	}
 }
 //VECTOR
 XMFLOAT3 Player::MoveVECTOR(XMVECTOR v, float angle)
@@ -85,7 +93,9 @@ XMFLOAT3 Player::MoveVECTOR(XMVECTOR v, float angle)
 //描画
 void Player::Draw(DirectXCommon* dxCommon)
 {
-	Obj_Draw();
+	if (!m_Damage) {
+		Obj_Draw();
+	}
 }
 
 //ImGui

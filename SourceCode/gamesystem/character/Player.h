@@ -77,4 +77,5 @@ private:
 	bool m_Attack = false;
 	float m_AddFrame = {};
 	bool m_Damage = false;
+	int m_DamageTimer = 0;
 };
