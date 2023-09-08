@@ -28,6 +28,7 @@ public:
 	{
 		MAGIC,
 		AREA,
+		BLOOD,
 	};
 	enum particleName
 	{

@@ -55,7 +55,6 @@ void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 	for (int i = 0; i < AREA_NUM; i++) {
 		tex[i].reset(IKETexture::Create(ImageManager::AREA, { 0,0,0 }, { 0.5f,0.5f,0.5f }, { 1,1,1,1 }));
 		tex[i]->TextureCreate();
-
 		tex[i]->SetRotation({ 90.0f,0.0f,0.0f });
 		tex[i]->SetColor({ 1.0f,0.0,0.0f,0.5f });
 	}
@@ -75,7 +74,8 @@ void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 	EPos.resize(Quantity);
 	EnemyMoveType.resize(Quantity);
 	ResCount.resize(Quantity);
-LoadCSV::LoadCsvParam_XMFLOAT3("Resources/csv/enemy.csv", EPos, "POP");
+	blood.resize(Quantity);
+	LoadCSV::LoadCsvParam_XMFLOAT3("Resources/csv/enemy.csv", EPos, "POP");
 		LoadCSV::LoadCsvParam_Int("Resources/csv/enemy.csv", EnemyMoveType, "MoveType");
 		LoadCSV::LoadCsvParam_Int("Resources/csv/enemy.csv", ResCount, "ResCount");
 
@@ -86,6 +86,10 @@ LoadCSV::LoadCsvParam_XMFLOAT3("Resources/csv/enemy.csv", EPos, "POP");
 		enemy[i]->SetState(EnemyMoveType[i]);
 		enemy[i]->SetPosition(EPos[i]);
 		enemy[i]->Initialize();
+
+		blood[i].reset(new EnemyDeadEffect(IKETexture::Create(ImageManager::BLOOD, { 0, 0, 0 }, { 0, 0, 0 }, { 1, 1, 1, 1 })));
+		blood[i]->object->TextureCreate();
+		blood[i]->object->SetRotation({ 90.0f, 0.0f, 0.0f });
 	}
 
 	Timer::GetInstance()->Initialize();
@@ -158,10 +162,54 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 		if (enemy[i] == nullptr) {
 			continue;
 		}
-
 		if (!enemy[i]->GetAlive()) {
+			for (auto& m : blood)
+			{
+				if (m->counter == 0)
+				{
+					m->object->SetPosition(enemy[i]->GetPosition());
+					m->counter = 1;
+					break;
+				}
+			}
 			enemy.erase(cbegin(enemy) + i);
 		}
+	}
+
+	//血だまりのエフェクト
+	for (int i = 0; i < blood.size(); i++)
+	{
+		if (blood[i]->counter == 0)
+		{
+			continue;
+		}
+
+		//拡大
+		if (0 < blood[i]->counter && blood[i]->counter < 60)
+		{
+			blood[i]->counter++;
+			float scale = blood[i]->object->GetScale().x;
+			scale += 0.05f;
+			scale = min(0.5f, scale);
+			blood[i]->object->SetScale({ scale, scale, scale });
+		}
+		//消える
+		else
+		{
+			XMFLOAT4 color = blood[i]->object->GetColor();
+			color.w -= 0.02f;
+			color.w = max(0, color.w);
+			blood[i]->object->SetColor(color);
+			if (color.w <= 0)
+			{
+				blood.erase(cbegin(blood) + i);
+			}
+		}
+	}
+	//更新
+	for (auto& m : blood)
+	{
+		m->object->Update();
 	}
 }
 
@@ -213,6 +261,10 @@ void FirstStageActor::BackDraw(DirectXCommon* dxCommon) {
 	IKETexture::PreDraw2(dxCommon, AlphaBlendType);
 	for (int i = 0; i < AREA_NUM; i++) {
 		tex[i]->Draw();
+	}
+	for (auto& m : blood)
+	{
+		m->object->Draw();
 	}
 	IKETexture::PostDraw();
 }

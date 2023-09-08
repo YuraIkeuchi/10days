@@ -60,7 +60,7 @@ void ParticleEmitter::SplatterEffect(const int life, const int num, const XMFLOA
 	{
 		XMFLOAT3 vel = vec;
 		float div = 10;
-		const int rnd_vel = 3;
+		const int rnd_vel = 4;
 		if (vec.x == 0)
 		{
 			vel.x += static_cast<float>(Random::GetRanNum(0, rnd_vel) - rnd_vel / 2) / div;

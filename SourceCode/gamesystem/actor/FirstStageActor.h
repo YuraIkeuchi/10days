@@ -25,7 +25,19 @@ private:
 	void FinishUpdate(DebugCamera* camera)override;		//撃破シーン
 
 	void ImGuiDraw();
+private:
+	//敵死亡時のエフェクト
+	struct EnemyDeadEffect
+	{
+		unique_ptr<IKETexture> object;
+		int counter;
 
+		EnemyDeadEffect(IKETexture* effect)
+		{
+			object.reset(effect);
+			counter = 0;
+		}
+	};
 private:
 	static const int AREA_NUM = 4;
 private:
@@ -33,10 +45,11 @@ private:
 	IKEModel* model;
 	unique_ptr<IKEObject3d> skydome;
 	XMFLOAT2 m_AddOffset = {};
-	std::vector <unique_ptr<InterEnemy>> enemy;
+	std::vector<unique_ptr<InterEnemy>> enemy;
 	std::vector<int>EnemyMoveType;
 	std::vector<int>ResCount;
 	unique_ptr<IKETexture> tex[AREA_NUM];
+	std::vector<unique_ptr<EnemyDeadEffect>> blood;
 private:
 	float radPower = 0;
 	const float addPower = 0.5f;
