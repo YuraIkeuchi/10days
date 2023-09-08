@@ -172,7 +172,7 @@ void NormalEnemy::SlowCollide() {
 				m_Alive = false;
 				_charaState = STATE_INTER;
 				m_ResPornTimer = {};
-				int num = Random::GetRanNum(30, 40);
+				int num = Random::GetRanNum(40, 50);
 				float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
 				ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
 			}
