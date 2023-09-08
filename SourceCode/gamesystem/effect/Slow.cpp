@@ -26,14 +26,15 @@ void Slow::Update() {
 		m_SlowPower = 0.2f;
 		m_PlayerSlowPower = 0.5f;
 		if (!m_Tutorial) {
-			m_SlowTimer++;
+			m_SlowTimer--;
 		}
 		else {
 			m_SlowPower = 0.0f;
 			m_PlayerSlowPower = 0.0f;
 		}
 
-		if (m_SlowTimer >= 20) {
+		if (m_SlowTimer <= 0) {
+			m_SlowTimer = {};
 			m_Slow = false;
 		}
 	}

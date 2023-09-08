@@ -1,5 +1,7 @@
 #pragma once
 #include "ObjCommon.h"
+#include "IKESprite.h"
+#include "SlashEffect.h"
 //“GŠî’ê
 class InterEnemy :
 	public ObjCommon {
@@ -31,8 +33,10 @@ public://getter setter
 	int _charaState = STATE_INTER;
 	int StartState;
 	int GetState() { return StartState; }
+	int GetEnemyType() { return m_EnemyType; }
 
 	void SetState(int state) { StartState=state; }
+	void SetEnemyType(int Type) { m_EnemyType = Type; }
 	bool CheckPos[4];
 	void SetResPos(PosSt pos,float otpos);
 	void SetPosX(float posx) { m_Position.x = posx; }
@@ -77,6 +81,8 @@ public:
 	/// </summary>
 	virtual void Draw(DirectXCommon* dxCommon)override;
 
+	virtual void EffectDraw(DirectXCommon* dxCommon) = 0;
+
 	void ImGuiDraw();
 
 	virtual void ImGui_Origin() = 0;
@@ -86,12 +92,39 @@ public://gettersetter
 	void SetStopF(bool f) { StopF = f; }
 	void SetSlowMove(const bool SlowMove) { m_SlowMove = SlowMove; }
 	void SetMove(const bool Move) { m_Move = Move; }
+	void SetDamage(const bool Damage) { m_Damage = Damage; }
 	const bool GetAlive() { return m_Alive; }
+	const bool GetDeath() { return m_Death; }
+	const bool GetDamage() { return m_Damage; }
 	const bool GetDestroy() { return m_Destroy; }
 protected:
 	
+	unique_ptr<IKESprite> effect_up;
+	unique_ptr<IKESprite> effect_down;
+	unique_ptr<IKESprite> gauge_up;
+	unique_ptr<IKESprite> gauge_down;
+	std::vector<SlashEffect*> slash;
+	XMFLOAT4 m_EffectColor = {};
 	bool m_SlowMove = false;
 	bool m_Move = true;
 	bool m_Alive = true;
 	bool m_Destroy = false;
+
+	enum EnemyType {
+		RED_ENEMY,
+		GREEN_ENEMY,
+		BLUE_ENEMY,
+	};
+	int _EnemyType = RED_ENEMY;
+
+	int m_EnemyType = {};
+
+	XMFLOAT2 m_UpPos = {};
+	XMFLOAT2 m_DownPos = {};
+	bool m_Death = false;
+	bool m_Damage = false;
+
+	bool m_ViewEffect = false;
+	float m_Frame = {};
+	float m_Alpha = 1.0f;
 };

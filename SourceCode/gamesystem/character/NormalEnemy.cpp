@@ -11,6 +11,7 @@
 #include "SceneManager.h"
 #include"Timer.h"
 #include "Random.h"
+#include "ImageManager.h"
 
 #define MapMinX -10
 #define MapMaxX 10
@@ -28,12 +29,39 @@ bool NormalEnemy::Initialize() {
 	m_Object.reset(new IKEObject3d());
 	m_Object->Initialize();
 	m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::ENEMY));
-	m_Color = { 1.0f,0.5f,0.0f,1.0f };
-	if(StartState==0)
-	{
-	//	_charaState =
-	}
+	effect_up = IKESprite::Create(ImageManager::CUT_UP, {});
+	effect_down = IKESprite::Create(ImageManager::CUT_DOWN, {});
+	gauge_up = IKESprite::Create(ImageManager::CUTGAGE_UP, {});
+	gauge_down = IKESprite::Create(ImageManager::CUTGAGE_DOWN, {});
 	_charaState =  StartState;
+	_EnemyType = m_EnemyType;
+
+	if (_EnemyType == RED_ENEMY) {
+		m_Color = { 1.0f,0.2f,0.0f,1.0f };
+		m_UpPos = { 800.0f,200.0f };
+		m_DownPos = { 800.0f,195.0f };
+	}
+	else if (_EnemyType == GREEN_ENEMY) {
+		m_Color = { 0.0f,1.0f,0.2f,1.0f };
+		m_UpPos = { 800.0f,280.0f };
+		m_DownPos = { 800.0f,275.0f };
+	}
+	else {
+		m_Color = { 0.2f,0.0f,1.0f,1.0f };
+		m_UpPos = { 800.0f,360.0f };
+		m_DownPos = { 800.0f,355.0f };
+	}
+	gauge_up->SetScale(0.3f);
+	gauge_down->SetScale(0.3f);
+	effect_up->SetScale(0.3f);
+	effect_down->SetScale(0.3f);
+	gauge_up->SetColor(m_Color);
+	gauge_down->SetColor(m_Color);
+
+	gauge_up->SetPosition(m_UpPos);
+	gauge_down->SetPosition(m_DownPos);
+	effect_up->SetPosition(m_UpPos);
+	effect_down->SetPosition(m_DownPos);
 	m_Alive = true;
 	//_charaState =  StartState;
 	m_Move = false;
@@ -53,12 +81,46 @@ void (NormalEnemy::* NormalEnemy::stateTable[])() = {
 //行動
 void NormalEnemy::Action() {
 	if (!StopF&&Timer::GetInstance()->getNowTime()<MovingTime) {
-		(this->*stateTable[_charaState])();
+		if (!m_Death) {
+			(this->*stateTable[_charaState])();
+		}
+		else {
+			DeathMove();
+		}
 
 		//当たり判
-		SlowCollide();
+		if (!m_Death) {
+			SlowCollide();
+		}
 	}
 	Obj_SetParam();
+
+	//エフェクト関係
+	gauge_up->SetPosition(m_UpPos);
+	gauge_down->SetPosition(m_DownPos);
+	effect_up->SetPosition(m_UpPos);
+	effect_down->SetPosition(m_DownPos);
+	gauge_up->SetColor({ m_Color.x,m_Color.y,m_Color.z,m_Alpha });
+	gauge_down->SetColor({ m_Color.x,m_Color.y,m_Color.z,m_Alpha });
+	effect_up->SetColor({ 1.0f,1.0f,1.0f,m_Alpha });
+	effect_down->SetColor({ 1.0f,1.0f,1.0f,m_Alpha });
+
+	//斬撃エフェクト
+	for (auto i = 0; i < slash.size(); i++)
+	{
+		if (slash[i] == nullptr)continue;
+		slash[i]->Update();
+	}
+	//斬撃エフェクトの削除
+	for (int i = 0; i < slash.size(); i++) {
+		if (slash[i] == nullptr) {
+			continue;
+		}
+
+		if (!slash[i]->GetAlive()) {
+			slash.erase(cbegin(slash) + i);
+		}
+	}
 }
 //描画
 void NormalEnemy::Draw(DirectXCommon* dxCommon) {
@@ -66,12 +128,36 @@ void NormalEnemy::Draw(DirectXCommon* dxCommon) {
 	if (StopF||SceneManager::GetInstance()->GetEditF()||Timer::GetInstance()->getNowTime()<MovingTime && m_Alive) {
 		Obj_Draw();
 	}
+
+	//斬撃エフェクト
+	for (auto i = 0; i < slash.size(); i++)
+	{
+		if (slash[i] == nullptr)continue;
+		slash[i]->Draw(dxCommon);
+	}
+}
+//エフェクト描画
+void NormalEnemy::EffectDraw(DirectXCommon* dxCommon) {
+	//斬撃エフェクト
+	for (auto i = 0; i < slash.size(); i++)
+	{
+		if (slash[i] == nullptr)continue;
+		slash[i]->ImGuiDraw();
+	}
+	if (m_ViewEffect) {
+		gauge_up->Draw();
+		gauge_down->Draw();
+		effect_up->Draw();
+		effect_down->Draw();
+	}
 }
 //ImGui描画
 void NormalEnemy::ImGui_Origin() {
 	ImGui::Begin("Enemy");
 	ImGui::Text("Slow:%f", m_velocity);
 	ImGui::End();
+
+	
 }
 //開放
 void NormalEnemy::Finalize() {
@@ -98,17 +184,20 @@ void NormalEnemy::RightMove() {
 	else {
 		m_velocity = m_BaseSpeed;
 	}
+
+	m_AddPower -= m_Gravity;
+	if (Helper::GetInstance()->CheckMax(m_Position.y, {}, m_AddPower * Slow::GetInstance()->GetSlowPower())) {
+		m_AddPower = 0.2f;
+	}
 	
 	if (Helper::GetInstance()->CheckMin(m_Position.x, l_MAX, m_velocity)) {
-		m_Position.x = MapMinX;
-		m_Alive = false;
+		m_Death = true;
 		m_Slow = false;
 		m_Destroy = true;
 	}
 }
 //左に動く
 void NormalEnemy::LeftMove() {
-	m_Rotation = { 0.0f,90.0f,0.0f };
 	const float l_MIN = MapMinX;
 	if (m_SlowMove) {
 		m_velocity = -m_BaseSpeed * Slow::GetInstance()->GetSlowPower();
@@ -117,9 +206,13 @@ void NormalEnemy::LeftMove() {
 		m_velocity = -m_BaseSpeed;
 	}
 
+	m_AddPower -= m_Gravity;
+	if (Helper::GetInstance()->CheckMax(m_Position.y, {}, m_AddPower * Slow::GetInstance()->GetSlowPower())) {
+		m_AddPower = 0.2f;
+	}
+
 	if (Helper::GetInstance()->CheckMax(m_Position.x, l_MIN, m_velocity)) {
-		m_Position.x = MapMaxX;
-		m_Alive = false;
+		m_Death = true;
 		m_Slow = false;
 		m_Destroy = true;
 	}
@@ -135,9 +228,13 @@ void NormalEnemy::BottomMove() {
 		m_velocity = -m_BaseSpeed;
 	}
 
+	m_AddPower -= m_Gravity;
+	if (Helper::GetInstance()->CheckMax(m_Position.y, {}, m_AddPower * Slow::GetInstance()->GetSlowPower())) {
+		m_AddPower = 0.2f;
+	}
+
 	if (Helper::GetInstance()->CheckMax(m_Position.z, l_MIN, m_velocity)) {
-		m_Position.z = MapMaxZ;
-		m_Alive = false;
+		m_Death = true;
 		m_Slow = false;
 		m_Destroy = true;
 	}
@@ -151,10 +248,14 @@ void NormalEnemy::UpMove() {
 	else {
 		m_velocity = m_BaseSpeed;
 	}
+
+	m_AddPower -= m_Gravity;
+	if (Helper::GetInstance()->CheckMax(m_Position.y, {}, m_AddPower * Slow::GetInstance()->GetSlowPower())) {
+		m_AddPower = 0.2f;
+	}
 	
 	if (Helper::GetInstance()->CheckMin(m_Position.z, l_MIN, m_velocity)) {
-		m_Position.z = MapMinZ;
-		m_Alive = false;
+		m_Death = true;
 		m_Slow = false;
 		m_Destroy = true;
 	}
@@ -162,12 +263,15 @@ void NormalEnemy::UpMove() {
 
 void NormalEnemy::SlowCollide() {
 	Input* input = Input::GetInstance();
-	if (Collision::CircleCollision(m_Position.x, m_Position.z, m_radius, Player::GetInstance()->GetPosition().x, Player::GetInstance()->GetPosition().z, m_radius)) {
+	if (Collision::CircleCollision(m_Position.x, m_Position.z, m_radius, Player::GetInstance()->GetAttackPos().x, Player::GetInstance()->GetAttackPos().z, m_radius)) {
 		if (!m_Slow && Player::GetInstance()->GetAttack()) {
-			m_Slow = true;
 			Slow::GetInstance()->SetSlow(true);
+			Slow::GetInstance()->SetSlowTimer(60);
+			m_Slow = true;
+			m_ViewEffect = true;
 		}
 		else {
+<<<<<<< HEAD
 			if ((input->TriggerButton(input->A))) {
 				m_Alive = false;
 				_charaState = STATE_INTER;
@@ -175,10 +279,73 @@ void NormalEnemy::SlowCollide() {
 				int num = Random::GetRanNum(40, 50);
 				float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
 				ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
+=======
+			if (m_EnemyType == RED_ENEMY) {
+				if ((input->TriggerButton(input->B))) {
+					m_Death = true;
+					_charaState = STATE_INTER;
+					int num = Random::GetRanNum(30, 40);
+					float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
+					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
+					BirthEffect();
+				}
+			}
+			else if (m_EnemyType == GREEN_ENEMY) {
+				if ((input->TriggerButton(input->A))) {
+					m_Death = true;
+					_charaState = STATE_INTER;
+					int num = Random::GetRanNum(30, 40);
+					float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
+					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
+					BirthEffect();
+				}
+			}
+			else {
+				if ((input->TriggerButton(input->X))) {
+					m_Death = true;
+					_charaState = STATE_INTER;
+					int num = Random::GetRanNum(30, 40);
+					float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
+					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
+					BirthEffect();
+				}
+>>>>>>> main
 			}
 		}
 	}
 	else {
+		m_ViewEffect = false;
 		m_Slow = false;
 	}
+}
+//死んだときの動き
+void NormalEnemy::DeathMove() {
+	const float l_AddFrame = 0.05f;
+	m_Slow = false;
+	m_AddPower -= m_Gravity;
+	if (Helper::GetInstance()->CheckMax(m_Position.y, {}, m_AddPower * Slow::GetInstance()->GetSlowPower())) {
+		m_Scale = { Ease(In,Cubic,0.5f * Slow::GetInstance()->GetSlowPower(),m_Scale.x,0.0f),
+					Ease(In,Cubic,0.5f * Slow::GetInstance()->GetSlowPower(),m_Scale.y,0.0f),
+					Ease(In,Cubic,0.5f * Slow::GetInstance()->GetSlowPower(),m_Scale.z,0.0f), };
+
+		m_Rotation.y += 2.0f;
+
+		if (m_Scale.x <= 0.1f) {
+			m_Alive = false;
+		}
+	}
+
+	if (Helper::GetInstance()->FrameCheck(m_Frame, l_AddFrame)) {
+		m_ViewEffect = false;
+	}
+	m_UpPos.x = Ease(In, Cubic, m_Frame, m_UpPos.x, 700.0f);
+	m_DownPos.x = Ease(In, Cubic, m_Frame, m_DownPos.x, 900.0f);
+	m_Alpha = Ease(In, Cubic, m_Frame, m_Alpha, 0.0f);
+}
+//エフェクトの生成
+void NormalEnemy::BirthEffect() {
+	SlashEffect* effect;
+	effect = new SlashEffect(m_Position);
+	effect->Initialize();
+	slash.push_back(effect);
 }

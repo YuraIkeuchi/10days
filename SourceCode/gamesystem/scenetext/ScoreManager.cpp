@@ -67,17 +67,29 @@ void ScoreManager::Initialize() {
 void ScoreManager::Update() {
 	//ŒJ‚èã‚°ˆ—
 	//‚Ğ‚Æ‚¯‚½–Ú
+<<<<<<< HEAD
 	if (m_FirstNumber > NUMBER_MAX - 1) {
+=======
+	if (m_FirstNumber > NUMBER_MAX) {
+>>>>>>> main
 		m_FirstNumber = m_FirstNumber - NUMBER_MAX;
 		m_SecondNumber++;
 	}
 	//“ñŒ…‚ß
+<<<<<<< HEAD
 	if (m_SecondNumber > NUMBER_MAX - 1) {
+=======
+	if (m_SecondNumber > NUMBER_MAX) {
+>>>>>>> main
 		m_SecondNumber = m_SecondNumber - NUMBER_MAX;
 		m_ThirdNumber++;
 	}
 	//OŒ…–Ú
+<<<<<<< HEAD
 	if (m_ThirdNumber > NUMBER_MAX - 1) {
+=======
+	if (m_ThirdNumber > NUMBER_MAX) {
+>>>>>>> main
 		m_ThirdNumber = m_FourthNumber - NUMBER_MAX;
 		m_FourthNumber++;
 	}

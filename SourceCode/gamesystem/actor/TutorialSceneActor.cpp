@@ -31,15 +31,6 @@ void TutorialSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera
 
 	m_SceneState = SceneState::IntroState;
 
-	
-	//地面
-	ground.reset(new IKEObject3d());
-	ground->Initialize();
-	ground->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::GROUND));
-	ground->SetScale({ 1.f,1.f,1.f });
-	ground->SetPosition({ 0.0f,5.0f,0.0f });
-	ground->SetTiling(10.0f);
-	
 	//スカイドーム
 	skydome.reset(new IKEObject3d());
 	skydome->Initialize();
@@ -116,8 +107,6 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 	camerawork->TutorialUpdate(camera);
 	lightgroup->Update();
 	skydome->Update();
-	ground->Update();
-	ground->UpdateWorldMatrix();
 	window->SetSize(window_size);
 	window->SetColor({ 1.0f,1.0f,1.0f,m_Alpha });
 	BackObj::GetInstance()->Update();
@@ -152,9 +141,6 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 		SceneChanger::GetInstance()->SetChange(false);
 	}
 
-	for (int i = 0; i < AREA_NUM; i++) {
-		tex[i]->Update();
-	}
 	ParticleEmitter::GetInstance()->Update();
 
 	for (auto i = 0; i < enemys.size(); i++) {
@@ -279,6 +265,11 @@ void TutorialSceneActor::Draw(DirectXCommon* dxCommon) {
 void TutorialSceneActor::FrontDraw(DirectXCommon* dxCommon) {
 	IKESprite::PreDraw();
 	ui->FrontDraw();
+	for (auto i = 0; i < enemys.size(); i++)
+	{
+		if (enemys[i] == nullptr)continue;
+		enemys[i]->EffectDraw(dxCommon);
+	}
 	//倍率テキスト
 	for (auto i = 0; i < magtext.size(); i++)
 	{
@@ -305,12 +296,11 @@ void TutorialSceneActor::FrontDraw(DirectXCommon* dxCommon) {
 //ポストエフェクトかかる
 void TutorialSceneActor::BackDraw(DirectXCommon* dxCommon) {
 	IKEObject3d::PreDraw();
-	BackObj::GetInstance()->Draw();
+	BackObj::GetInstance()->Draw(dxCommon);
 	Player::GetInstance()->Draw(dxCommon);
 	for (auto i = 0; i < enemys.size(); i++) {
 		enemys[i]->Draw(dxCommon);
 	}
-	ground->Draw();
 	IKEObject3d::PostDraw();
 	ParticleEmitter::GetInstance()->FlontDrawAll();
 
@@ -348,6 +338,7 @@ void TutorialSceneActor::ImGuiDraw() {
 		enemys[i]->ImGuiDraw();
 	}
 	ScoreManager::GetInstance()->ImGuiDraw();*/
+	Slow::GetInstance()->ImGuiDraw();
 }
 
 //移動
@@ -502,6 +493,7 @@ void TutorialSceneActor::BirthEnemy(bool Move,bool End) {
 		newEnemy->Initialize();
 		newEnemy->SetPosition({ 0.0f,0.0f,0.0f });
 		newEnemy->SetMove(Move);
+		newEnemy->SetEnemyType(0);
 		enemys.push_back(newEnemy);
 		m_EnemyCount++;
 
@@ -515,14 +507,17 @@ void TutorialSceneActor::BirthEnemy(bool Move,bool End) {
 		for (int i = 0; i < ENEMY_MAX; i++) {
 			InterEnemy* newEnemy;
 			newEnemy = new TutorialEnemy();
-			newEnemy->Initialize();
 			if (i == 0) {
 				newEnemy->SetPosition({ 0.0f,0.0f,0.0f });
+				newEnemy->SetEnemyType(0);
 			}else if (i == 1) {
 				newEnemy->SetPosition({ 3.0f,0.0f,0.0f });
+				newEnemy->SetEnemyType(1);
 			}else if (i == 2) {
 				newEnemy->SetPosition({ -3.0f,0.0f,0.0f });
+				newEnemy->SetEnemyType(2);
 			}
+			newEnemy->Initialize();
 			newEnemy->SetMove(Move);
 			enemys.push_back(newEnemy);
 			m_EnemyCount++;

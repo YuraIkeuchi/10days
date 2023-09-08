@@ -348,6 +348,9 @@
     <ClCompile Include="SourceCode\gamesystem\scenetext\MagText.cpp">
       <Filter>gamesystem\scenetext\Game</Filter>
     </ClCompile>
+    <ClCompile Include="SourceCode\gamesystem\effect\SlashEffect.cpp">
+      <Filter>gamesystem\effect</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCode\engine\camera\DebugCamera.h">
@@ -658,6 +661,9 @@
     </ClInclude>
     <ClInclude Include="SourceCode\gamesystem\scenetext\MagText.h">
       <Filter>gamesystem\scenetext\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCode\gamesystem\effect\SlashEffect.h">
+      <Filter>gamesystem\effect</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

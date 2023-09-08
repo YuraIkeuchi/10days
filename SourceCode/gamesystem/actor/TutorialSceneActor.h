@@ -60,12 +60,10 @@ private:
 	std::vector<EnemyDeadEffect*> blood;
 	unique_ptr<IKESprite> window;
 	unique_ptr<TutorialText> text_;
-	unique_ptr<IKEObject3d> ground;
 	IKEModel* model;
 	unique_ptr<IKEObject3d> skydome;
 	XMFLOAT2 m_AddOffset = {};
 	std::vector<InterEnemy*> enemys;
-	unique_ptr<IKETexture> tex[AREA_NUM];
 	int m_TexTimer = {};
 	int m_EndCount = {};
 	int m_ResetTimer = {};

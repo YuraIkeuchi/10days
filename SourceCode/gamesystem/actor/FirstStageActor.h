@@ -43,7 +43,6 @@ private:
 private:
 	static const int AREA_NUM = 4;
 private:
-	unique_ptr<IKEObject3d> ground;
 	IKEModel* model;
 	unique_ptr<IKEObject3d> skydome;
 	XMFLOAT2 m_AddOffset = {};
@@ -51,7 +50,7 @@ private:
 	std::vector<MagText*> magtext;
 	std::vector<int>EnemyMoveType;
 	std::vector<int>ResCount;
-	unique_ptr<IKETexture> tex[AREA_NUM];
+	std::vector<int>InitEnemyMoveType;
 	std::vector<unique_ptr<EnemyDeadEffect>> blood;
 private:
 	unique_ptr<UI> ui;

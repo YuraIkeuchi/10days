@@ -11,9 +11,11 @@ public:
 	void ImGui_Origin()override;
 
 	void Draw(DirectXCommon* dxCommon) override;//描画
-
+	void EffectDraw(DirectXCommon* dxCommon) override;//エフェクト描画
 private:
 	void SlowCollide();
+	void DeathMove();
+	void BirthEffect();
 private:
 
 	//関数ポインタ
@@ -37,5 +39,6 @@ private:
 	int m_ResPornTimer = 0;
 
 	float m_BaseSpeed = {};
+	bool m_Death = false;
 };
 

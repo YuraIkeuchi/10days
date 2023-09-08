@@ -40,6 +40,7 @@ public:
 	const bool GetCameraZoom() { return m_CameraZoom; }
 	const bool GetAttack() { return m_Attack; }
 	const XMFLOAT3& GetPlayerVec() { return m_playerVec; }
+	const XMFLOAT3& GetAttackPos() { return m_AttackPos; }
 private:
 	void LoadCSV();
 
@@ -52,6 +53,8 @@ private:
 	float m_BaseSpeed = {};
 	//ベクトル
 	XMFLOAT3 m_playerVec = { 0, 0, 0 };
+	//攻撃範囲
+	XMFLOAT3 m_AttackPos = { 100.0f, 0.0f, 0.0f };
 
 	//キャラの状態
 	enum CharaState
