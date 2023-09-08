@@ -242,15 +242,15 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 		{
 			blood[i]->counter++;
 			float scale = blood[i]->object->GetScale().x;
-			scale += 0.05f;
-			scale = min(0.5f, scale);
+			scale += 0.03f;
+			scale = min(0.3f, scale);
 			blood[i]->object->SetScale({ scale, scale, scale });
 		}
 		//消える
 		else
 		{
 			XMFLOAT4 color = blood[i]->object->GetColor();
-			color.w -= 0.02f;
+			color.w -= 0.01f;
 			color.w = max(0, color.w);
 			blood[i]->object->SetColor(color);
 			if (color.w <= 0)
