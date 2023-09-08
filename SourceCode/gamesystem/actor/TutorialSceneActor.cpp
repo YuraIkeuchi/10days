@@ -164,11 +164,6 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 	//血だまりのエフェクト
 	for (int i = 0; i < blood.size(); i++)
 	{
-		if (blood[i]->counter == 0)
-		{
-			continue;
-		}
-
 		//拡大
 		if (0 < blood[i]->counter && blood[i]->counter < 60)
 		{
