@@ -9,6 +9,8 @@
 #include "SceneManager.h"
 #include"CsvLoader.h"
 #include "BackObj.h"
+#include "ScoreManager.h"
+#include "SceneChanger.h"
 
 void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, LightGroup* lightgroup) {
 	dxCommon->SetFullScreen(true);
@@ -32,7 +34,7 @@ void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 	ground->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::GROUND));
 	ground->SetScale({ 1.f,1.f,1.f });
 	ground->SetPosition({ 0.0f,5.0f,0.0f });
-	ground->SetTiling(10.0f);
+	ground->SetTiling(25.0f);
 
 	//スカイドーム
 	skydome.reset(new IKEObject3d());
@@ -96,6 +98,15 @@ void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 
 	//背景
 	BackObj::GetInstance()->Initialize();
+
+	//スコア
+	ScoreManager::GetInstance()->Initialize();
+	//スロー
+	Slow::GetInstance()->Initialize();
+
+	//UI
+	ui = make_unique<UI>();
+	ui->Initialize();
 }
 
 void FirstStageActor::Finalize() {
@@ -112,6 +123,8 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 	ground->Update();
 	ground->UpdateWorldMatrix();
 	BackObj::GetInstance()->Update();
+	ScoreManager::GetInstance()->Update();
+	Timer::GetInstance()->Update();
 	if (!Timer::GetInstance()->GetStop()) {
 		Player::GetInstance()->Update();
 		Slow::GetInstance()->Update();
@@ -124,7 +137,7 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 	}
 	//タイマーを図る
 	if (!Slow::GetInstance()->GetSlow()) {
-		Timer::GetInstance()->Update();
+		
 		for (auto i = 0; i < enemy.size(); i++)
 		{
 			if (enemy[i] == nullptr)continue;
@@ -149,9 +162,14 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 
 	//ゲーム終了
 	if (Timer::GetInstance()->GetEnd()) {
-		SceneManager::GetInstance()->ChangeScene("TITLE");
+		SceneChanger::GetInstance()->SetChangeStart(true);
 	}
 	
+	if (SceneChanger::GetInstance()->GetChange() && Timer::GetInstance()->GetEnd()) {
+		SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
+		SceneChanger::GetInstance()->SetChange(false);
+	}
+
 	for (int i = 0; i < AREA_NUM; i++) {
 		tex[i]->Update();
 	}
@@ -172,7 +190,42 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 					break;
 				}
 			}
+			if (!enemy[i]->GetDestroy()) {
+				ui->SetMag(true);
+				if (ScoreManager::GetInstance()->GetMagnification() < 5) {
+					ScoreManager::GetInstance()->SetMagnification(ScoreManager::GetInstance()->GetMagnification() + 1);
+				}
+				m_AddScore = (ScoreManager::GetInstance()->GetMagnification() * 1);
+				BirthScoreText(1, ScoreManager::GetInstance()->GetMagnification());
+				ScoreManager::GetInstance()->SetFirstNumber(ScoreManager::GetInstance()->GetFirstNumber() + m_AddScore);
+				m_AddScore = 0;
+			}
 			enemy.erase(cbegin(enemy) + i);
+		}
+	}
+
+	SceneChanger::GetInstance()->Update();
+
+	//倍率UIの表示
+	if (!Player::GetInstance()->GetAttack()) {
+		ui->SetMag(false);
+	}
+	ui->Update();
+
+	//倍率テキスト
+	for (auto i = 0; i < magtext.size(); i++)
+	{
+		if (magtext[i] == nullptr)continue;
+		magtext[i]->Update();
+	}
+	//テキストの削除
+	for (int i = 0; i < magtext.size(); i++) {
+		if (magtext[i] == nullptr) {
+			continue;
+		}
+
+		if (!magtext[i]->GetAlive()) {
+			magtext.erase(cbegin(magtext) + i);
 		}
 	}
 
@@ -219,11 +272,10 @@ void FirstStageActor::Draw(DirectXCommon* dxCommon) {
 	if (PlayPostEffect) {
 		postEffect->PreDrawScene(dxCommon->GetCmdList());
 		BackDraw(dxCommon);
-		FrontDraw(dxCommon);
 		postEffect->PostDrawScene(dxCommon->GetCmdList());
-
 		dxCommon->PreDraw();
 		postEffect->Draw(dxCommon->GetCmdList());
+		FrontDraw(dxCommon);
 		ImGuiDraw();
 		dxCommon->PostDraw();
 	} else {
@@ -239,7 +291,19 @@ void FirstStageActor::Draw(DirectXCommon* dxCommon) {
 }
 //ポストエフェクトかからない
 void FirstStageActor::FrontDraw(DirectXCommon* dxCommon) {
-
+	IKESprite::PreDraw();
+	ui->FrontDraw();
+	//倍率テキスト
+	for (auto i = 0; i < magtext.size(); i++)
+	{
+		if (magtext[i] == nullptr)continue;
+		magtext[i]->Draw();
+	}
+	ui->BackDraw();
+	IKESprite::PostDraw();
+	IKESprite::PreDraw();
+	SceneChanger::GetInstance()->Draw();
+	IKESprite::PostDraw();
 }
 //ポストエフェクトかかる
 void FirstStageActor::BackDraw(DirectXCommon* dxCommon) {
@@ -252,8 +316,6 @@ void FirstStageActor::BackDraw(DirectXCommon* dxCommon) {
 		if (enemy[i] == nullptr)continue;
 		enemy[i]->Draw(dxCommon);
 	}
-	//enemy->Draw(dxCommon);
-	//enemy->Draw(dxCommon);
 	ground->Draw();
 	IKEObject3d::PostDraw();
 	ParticleEmitter::GetInstance()->FlontDrawAll();
@@ -287,9 +349,17 @@ void FirstStageActor::ImGuiDraw() {
 		ImGui::Text("PUSH A!!!");
 	}
 	ImGui::End();
-	//enemy->ImGuiDraw();
-	Player::GetInstance()->ImGuiDraw();
-	Slow::GetInstance()->ImGuiDraw();
+	////enemy->ImGuiDraw();
+	//Player::GetInstance()->ImGuiDraw();
+	//Slow::GetInstance()->ImGuiDraw();
 
-	Timer::GetInstance()->ImGuiDraw();
+	//Timer::GetInstance()->ImGuiDraw();
+	//ScoreManager::GetInstance()->ImGuiDraw();
+}
+//倍率スコアの生成
+void FirstStageActor::BirthScoreText(const int EnemyCount, const int Magnification) {
+	MagText* newtext;
+	newtext = new MagText(EnemyCount, Magnification);
+	newtext->Initialize();
+	magtext.push_back(newtext);
 }

@@ -12,6 +12,13 @@ void ImageManager::StartLoad2D()
 	IKESprite::LoadTexture(NUMBER, L"Resources/2d/objicon/Num.png");
 	IKESprite::LoadTexture(BLACKWINDOW, L"Resources/2d/objicon/BlackWindow.png");
 	IKESprite::LoadTexture(TUTORIAL, L"Resources/2d/objicon/Tutorial.png");
+	IKESprite::LoadTexture(RESULT, L"Resources/2d/sceneback/Result.png");
+	IKESprite::LoadTexture(LEFTDOOR, L"Resources/2d/sceneback/Door.png");
+	IKESprite::LoadTexture(RIGHTDOOR, L"Resources/2d/sceneback/Door2.png");
+	IKESprite::LoadTexture(TIMEGAGE, L"Resources/2d/objicon/Emaki.png");
+	IKESprite::LoadTexture(SCOREGAGE, L"Resources/2d/objicon/Emaki2.png");
+	IKESprite::LoadTexture(MAGGAGE, L"Resources/2d/objicon/Emaki3.png");
+	IKESprite::LoadTexture(MAGNIFICATION, L"Resources/2d/objicon/Mag.png");
 }
 
 //非同期処理で読み込むスプライト

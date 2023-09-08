@@ -345,6 +345,9 @@
     <ClCompile Include="SourceCode\gamesystem\scenetext\ScoreManager.cpp">
       <Filter>gamesystem\scenetext\Game</Filter>
     </ClCompile>
+    <ClCompile Include="SourceCode\gamesystem\scenetext\MagText.cpp">
+      <Filter>gamesystem\scenetext\Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCode\engine\camera\DebugCamera.h">
@@ -651,6 +654,9 @@
     </ClInclude>
     <ClInclude Include="SourceCode\engine\helper\Random.h" />
     <ClInclude Include="SourceCode\gamesystem\scenetext\ScoreManager.h">
+      <Filter>gamesystem\scenetext\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCode\gamesystem\scenetext\MagText.h">
       <Filter>gamesystem\scenetext\Game</Filter>
     </ClInclude>
   </ItemGroup>

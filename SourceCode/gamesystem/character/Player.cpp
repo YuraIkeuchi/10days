@@ -56,6 +56,8 @@ void Player::InitState(const XMFLOAT3& pos) {
 	m_MoveTimer = {};
 
 	m_Attack = false;
+
+	_charaState = STATE_MOVE;
 }
 /*CharaStateのState並び順に合わせる*/
 void (Player::* Player::stateTable[])() = {

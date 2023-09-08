@@ -21,7 +21,14 @@ public:
 		FEED,
 		NUMBER,
 		BLACKWINDOW,
-		TUTORIAL
+		TUTORIAL,
+		RESULT,
+		LEFTDOOR,
+		RIGHTDOOR,
+		TIMEGAGE,
+		SCOREGAGE,
+		MAGGAGE,
+		MAGNIFICATION,
 	};
 	//テクスチャの名前
 	enum tex2dName

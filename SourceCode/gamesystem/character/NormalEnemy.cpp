@@ -34,6 +34,7 @@ bool NormalEnemy::Initialize() {
 	//	_charaState =
 	}
 	_charaState =  StartState;
+	m_Alive = true;
 	//_charaState =  StartState;
 	m_Move = false;
 	m_BaseSpeed = static_cast<float>(std::any_cast<double>(LoadCSV::LoadCsvParam("Resources/csv/chara/enemy/enemy.csv", "speed")));
@@ -62,7 +63,7 @@ void NormalEnemy::Action() {
 //描画
 void NormalEnemy::Draw(DirectXCommon* dxCommon) {
 
-	if (StopF||SceneManager::GetInstance()->GetEditF()||Timer::GetInstance()->getNowTime()<MovingTime) {
+	if (StopF||SceneManager::GetInstance()->GetEditF()||Timer::GetInstance()->getNowTime()<MovingTime && m_Alive) {
 		Obj_Draw();
 	}
 }
@@ -90,8 +91,7 @@ void NormalEnemy::Inter() {
 void NormalEnemy::RightMove() {
 
 	const float l_MAX = MapMaxX;
-	m_velocity = m_BaseSpeed;
-
+	
 	if (m_SlowMove) {
 		m_velocity = m_BaseSpeed * Slow::GetInstance()->GetSlowPower();
 	}
@@ -101,14 +101,15 @@ void NormalEnemy::RightMove() {
 	
 	if (Helper::GetInstance()->CheckMin(m_Position.x, l_MAX, m_velocity)) {
 		m_Position.x = MapMinX;
+		m_Alive = false;
 		m_Slow = false;
+		m_Destroy = true;
 	}
 }
 //左に動く
 void NormalEnemy::LeftMove() {
 	m_Rotation = { 0.0f,90.0f,0.0f };
 	const float l_MIN = MapMinX;
-	m_velocity = -m_BaseSpeed;
 	if (m_SlowMove) {
 		m_velocity = -m_BaseSpeed * Slow::GetInstance()->GetSlowPower();
 	}
@@ -118,28 +119,44 @@ void NormalEnemy::LeftMove() {
 
 	if (Helper::GetInstance()->CheckMax(m_Position.x, l_MIN, m_velocity)) {
 		m_Position.x = MapMaxX;
+		m_Alive = false;
 		m_Slow = false;
+		m_Destroy = true;
 	}
 	
 }
 //下に動く
 void NormalEnemy::BottomMove() {
 	const float l_MIN = MapMinZ;
-	m_velocity = -m_BaseSpeed;
+	if (m_SlowMove) {
+		m_velocity = -m_BaseSpeed * Slow::GetInstance()->GetSlowPower();
+	}
+	else {
+		m_velocity = -m_BaseSpeed;
+	}
 
 	if (Helper::GetInstance()->CheckMax(m_Position.z, l_MIN, m_velocity)) {
 		m_Position.z = MapMaxZ;
+		m_Alive = false;
 		m_Slow = false;
+		m_Destroy = true;
 	}
 }
 //上に動く
 void NormalEnemy::UpMove() {
 	const float l_MIN =MapMaxZ;
-	m_velocity = m_BaseSpeed;
+	if (m_SlowMove) {
+		m_velocity = m_BaseSpeed * Slow::GetInstance()->GetSlowPower();
+	}
+	else {
+		m_velocity = m_BaseSpeed;
+	}
 	
 	if (Helper::GetInstance()->CheckMin(m_Position.z, l_MIN, m_velocity)) {
 		m_Position.z = MapMinZ;
+		m_Alive = false;
 		m_Slow = false;
+		m_Destroy = true;
 	}
 }
 

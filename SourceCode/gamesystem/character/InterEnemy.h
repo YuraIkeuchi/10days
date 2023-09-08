@@ -87,9 +87,11 @@ public://gettersetter
 	void SetSlowMove(const bool SlowMove) { m_SlowMove = SlowMove; }
 	void SetMove(const bool Move) { m_Move = Move; }
 	const bool GetAlive() { return m_Alive; }
+	const bool GetDestroy() { return m_Destroy; }
 protected:
 	
 	bool m_SlowMove = false;
 	bool m_Move = true;
 	bool m_Alive = true;
+	bool m_Destroy = false;
 };

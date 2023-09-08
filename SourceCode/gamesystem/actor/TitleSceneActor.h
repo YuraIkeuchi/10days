@@ -4,6 +4,7 @@
 #include "TitleText.h"
 #include <memory>
 #include"Font.h"
+#include <array>
 /// タイトルシーン
 class TitleSceneActor : public BaseActor {
 public:
@@ -21,5 +22,17 @@ public:
 
 
 private:
+	static const int NUMBER_MAX = 10;
+private:
 	unique_ptr<TitleText> text_;
+	array<unique_ptr<IKESprite>,NUMBER_MAX> Sprite_First;
+	array<unique_ptr<IKESprite>,NUMBER_MAX> Sprite_Second;
+	array<unique_ptr<IKESprite>,NUMBER_MAX> Sprite_Third;
+	array<unique_ptr<IKESprite>,NUMBER_MAX> Sprite_Fourth;
+
+	enum SceneType {
+		PLAY,
+		TUTORIAL,
+		EDITOR,
+	}_SceneType = PLAY;
 };

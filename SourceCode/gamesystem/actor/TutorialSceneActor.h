@@ -5,7 +5,8 @@
 #include "TutorialEnemy.h"
 #include<windows.h>
 #include<vector>
-
+#include "UI.h"
+#include "MagText.h"
 class TutorialSceneActor :public BaseActor
 {
 public:
@@ -25,6 +26,7 @@ private:
 	void FinishUpdate(DebugCamera* camera)override;		//撃破シーン
 
 	void ImGuiDraw();
+	void BirthScoreText(const int EnemyCount, const int Magnification);
 private:
 	enum class state {
 		MOVE,
@@ -73,5 +75,11 @@ private:
 
 	bool m_TutorialEnd = false;
 	int m_AddScore = {};
+
+	float radPower = 0;
+	const float addPower = 0.5f;
+
+	unique_ptr<UI> ui;
+	std::vector<MagText*> magtext;
 };
 
