@@ -41,6 +41,8 @@ public:
 	const bool GetAttack() { return m_Attack; }
 	const XMFLOAT3& GetPlayerVec() { return m_playerVec; }
 	const XMFLOAT3& GetAttackPos() { return m_AttackPos; }
+
+	void SetDamage(bool Damage) { this->m_Damage = Damage; }
 private:
 	void LoadCSV();
 
@@ -74,4 +76,5 @@ private:
 
 	bool m_Attack = false;
 	float m_AddFrame = {};
+	bool m_Damage = false;
 };

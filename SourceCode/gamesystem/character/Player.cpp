@@ -93,6 +93,7 @@ void Player::ImGuiDraw() {
 	ImGui::Begin("Player");
 	ImGui::Text("POSZ%f", m_Position.z);
 	ImGui::Text("Timer:%d", m_MoveTimer);
+	ImGui::Text("Damage:%d", m_Damage);
 	ImGui::End();
 }
 

@@ -105,7 +105,7 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 			if (enemy[i] == nullptr)continue;
 			enemy[i]->Update();
 		}
-	//	enemy->Update();
+
 	}
 	//タイマーを図る
 	if (!Slow::GetInstance()->GetSlow()) {
@@ -286,21 +286,9 @@ void FirstStageActor::FrontDraw(DirectXCommon* dxCommon) {
 }
 //ポストエフェクトかかる
 void FirstStageActor::BackDraw(DirectXCommon* dxCommon) {
-	IKEObject3d::PreDraw();
+IKEObject3d::PreDraw();
 	BackObj::GetInstance()->Draw(dxCommon);
 	Player::GetInstance()->Draw(dxCommon);
-<<<<<<< HEAD
-	for (auto i = 0; i < enemy.size(); i++)
-	{
-		if (enemy[i] == nullptr)continue;
-		enemy[i]->Draw(dxCommon);
-	}
-	ground->Draw();
-	IKEObject3d::PostDraw();
-	ParticleEmitter::GetInstance()->FlontDrawAll();
-
-=======
->>>>>>> main
 	IKETexture::PreDraw2(dxCommon, AlphaBlendType);
 	for (auto& m : blood)
 	{
@@ -315,8 +303,6 @@ void FirstStageActor::BackDraw(DirectXCommon* dxCommon) {
 	//ground->Draw();
 	IKEObject3d::PostDraw();
 	ParticleEmitter::GetInstance()->FlontDrawAll();
-
-	
 }
 //導入しーんの更新
 void FirstStageActor::IntroUpdate(DebugCamera* camera) {
@@ -332,7 +318,7 @@ void FirstStageActor::FinishUpdate(DebugCamera* camera) {
 }
 
 void FirstStageActor::ImGuiDraw() {
-	ImGui::Begin("FIRST");
+	/*ImGui::Begin("FIRST");
 	if (Slow::GetInstance()->GetSlow()) {
 		ImGui::Text("PUSH A!!!");
 	}
@@ -341,7 +327,8 @@ void FirstStageActor::ImGuiDraw() {
 	{
 		if (enemy[i] == nullptr)continue;
 		enemy[i]->ImGuiDraw();
-	}
+	}*/
+	Player::GetInstance()->ImGuiDraw();
 }
 //倍率スコアの生成
 void FirstStageActor::BirthScoreText(const int EnemyCount, const int Magnification) {

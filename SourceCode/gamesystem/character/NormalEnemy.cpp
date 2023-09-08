@@ -156,8 +156,6 @@ void NormalEnemy::ImGui_Origin() {
 	ImGui::Begin("Enemy");
 	ImGui::Text("Slow:%f", m_velocity);
 	ImGui::End();
-
-	
 }
 //開放
 void NormalEnemy::Finalize() {
@@ -316,6 +314,7 @@ void NormalEnemy::SlowCollide() {
 	else {
 		m_ViewEffect = false;
 		m_Slow = false;
+		Player::GetInstance()->SetDamage(true);
 	}
 }
 //死んだときの動き

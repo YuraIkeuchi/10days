@@ -110,7 +110,7 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 	window->SetSize(window_size);
 	window->SetColor({ 1.0f,1.0f,1.0f,m_Alpha });
 	BackObj::GetInstance()->Update();
-	
+
 	if (!TutorialTask::GetInstance()->GetStop()) {
 		Player::GetInstance()->TutorialUpdate();
 		Slow::GetInstance()->Update();
@@ -143,16 +143,13 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 
 	ParticleEmitter::GetInstance()->Update();
 
-	for (auto i = 0; i < enemys.size(); i++) {
-		enemys[i]->Update();
-	}
 	//敵の削除
 	for (int i = 0; i < enemys.size(); i++) {
 		if (enemys[i] == nullptr) {
 			continue;
 		}
 
-		if (!enemys[i]->GetAlive()) {
+		if (enemys[i]->GetDeath() && !enemys[i]->GetDamage()) {
 			ui->SetMag(true);
 			for (auto& m : blood)
 			{
@@ -163,7 +160,6 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 					break;
 				}
 			}
-			enemys.erase(cbegin(enemys) + i);
 			m_EnemyCount--;
 			if (ScoreManager::GetInstance()->GetMagnification() < 5) {
 				ScoreManager::GetInstance()->SetMagnification(ScoreManager::GetInstance()->GetMagnification() + 1);
@@ -172,9 +168,17 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 			BirthScoreText(1, ScoreManager::GetInstance()->GetMagnification());
 			ScoreManager::GetInstance()->SetFirstNumber(ScoreManager::GetInstance()->GetFirstNumber() + m_AddScore);
 			m_AddScore = 0;
+			enemys[i]->SetDamage(true);
+		}
+
+		if (!enemys[i]->GetAlive()) {
+			enemys.erase(cbegin(enemys) + i);
 		}
 	}
 
+	for (auto i = 0; i < enemys.size(); i++) {
+		enemys[i]->Update();
+  }
 	//血だまりのエフェクト
 	for (int i = 0; i < blood.size(); i++)
 	{
@@ -235,6 +239,22 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 	}
 	ScoreManager::GetInstance()->Update();
 	SceneChanger::GetInstance()->Update();
+
+	//タイマーを図る
+	if (!Slow::GetInstance()->GetSlow()) {
+		//Timer::GetInstance()->Update();
+		PlayPostEffect = false;
+		radPower -= addPower;
+		radPower = max(0, radPower);
+		postEffect->SetRadPower(radPower);
+	}
+	else {
+		PlayPostEffect = true;
+		radPower += addPower;
+		radPower = min(radPower, 10.0f);
+		postEffect->SetRadPower(radPower);
+	}
+	ScoreManager::GetInstance()->Update();
 }
 
 void TutorialSceneActor::Draw(DirectXCommon* dxCommon) {
@@ -265,6 +285,7 @@ void TutorialSceneActor::Draw(DirectXCommon* dxCommon) {
 void TutorialSceneActor::FrontDraw(DirectXCommon* dxCommon) {
 	IKESprite::PreDraw();
 	ui->FrontDraw();
+	IKESprite::PostDraw();
 	for (auto i = 0; i < enemys.size(); i++)
 	{
 		if (enemys[i] == nullptr)continue;
@@ -276,6 +297,7 @@ void TutorialSceneActor::FrontDraw(DirectXCommon* dxCommon) {
 		if (magtext[i] == nullptr)continue;
 		magtext[i]->Draw();
 	}
+	IKESprite::PreDraw();
 	ui->BackDraw();
 	IKESprite::PostDraw();
 	//完全に前に書くスプライト
@@ -328,17 +350,17 @@ void TutorialSceneActor::FinishUpdate(DebugCamera* camera) {
 }
 
 void TutorialSceneActor::ImGuiDraw() {
-	/*ImGui::Begin("TUTORIAL");
-	ImGui::Text("Timer:%d", m_TexTimer);
-	ImGui::Text("Count:%d", m_EnemyCount);
-	ImGui::End();
-	Player::GetInstance()->ImGuiDraw();
-	camerawork->ImGuiDraw();
+	
+	Slow::GetInstance()->ImGuiDraw();
 	for (auto i = 0; i < enemys.size(); i++) {
 		enemys[i]->ImGuiDraw();
 	}
-	ScoreManager::GetInstance()->ImGuiDraw();*/
-	Slow::GetInstance()->ImGuiDraw();
+
+	ImGui::Begin("Tuto");
+	ImGui::Text("Timer:%d", m_TexTimer);
+	ImGui::Text("Count:%d", m_EnemyCount);
+	ImGui::Text("State:%d", _AttackState);
+	ImGui::End();
 }
 
 //移動
@@ -406,13 +428,13 @@ void TutorialSceneActor::AttackState() {
 		if (Slow::GetInstance()->GetSlow()) {
 			Slow::GetInstance()->SetTutorial(true);
 			text_->SelectText(TextManager::ATTACK5);
+		}
 
-			if (m_EnemyCount == 0) {
-				m_TexTimer = {};
-				Slow::GetInstance()->SetTutorial(false);
-				_AttackState = ENEMY_INTERVAL;
-				text_->SelectText(TextManager::ATTACK6);
-			}
+		if (m_EnemyCount == 0) {	//敵を倒した瞬間
+			Slow::GetInstance()->SetTutorial(false);
+			m_TexTimer = {};
+			_AttackState = ENEMY_INTERVAL;
+			text_->SelectText(TextManager::ATTACK6);
 		}
 	}
 	else if (_AttackState == ENEMY_INTERVAL) {
@@ -450,21 +472,6 @@ void TutorialSceneActor::EndState() {
 	if (m_EnemyCount == 0 && m_TutorialEnd) {
 		m_TexTimer = {};
 		m_TutorialEnd = false;
-	}
-
-	//タイマーを図る
-	if (!Slow::GetInstance()->GetSlow()) {
-		//Timer::GetInstance()->Update();
-		PlayPostEffect = false;
-		radPower -= addPower;
-		radPower = max(0, radPower);
-		postEffect->SetRadPower(radPower);
-	}
-	else {
-		PlayPostEffect = true;
-		radPower += addPower;
-		radPower = min(radPower, 10.0f);
-		postEffect->SetRadPower(radPower);
 	}
 
 }
