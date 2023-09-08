@@ -39,6 +39,7 @@ void ImageManager::StartLoadTex2D()
 	IKETexture::LoadTexture(GRASS, L"Resources/2d/objicon/grass.png");
 	IKETexture::LoadTexture(GROUND, L"Resources/2d/objicon/ground.png");
 	IKETexture::LoadTexture(BASE_GROUND, L"Resources/2d/objicon/baseground.png");
+	IKETexture::LoadTexture(SLASH, L"Resources/2d/effect/Slash.png");
 }
 
 //非同期処理でのテクスチャの読み込み

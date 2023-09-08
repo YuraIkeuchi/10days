@@ -288,7 +288,12 @@ void FirstStageActor::BackDraw(DirectXCommon* dxCommon) {
 	IKEObject3d::PreDraw();
 	BackObj::GetInstance()->Draw(dxCommon);
 	Player::GetInstance()->Draw(dxCommon);
-
+	IKETexture::PreDraw2(dxCommon, AlphaBlendType);
+	for (auto& m : blood)
+	{
+		m->object->Draw();
+	}
+	IKETexture::PostDraw();
 	for (auto i = 0; i < enemy.size(); i++)
 	{
 		if (enemy[i] == nullptr)continue;
@@ -298,13 +303,7 @@ void FirstStageActor::BackDraw(DirectXCommon* dxCommon) {
 	IKEObject3d::PostDraw();
 	ParticleEmitter::GetInstance()->FlontDrawAll();
 
-	IKETexture::PreDraw2(dxCommon, AlphaBlendType);
-
-	for (auto& m : blood)
-	{
-		m->object->Draw();
-	}
-	IKETexture::PostDraw();
+	
 }
 //導入しーんの更新
 void FirstStageActor::IntroUpdate(DebugCamera* camera) {
@@ -325,12 +324,11 @@ void FirstStageActor::ImGuiDraw() {
 		ImGui::Text("PUSH A!!!");
 	}
 	ImGui::End();
-	////enemy->ImGuiDraw();
-	//Player::GetInstance()->ImGuiDraw();
-	Slow::GetInstance()->ImGuiDraw();
-
-	//Timer::GetInstance()->ImGuiDraw();
-	//ScoreManager::GetInstance()->ImGuiDraw();
+	for (auto i = 0; i < enemy.size(); i++)
+	{
+		if (enemy[i] == nullptr)continue;
+		enemy[i]->ImGuiDraw();
+	}
 }
 //倍率スコアの生成
 void FirstStageActor::BirthScoreText(const int EnemyCount, const int Magnification) {

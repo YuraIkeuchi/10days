@@ -1,6 +1,7 @@
 #pragma once
 #include "ObjCommon.h"
 #include "IKESprite.h"
+#include "SlashEffect.h"
 //“GŠî’ê
 class InterEnemy :
 	public ObjCommon {
@@ -102,6 +103,7 @@ protected:
 	unique_ptr<IKESprite> effect_down;
 	unique_ptr<IKESprite> gauge_up;
 	unique_ptr<IKESprite> gauge_down;
+	std::vector<SlashEffect*> slash;
 	XMFLOAT4 m_EffectColor = {};
 	bool m_SlowMove = false;
 	bool m_Move = true;

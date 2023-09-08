@@ -104,6 +104,23 @@ void NormalEnemy::Action() {
 	gauge_down->SetColor({ m_Color.x,m_Color.y,m_Color.z,m_Alpha });
 	effect_up->SetColor({ 1.0f,1.0f,1.0f,m_Alpha });
 	effect_down->SetColor({ 1.0f,1.0f,1.0f,m_Alpha });
+
+	//斬撃エフェクト
+	for (auto i = 0; i < slash.size(); i++)
+	{
+		if (slash[i] == nullptr)continue;
+		slash[i]->Update();
+	}
+	//斬撃エフェクトの削除
+	for (int i = 0; i < slash.size(); i++) {
+		if (slash[i] == nullptr) {
+			continue;
+		}
+
+		if (!slash[i]->GetAlive()) {
+			slash.erase(cbegin(slash) + i);
+		}
+	}
 }
 //描画
 void NormalEnemy::Draw(DirectXCommon* dxCommon) {
@@ -111,9 +128,22 @@ void NormalEnemy::Draw(DirectXCommon* dxCommon) {
 	if (StopF||SceneManager::GetInstance()->GetEditF()||Timer::GetInstance()->getNowTime()<MovingTime && m_Alive) {
 		Obj_Draw();
 	}
+
+	//斬撃エフェクト
+	for (auto i = 0; i < slash.size(); i++)
+	{
+		if (slash[i] == nullptr)continue;
+		slash[i]->Draw(dxCommon);
+	}
 }
 //エフェクト描画
 void NormalEnemy::EffectDraw(DirectXCommon* dxCommon) {
+	//斬撃エフェクト
+	for (auto i = 0; i < slash.size(); i++)
+	{
+		if (slash[i] == nullptr)continue;
+		slash[i]->ImGuiDraw();
+	}
 	if (m_ViewEffect) {
 		gauge_up->Draw();
 		gauge_down->Draw();
@@ -126,6 +156,8 @@ void NormalEnemy::ImGui_Origin() {
 	ImGui::Begin("Enemy");
 	ImGui::Text("Slow:%f", m_velocity);
 	ImGui::End();
+
+	
 }
 //開放
 void NormalEnemy::Finalize() {
@@ -246,6 +278,7 @@ void NormalEnemy::SlowCollide() {
 					int num = Random::GetRanNum(30, 40);
 					float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
 					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
+					BirthEffect();
 				}
 			}
 			else if (m_EnemyType == GREEN_ENEMY) {
@@ -255,6 +288,7 @@ void NormalEnemy::SlowCollide() {
 					int num = Random::GetRanNum(30, 40);
 					float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
 					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
+					BirthEffect();
 				}
 			}
 			else {
@@ -264,6 +298,7 @@ void NormalEnemy::SlowCollide() {
 					int num = Random::GetRanNum(30, 40);
 					float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
 					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
+					BirthEffect();
 				}
 			}
 		}
@@ -296,4 +331,11 @@ void NormalEnemy::DeathMove() {
 	m_UpPos.x = Ease(In, Cubic, m_Frame, m_UpPos.x, 700.0f);
 	m_DownPos.x = Ease(In, Cubic, m_Frame, m_DownPos.x, 900.0f);
 	m_Alpha = Ease(In, Cubic, m_Frame, m_Alpha, 0.0f);
+}
+//エフェクトの生成
+void NormalEnemy::BirthEffect() {
+	SlashEffect* effect;
+	effect = new SlashEffect(m_Position);
+	effect->Initialize();
+	slash.push_back(effect);
 }

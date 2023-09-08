@@ -15,6 +15,7 @@ public:
 private:
 	void SlowCollide();
 	void DeathMove();
+	void BirthEffect();
 private:
 
 	//ŠÖ”ƒ|ƒCƒ“ƒ^

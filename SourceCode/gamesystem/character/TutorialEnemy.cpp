@@ -86,15 +86,40 @@ void TutorialEnemy::Action() {
 		SlowCollide();
 	}
 	Obj_SetParam();
+
+	//斬撃エフェクト
+	for (auto i = 0; i < slash.size(); i++)
+	{
+		if (slash[i] == nullptr)continue;
+		slash[i]->Update();
+	}
+	//斬撃エフェクトの削除
+	for (int i = 0; i < slash.size(); i++) {
+		if (slash[i] == nullptr) {
+			continue;
+		}
+
+		if (!slash[i]->GetAlive()) {
+			slash.erase(cbegin(slash) + i);
+		}
+	}
 }
 //描画
 void TutorialEnemy::Draw(DirectXCommon* dxCommon) {
 	if (_charaState != STATE_INTER) {
 		Obj_Draw();
 	}
+
+	
 }
 //エフェクト描画
 void TutorialEnemy::EffectDraw(DirectXCommon* dxCommon) {
+	//斬撃エフェクト
+	for (auto i = 0; i < slash.size(); i++)
+	{
+		if (slash[i] == nullptr)continue;
+		slash[i]->Draw(dxCommon);
+	}
 	if (m_Slow) {
 		gauge_up->Draw();
 		gauge_down->Draw();
@@ -195,13 +220,41 @@ void TutorialEnemy::SlowCollide() {
 			m_Slow = true;
 		}
 		else {
-			if ((input->TriggerButton(input->A))) {
-				m_Death = true;
-				_charaState = STATE_INTER;
-				m_ResPornTimer = {};
-				int num = Random::GetRanNum(30, 40);
-				float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
-				ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
+			if (m_EnemyType == RED_ENEMY) {
+				if ((input->TriggerButton(input->B))) {
+					m_Death = true;
+					_charaState = STATE_INTER;
+					int num = Random::GetRanNum(30, 40);
+					float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
+					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
+					BirthEffect();
+					Slow::GetInstance()->SetSlow(false);
+					Slow::GetInstance()->SetSlowTimer(0);
+				}
+			}
+			else if (m_EnemyType == GREEN_ENEMY) {
+				if ((input->TriggerButton(input->A))) {
+					m_Death = true;
+					_charaState = STATE_INTER;
+					int num = Random::GetRanNum(30, 40);
+					float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
+					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
+					BirthEffect();
+					Slow::GetInstance()->SetSlow(false);
+					Slow::GetInstance()->SetSlowTimer(0);
+				}
+			}
+			else {
+				if ((input->TriggerButton(input->X))) {
+					m_Death = true;
+					_charaState = STATE_INTER;
+					int num = Random::GetRanNum(30, 40);
+					float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
+					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
+					BirthEffect();
+					Slow::GetInstance()->SetSlow(false);
+					Slow::GetInstance()->SetSlowTimer(0);
+				}
 			}
 		}
 	}
@@ -220,4 +273,11 @@ void TutorialEnemy::DeathMove() {
 	if (m_Scale.x <= 0.1f) {
 		m_Alive = false;
 	}
+}
+//エフェクトの生成
+void TutorialEnemy::BirthEffect() {
+	SlashEffect* effect;
+	effect = new SlashEffect(m_Position);
+	effect->Initialize();
+	slash.push_back(effect);
 }

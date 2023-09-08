@@ -43,6 +43,7 @@ public:
 		GRASS,
 		GROUND,
 		BASE_GROUND,
+		SLASH,
 	};
 	enum particleName
 	{
