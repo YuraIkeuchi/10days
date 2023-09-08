@@ -336,20 +336,20 @@ void FirstStageActor::FinishUpdate(DebugCamera* camera) {
 }
 
 void FirstStageActor::ImGuiDraw() {
-	/*ImGui::Begin("FIRST");
-	if (Slow::GetInstance()->GetSlow()) {
-		ImGui::Text("PUSH A!!!");
-	}
-	ImGui::End();
-	
-	}*/
-	Slow::GetInstance()->ImGuiDraw();
-	Player::GetInstance()->ImGuiDraw();
-	for (auto i = 0; i < enemy.size(); i++)
-	{
-		if (enemy[i] == nullptr)continue;
-		enemy[i]->ImGuiDraw();
-	}
+	///*ImGui::Begin("FIRST");
+	//if (Slow::GetInstance()->GetSlow()) {
+	//	ImGui::Text("PUSH A!!!");
+	//}
+	//ImGui::End();
+	//
+	//}*/
+	//Slow::GetInstance()->ImGuiDraw();
+	//Player::GetInstance()->ImGuiDraw();
+	//for (auto i = 0; i < enemy.size(); i++)
+	//{
+	//	if (enemy[i] == nullptr)continue;
+	//	enemy[i]->ImGuiDraw();
+	//}
 }
 //倍率スコアの生成
 void FirstStageActor::BirthScoreText(const int EnemyCount, const int Magnification) {

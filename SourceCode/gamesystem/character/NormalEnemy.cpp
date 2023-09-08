@@ -30,16 +30,20 @@ bool NormalEnemy::Initialize() {
 	m_Object->Initialize();
 	m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::ENEMY));
 	effect_up = IKESprite::Create(ImageManager::CUT_UP, {});
+	effect_up->SetAnchorPoint({ 0.5f,1.0f });
 	effect_down = IKESprite::Create(ImageManager::CUT_DOWN, {});
+	effect_down->SetAnchorPoint({ 0.5f,0.0f });
 	gauge_up = IKESprite::Create(ImageManager::CUTGAGE_UP, {});
+	gauge_up->SetAnchorPoint({ 0.5f,1.0f });
 	gauge_down = IKESprite::Create(ImageManager::CUTGAGE_DOWN, {});
+	gauge_down->SetAnchorPoint({ 0.5f,0.0f });
 	_charaState =  StartState;
 	_EnemyType = m_EnemyType;
 
 	if (_EnemyType == RED_ENEMY) {
 		m_Color = { 1.0f,0.2f,0.0f,1.0f };
-		m_UpPos = { 800.0f,200.0f };
-		m_DownPos = { 800.0f,195.0f };
+		m_UpPos = { 1000.0f,200.0f };
+		m_DownPos = { 1000.0f,195.0f };
 	}
 	else if (_EnemyType == GREEN_ENEMY) {
 		m_Color = { 0.0f,1.0f,0.2f,1.0f };
@@ -51,10 +55,10 @@ bool NormalEnemy::Initialize() {
 		m_UpPos = { 800.0f,360.0f };
 		m_DownPos = { 800.0f,355.0f };
 	}
-	gauge_up->SetScale(0.3f);
-	gauge_down->SetScale(0.3f);
-	effect_up->SetScale(0.3f);
-	effect_down->SetScale(0.3f);
+	gauge_up->SetScale(0.25f);
+	gauge_down->SetScale(0.25f);
+	effect_up->SetScale(0.25f);
+	effect_down->SetScale(0.25f);
 	gauge_up->SetColor(m_Color);
 	gauge_down->SetColor(m_Color);
 
@@ -129,7 +133,10 @@ void NormalEnemy::Action() {
 		m_Slow = false;
 		m_Miss = false;
 		m_ViewEffect = false;
+		m_MissTimer = {};
 	}
+
+	EffectCountDown();
 }
 //描画
 void NormalEnemy::Draw(DirectXCommon* dxCommon) {
@@ -163,7 +170,7 @@ void NormalEnemy::EffectDraw(DirectXCommon* dxCommon) {
 //ImGui描画
 void NormalEnemy::ImGui_Origin() {
 	ImGui::Begin("Enemy");
-	ImGui::Text("Hit:%d", SlowStopTimer);
+	ImGui::Text("Hit:%d", m_MissTimer);
 	ImGui::End();
 }
 //開放
@@ -353,8 +360,8 @@ void NormalEnemy::DeathMove() {
 	if (Helper::GetInstance()->FrameCheck(m_Frame, l_AddFrame)) {
 		m_ViewEffect = false;
 	}
-	m_UpPos.x = Ease(In, Cubic, m_Frame, m_UpPos.x, 700.0f);
-	m_DownPos.x = Ease(In, Cubic, m_Frame, m_DownPos.x, 900.0f);
+	m_UpPos.x = Ease(In, Cubic, m_Frame, m_UpPos.x, 600.0f);
+	m_DownPos.x = Ease(In, Cubic, m_Frame, m_DownPos.x, 1000.0f);
 	m_Alpha = Ease(In, Cubic, m_Frame, m_Alpha, 0.0f);
 
 	SlowStopTimer++;

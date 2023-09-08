@@ -24,7 +24,7 @@ void Slow::Initialize() {
 void Slow::Update() {
 	if (m_Slow) {
 		if (!m_Tutorial) {
-			m_SlowPower = 0.2f;
+			m_SlowPower = 0.1f;
 			m_PlayerSlowPower = 0.2f;
 			m_MovePower = 0.1f;
 			//m_SlowTimer--;

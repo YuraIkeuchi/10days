@@ -86,6 +86,8 @@ public:
 	void ImGuiDraw();
 
 	virtual void ImGui_Origin() = 0;
+
+	void EffectCountDown();//制限時間
 public:
 	bool CheckCollide();
 	void AttackCollide();
@@ -139,4 +141,8 @@ protected:
 	bool m_Slow = false;
 	float m_radius = 1.2f;
 
+	//エフェクトの大きさ
+	XMFLOAT2 EffectSize = {};
+	float m_EffectFrame = {};
+	int m_MissTimer = {};
 };

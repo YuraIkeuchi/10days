@@ -6,6 +6,7 @@
 #include "Random.h"
 #include "ParticleEmitter.h"
 #include "Input.h"
+#include "Timer.h"
 //初期化
 bool InterEnemy::Initialize() {
 	return true;
@@ -60,7 +61,8 @@ void InterEnemy::ImGuiDraw() {
 
 bool InterEnemy::CheckCollide() {
 	if (Collision::CircleCollision(m_Position.x, m_Position.z, m_radius, Player::GetInstance()->GetAttackPos().x, Player::GetInstance()->GetAttackPos().z, m_radius)) {
-		if (Player::GetInstance()->GetAttack() && !m_Death && !m_Miss) {
+		if (Player::GetInstance()->GetAttack() && !m_Death && !m_Miss && _charaState != STATE_INTER
+			&& Timer::GetInstance()->getNowTime() < MovingTime) {
 			Slow::GetInstance()->SetSlow(true);
 			m_Slow = true;
 			m_ViewEffect = true;
@@ -85,7 +87,6 @@ void InterEnemy::AttackCollide() {
 			if (m_EnemyType == RED_ENEMY) {
 				Slow::GetInstance()->SetCheck(false);
 				m_Death = true;
-				_charaState = STATE_INTER;
 				int num = Random::GetRanNum(30, 40);
 				float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
 				ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
@@ -105,7 +106,6 @@ void InterEnemy::AttackCollide() {
 			if (m_EnemyType == GREEN_ENEMY) {
 				Slow::GetInstance()->SetCheck(false);
 				m_Death = true;
-				_charaState = STATE_INTER;
 				int num = Random::GetRanNum(30, 40);
 				float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
 				ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
@@ -125,7 +125,6 @@ void InterEnemy::AttackCollide() {
 			if (m_EnemyType == BLUE_ENEMY) {
 				Slow::GetInstance()->SetCheck(false);
 				m_Death = true;
-				_charaState = STATE_INTER;
 				int num = Random::GetRanNum(30, 40);
 				float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
 				ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
@@ -158,4 +157,34 @@ void InterEnemy::BirthEffect() {
 	effect = new SlashEffect(m_Position);
 	effect->Initialize();
 	slash.push_back(effect);
+}
+
+//エフェクトが小さくなる
+void InterEnemy::EffectCountDown() {
+	if (m_ViewEffect && !m_Death) {
+		gauge_up->SetScale(0.97f);
+		gauge_down->SetScale(0.97f);
+		effect_up->SetScale(0.97f);
+		effect_down->SetScale(0.97f);
+		m_MissTimer++;
+	}
+
+	if (m_MissTimer >= 80) {
+		Slow::GetInstance()->SetCheck(false);
+		m_Miss = true;
+		m_HitCheck = false;
+		Player::GetInstance()->SetDamage(true);
+		Slow::GetInstance()->SetSlow(false);
+		m_ViewEffect = false;
+
+		gauge_up->SetSize({ 1632.0f,706 });
+		gauge_down->SetSize({ 1632.0f,819 });
+		effect_up->SetSize({ 1632.0f,703.0f });
+		effect_down->SetSize({ 1632.0f,823.0f });
+		gauge_up->SetScale(0.25f);
+		gauge_down->SetScale(0.25f);
+		effect_up->SetScale(0.25f);
+		effect_down->SetScale(0.25f);
+		m_MissTimer = {};
+	}
 }
