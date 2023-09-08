@@ -19,7 +19,8 @@ void ImageManager::StartLoad2D()
 	IKESprite::LoadTexture(SCOREGAGE, L"Resources/2d/objicon/Emaki2.png");
 	IKESprite::LoadTexture(MAGGAGE, L"Resources/2d/objicon/Emaki3.png");
 	IKESprite::LoadTexture(MAGNIFICATION, L"Resources/2d/objicon/Mag.png");
-	IKESprite::LoadTexture(CUTEFFECT, L"Resources/2d/effect/CutEffect.png");
+	IKESprite::LoadTexture(CUTEFFECT, L"Resources/2d/effect/slash.png");
+	IKESprite::LoadTexture(CUTGAGE, L"Resources/2d/effect/gauge.png");
 }
 
 //非同期処理で読み込むスプライト

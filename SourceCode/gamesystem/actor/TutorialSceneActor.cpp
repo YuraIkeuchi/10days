@@ -300,6 +300,7 @@ void TutorialSceneActor::ImGuiDraw() {
 		enemys[i]->ImGuiDraw();
 	}
 	ScoreManager::GetInstance()->ImGuiDraw();*/
+	Slow::GetInstance()->ImGuiDraw();
 }
 
 //移動

@@ -96,6 +96,7 @@ public://gettersetter
 protected:
 	
 	unique_ptr<IKESprite> effect;
+	unique_ptr<IKESprite> gauge;
 	XMFLOAT4 m_EffectColor = {};
 	bool m_SlowMove = false;
 	bool m_Move = true;

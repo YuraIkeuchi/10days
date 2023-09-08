@@ -30,6 +30,7 @@ public:
 		MAGGAGE,
 		MAGNIFICATION,
 		CUTEFFECT,
+		CUTGAGE,
 	};
 	//テクスチャの名前
 	enum tex2dName

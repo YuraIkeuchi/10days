@@ -27,6 +27,7 @@ bool TutorialEnemy::Initialize() {
 	m_Object->Initialize();
 	m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::ENEMY));
 	effect = IKESprite::Create(ImageManager::CUTEFFECT, {});
+	gauge = IKESprite::Create(ImageManager::CUTGAGE, {});
 	_charaState = StartState;
 	_EnemyType = m_EnemyType;
 
@@ -42,8 +43,10 @@ bool TutorialEnemy::Initialize() {
 		m_Color = { 0.2f,0.0f,1.0f,1.0f };
 		effect->SetPosition({ 800.0f,450.0f });
 	}
-
-	effect->SetColor(m_Color);
+	gauge->SetScale(0.15f);
+	effect->SetScale(0.15f);
+	gauge->SetColor(m_Color);
+	gauge->SetPosition(effect->GetPosition());
 	m_BaseSpeed = static_cast<float>(std::any_cast<double>(LoadCSV::LoadCsvParam("Resources/csv/chara/enemy/enemy.csv", "speed")));
 	return true;
 }
@@ -58,10 +61,18 @@ void (TutorialEnemy::* TutorialEnemy::stateTable[])() = {
 
 //s“®
 void TutorialEnemy::Action() {
-	(this->*stateTable[_charaState])();
+	if (!m_Death) {
+		(this->*stateTable[_charaState])();
+	}
+	else {
+		DeathMove();
+	}
+	
 
 	//“–‚½‚è”»’è
-	SlowCollide();
+	if (!m_Death) {
+		SlowCollide();
+	}
 	Obj_SetParam();
 }
 //•`‰æ
@@ -165,12 +176,12 @@ void TutorialEnemy::SlowCollide() {
 	if (Collision::CircleCollision(m_Position.x, m_Position.z, m_radius, Player::GetInstance()->GetAttackPos().x, Player::GetInstance()->GetAttackPos().z, m_radius)) {
 		if (!m_Slow) {
 			Slow::GetInstance()->SetSlow(true);
-			Slow::GetInstance()->SetSlowTimer(25);
+			Slow::GetInstance()->SetSlowTimer(60);
 			m_Slow = true;
 		}
 		else {
 			if ((input->TriggerButton(input->A))) {
-				m_Alive = false;
+				m_Death = true;
 				_charaState = STATE_INTER;
 				m_ResPornTimer = {};
 				int num = Random::GetRanNum(30, 40);
@@ -181,5 +192,17 @@ void TutorialEnemy::SlowCollide() {
 	}
 	else {
 		m_Slow = false;
+	}
+}
+//Ž€‚ñ‚¾‚Æ‚«‚Ì“®‚«
+void TutorialEnemy::DeathMove() {
+	m_Slow = false;
+	m_Rotation.y += 2.0f;
+	m_Scale = { Ease(In,Cubic,0.5f * Slow::GetInstance()->GetSlowPower(),m_Scale.x,0.0f),
+				Ease(In,Cubic,0.5f * Slow::GetInstance()->GetSlowPower(),m_Scale.y,0.0f),
+				Ease(In,Cubic,0.5f * Slow::GetInstance()->GetSlowPower(),m_Scale.z,0.0f), };
+
+	if (m_Scale.x <= 0.1f) {
+		m_Alive = false;
 	}
 }

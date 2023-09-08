@@ -30,6 +30,7 @@ bool NormalEnemy::Initialize() {
 	m_Object->Initialize();
 	m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::ENEMY));
 	effect = IKESprite::Create(ImageManager::CUTEFFECT, {});
+	gauge = IKESprite::Create(ImageManager::CUTGAGE, {});
 	_charaState =  StartState;
 	_EnemyType = m_EnemyType;
 
@@ -45,8 +46,10 @@ bool NormalEnemy::Initialize() {
 		m_Color = { 0.2f,0.0f,1.0f,1.0f };
 		effect->SetPosition({ 800.0f,450.0f });
 	}
-
-	effect->SetColor(m_Color);
+	gauge->SetScale(0.15f);
+	effect->SetScale(0.15f);
+	gauge->SetColor(m_Color);
+	gauge->SetPosition(effect->GetPosition());
 	m_Alive = true;
 	//_charaState =  StartState;
 	m_Move = false;
@@ -66,10 +69,17 @@ void (NormalEnemy::* NormalEnemy::stateTable[])() = {
 //行動
 void NormalEnemy::Action() {
 	if (!StopF&&Timer::GetInstance()->getNowTime()<MovingTime) {
-		(this->*stateTable[_charaState])();
+		if (!m_Death) {
+			(this->*stateTable[_charaState])();
+		}
+		else {
+			DeathMove();
+		}
 
 		//当たり判
-		SlowCollide();
+		if (!m_Death) {
+			SlowCollide();
+		}
 	}
 	Obj_SetParam();
 }
@@ -83,6 +93,7 @@ void NormalEnemy::Draw(DirectXCommon* dxCommon) {
 //エフェクト描画
 void NormalEnemy::EffectDraw(DirectXCommon* dxCommon) {
 	if (m_Slow) {
+		gauge->Draw();
 		effect->Draw();
 	}
 }
@@ -125,14 +136,13 @@ void NormalEnemy::RightMove() {
 	
 	if (Helper::GetInstance()->CheckMin(m_Position.x, l_MAX, m_velocity)) {
 		m_Position.x = MapMinX;
-		m_Alive = false;
+		m_Death = true;
 		m_Slow = false;
 		m_Destroy = true;
 	}
 }
 //左に動く
 void NormalEnemy::LeftMove() {
-	m_Rotation = { 0.0f,90.0f,0.0f };
 	const float l_MIN = MapMinX;
 	if (m_SlowMove) {
 		m_velocity = -m_BaseSpeed * Slow::GetInstance()->GetSlowPower();
@@ -148,7 +158,7 @@ void NormalEnemy::LeftMove() {
 
 	if (Helper::GetInstance()->CheckMax(m_Position.x, l_MIN, m_velocity)) {
 		m_Position.x = MapMaxX;
-		m_Alive = false;
+		m_Death = true;
 		m_Slow = false;
 		m_Destroy = true;
 	}
@@ -171,7 +181,7 @@ void NormalEnemy::BottomMove() {
 
 	if (Helper::GetInstance()->CheckMax(m_Position.z, l_MIN, m_velocity)) {
 		m_Position.z = MapMaxZ;
-		m_Alive = false;
+		m_Death = true;
 		m_Slow = false;
 		m_Destroy = true;
 	}
@@ -193,7 +203,7 @@ void NormalEnemy::UpMove() {
 	
 	if (Helper::GetInstance()->CheckMin(m_Position.z, l_MIN, m_velocity)) {
 		m_Position.z = MapMinZ;
-		m_Alive = false;
+		m_Death = true;
 		m_Slow = false;
 		m_Destroy = true;
 	}
@@ -204,13 +214,13 @@ void NormalEnemy::SlowCollide() {
 	if (Collision::CircleCollision(m_Position.x, m_Position.z, m_radius, Player::GetInstance()->GetAttackPos().x, Player::GetInstance()->GetAttackPos().z, m_radius)) {
 		if (!m_Slow && Player::GetInstance()->GetAttack()) {
 			Slow::GetInstance()->SetSlow(true);
-			Slow::GetInstance()->SetSlowTimer(25);
+			Slow::GetInstance()->SetSlowTimer(60);
 			m_Slow = true;
 		}
 		else {
 			if (m_EnemyType == RED_ENEMY) {
 				if ((input->TriggerButton(input->B))) {
-					m_Alive = false;
+					m_Death = true;
 					_charaState = STATE_INTER;
 					m_ResPornTimer = {};
 					int num = Random::GetRanNum(30, 40);
@@ -220,7 +230,7 @@ void NormalEnemy::SlowCollide() {
 			}
 			else if (m_EnemyType == GREEN_ENEMY) {
 				if ((input->TriggerButton(input->A))) {
-					m_Alive = false;
+					m_Death = true;
 					_charaState = STATE_INTER;
 					m_ResPornTimer = {};
 					int num = Random::GetRanNum(30, 40);
@@ -230,7 +240,7 @@ void NormalEnemy::SlowCollide() {
 			}
 			else {
 				if ((input->TriggerButton(input->X))) {
-					m_Alive = false;
+					m_Death = true;
 					_charaState = STATE_INTER;
 					m_ResPornTimer = {};
 					int num = Random::GetRanNum(30, 40);
@@ -242,5 +252,21 @@ void NormalEnemy::SlowCollide() {
 	}
 	else {
 		m_Slow = false;
+	}
+}
+//死んだときの動き
+void NormalEnemy::DeathMove() {
+	m_Slow = false;
+	m_AddPower -= m_Gravity;
+	if (Helper::GetInstance()->CheckMax(m_Position.y, {}, m_AddPower * Slow::GetInstance()->GetSlowPower())) {
+		m_Scale = { Ease(In,Cubic,0.5f * Slow::GetInstance()->GetSlowPower(),m_Scale.x,0.0f),
+					Ease(In,Cubic,0.5f * Slow::GetInstance()->GetSlowPower(),m_Scale.y,0.0f),
+					Ease(In,Cubic,0.5f * Slow::GetInstance()->GetSlowPower(),m_Scale.z,0.0f), };
+
+		m_Rotation.y += 2.0f;
+
+		if (m_Scale.x <= 0.1f) {
+			m_Alive = false;
+		}
 	}
 }

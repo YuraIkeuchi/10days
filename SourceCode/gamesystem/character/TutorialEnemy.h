@@ -14,6 +14,7 @@ public:
 	void EffectDraw(DirectXCommon* dxCommon) override;//エフェクト描画
 private:
 	void SlowCollide();
+	void DeathMove();
 private:
 
 	//関数ポインタ
@@ -37,5 +38,6 @@ private:
 	int m_ResPornTimer = 0;
 
 	float m_BaseSpeed = {};
+	bool m_Death = false;
 };
 
