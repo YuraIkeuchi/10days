@@ -40,6 +40,9 @@ public:
 		MAGIC,
 		AREA,
 		BLOOD,
+		GRASS,
+		GROUND,
+		BASE_GROUND,
 	};
 	enum particleName
 	{

@@ -1,6 +1,7 @@
 #pragma once
 #include "IKEObject3d.h"
 #include "IKEModel.h"
+#include "IKETexture.h"
 #include <memory>
 #include <array>
 
@@ -21,7 +22,7 @@ public:
 	//çXêV
 	void Update();
 	//ï`âÊ
-	void Draw();
+	void Draw(DirectXCommon* dxCommon);
 
 private:
 	static const int WALL_NUM = 4;
@@ -32,4 +33,7 @@ private:
 
 	array<unique_ptr<IKEObject3d>, WALL_NUM> Up_Obj;
 	array<unique_ptr<IKEObject3d>, WALL_NUM> Under_Obj;
+	unique_ptr<IKETexture> ground;
+	unique_ptr<IKETexture> grass;
+	unique_ptr<IKETexture> base_ground;
 };

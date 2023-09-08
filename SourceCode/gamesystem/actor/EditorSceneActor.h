@@ -41,12 +41,10 @@ private:
 	int timer;
 	unique_ptr<InterEnemy>Sample;
 	InterEnemy::PosSt ini_enmeypos;
-	unique_ptr<IKEObject3d> ground;
 	IKEModel* model;
 	unique_ptr<IKEObject3d> skydome;
 	XMFLOAT2 m_AddOffset = {};
 	std::vector<unique_ptr<InterEnemy>> enemys;
-	unique_ptr<IKETexture> tex[AREA_NUM];
 	bool delf;
 	int TimeRap;
 	bool viewf;

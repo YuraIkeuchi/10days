@@ -31,15 +31,6 @@ void TutorialSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera
 
 	m_SceneState = SceneState::IntroState;
 
-	
-	//地面
-	ground.reset(new IKEObject3d());
-	ground->Initialize();
-	ground->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::GROUND));
-	ground->SetScale({ 1.f,1.f,1.f });
-	ground->SetPosition({ 0.0f,5.0f,0.0f });
-	ground->SetTiling(10.0f);
-	
 	//スカイドーム
 	skydome.reset(new IKEObject3d());
 	skydome->Initialize();
@@ -52,24 +43,6 @@ void TutorialSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera
 	Player::GetInstance()->LoadResource();
 	Player::GetInstance()->InitState({ 0.0f,0.0f,8.0f });
 	Player::GetInstance()->Initialize();
-
-	//テクスチャ
-	for (int i = 0; i < AREA_NUM; i++) {
-		tex[i].reset(IKETexture::Create(ImageManager::AREA, { 0,0,0 }, { 0.5f,0.5f,0.5f }, { 1,1,1,1 }));
-		tex[i]->TextureCreate();
-
-		tex[i]->SetRotation({ 90.0f,0.0f,0.0f });
-		tex[i]->SetColor({ 1.0f,0.0,0.0f,0.5f });
-	}
-
-	tex[0]->SetPosition({ 0.0f,0.0f,8.0f });
-	tex[1]->SetPosition({ 0.0f,0.0f,-8.0f });
-	tex[2]->SetPosition({ 9.3f,0.0f,0.0f });
-	tex[3]->SetPosition({ -9.3f,0.0f,0.0f });
-	tex[0]->SetScale({ 2.0f,0.1f,0.1f });
-	tex[1]->SetScale({ 2.0f,0.1f,0.1f });
-	tex[2]->SetScale({ 0.1f,1.6f,0.1f });
-	tex[3]->SetScale({ 0.1f,1.6f,0.1f });
 
 	//タイマー
 	Timer::GetInstance()->Initialize();
@@ -113,8 +86,6 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 	camerawork->TutorialUpdate(camera);
 	lightgroup->Update();
 	skydome->Update();
-	ground->Update();
-	ground->UpdateWorldMatrix();
 	window->SetSize(window_size);
 	window->SetColor({ 1.0f,1.0f,1.0f,m_Alpha });
 	BackObj::GetInstance()->Update();
@@ -149,9 +120,6 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 		SceneChanger::GetInstance()->SetChange(false);
 	}
 
-	for (int i = 0; i < AREA_NUM; i++) {
-		tex[i]->Update();
-	}
 	ParticleEmitter::GetInstance()->Update();
 
 	for (auto i = 0; i < enemys.size(); i++) {
@@ -261,20 +229,14 @@ void TutorialSceneActor::FrontDraw(DirectXCommon* dxCommon) {
 //ポストエフェクトかかる
 void TutorialSceneActor::BackDraw(DirectXCommon* dxCommon) {
 	IKEObject3d::PreDraw();
-	BackObj::GetInstance()->Draw();
+	BackObj::GetInstance()->Draw(dxCommon);
 	Player::GetInstance()->Draw(dxCommon);
 	for (auto i = 0; i < enemys.size(); i++) {
 		enemys[i]->Draw(dxCommon);
 	}
-	ground->Draw();
 	IKEObject3d::PostDraw();
 	ParticleEmitter::GetInstance()->FlontDrawAll();
 
-	IKETexture::PreDraw2(dxCommon, AlphaBlendType);
-	for (int i = 0; i < AREA_NUM; i++) {
-		tex[i]->Draw();
-	}
-	IKETexture::PostDraw();
 }
 //導入しーんの更新
 void TutorialSceneActor::IntroUpdate(DebugCamera* camera) {

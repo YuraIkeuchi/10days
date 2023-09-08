@@ -13,7 +13,6 @@ ModelManager* ModelManager::GetInstance()
 //モデル読み込み(最初から読み込むもの)
 void ModelManager::StartInitialize()
 {
-	LoadModel(GROUND, "ground");
 	LoadModel(PLAYERMODEL, "chr_knight");
 	LoadModel(SKYDOME, "skydome");
 	LoadModel(WALL_UP, "WallUp");

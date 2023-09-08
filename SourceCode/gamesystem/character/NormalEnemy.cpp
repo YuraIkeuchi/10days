@@ -159,7 +159,6 @@ void NormalEnemy::RightMove() {
 	}
 	
 	if (Helper::GetInstance()->CheckMin(m_Position.x, l_MAX, m_velocity)) {
-		m_Position.x = MapMinX;
 		m_Death = true;
 		m_Slow = false;
 		m_Destroy = true;
@@ -181,7 +180,6 @@ void NormalEnemy::LeftMove() {
 	}
 
 	if (Helper::GetInstance()->CheckMax(m_Position.x, l_MIN, m_velocity)) {
-		m_Position.x = MapMaxX;
 		m_Death = true;
 		m_Slow = false;
 		m_Destroy = true;
@@ -204,7 +202,6 @@ void NormalEnemy::BottomMove() {
 	}
 
 	if (Helper::GetInstance()->CheckMax(m_Position.z, l_MIN, m_velocity)) {
-		m_Position.z = MapMaxZ;
 		m_Death = true;
 		m_Slow = false;
 		m_Destroy = true;
@@ -226,7 +223,6 @@ void NormalEnemy::UpMove() {
 	}
 	
 	if (Helper::GetInstance()->CheckMin(m_Position.z, l_MIN, m_velocity)) {
-		m_Position.z = MapMinZ;
 		m_Death = true;
 		m_Slow = false;
 		m_Destroy = true;
