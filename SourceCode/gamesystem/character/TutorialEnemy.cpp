@@ -9,7 +9,7 @@
 #include "Collision.h"
 #include "ParticleEmitter.h"
 #include "Random.h"
-
+#include "ImageManager.h"
 #define MapMinX -10
 #define MapMaxX 10
 
@@ -26,12 +26,24 @@ bool TutorialEnemy::Initialize() {
 	m_Object.reset(new IKEObject3d());
 	m_Object->Initialize();
 	m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::ENEMY));
-	m_Color = { 1.0f,0.5f,0.0f,1.0f };
-	if(StartState==0)
-	{
-	//	_charaState =
+	effect = IKESprite::Create(ImageManager::CUTEFFECT, {});
+	_charaState = StartState;
+	_EnemyType = m_EnemyType;
+
+	if (_EnemyType == RED_ENEMY) {
+		m_Color = { 1.0f,0.2f,0.0f,1.0f };
+		effect->SetPosition({ 800.0f,250.0f });
 	}
-	_charaState =  CharaState::STATE_LEFT;//StartState;
+	else if (_EnemyType == GREEN_ENEMY) {
+		m_Color = { 0.0f,1.0f,0.2f,1.0f };
+		effect->SetPosition({ 800.0f,350.0f });
+	}
+	else {
+		m_Color = { 0.2f,0.0f,1.0f,1.0f };
+		effect->SetPosition({ 800.0f,450.0f });
+	}
+
+	effect->SetColor(m_Color);
 	m_BaseSpeed = static_cast<float>(std::any_cast<double>(LoadCSV::LoadCsvParam("Resources/csv/chara/enemy/enemy.csv", "speed")));
 	return true;
 }
@@ -60,7 +72,9 @@ void TutorialEnemy::Draw(DirectXCommon* dxCommon) {
 }
 //エフェクト描画
 void TutorialEnemy::EffectDraw(DirectXCommon* dxCommon) {
-
+	if (m_Slow) {
+		effect->Draw();
+	}
 }
 //ImGui描画
 void TutorialEnemy::ImGui_Origin() {
@@ -148,7 +162,7 @@ void TutorialEnemy::UpMove() {
 
 void TutorialEnemy::SlowCollide() {
 	Input* input = Input::GetInstance();
-	if (Collision::CircleCollision(m_Position.x, m_Position.z, m_radius, Player::GetInstance()->GetPosition().x, Player::GetInstance()->GetPosition().z, m_radius)) {
+	if (Collision::CircleCollision(m_Position.x, m_Position.z, m_radius, Player::GetInstance()->GetAttackPos().x, Player::GetInstance()->GetAttackPos().z, m_radius)) {
 		if (!m_Slow) {
 			Slow::GetInstance()->SetSlow(true);
 			Slow::GetInstance()->SetSlowTimer(25);

@@ -54,7 +54,7 @@ private:
 	//ベクトル
 	XMFLOAT3 m_playerVec = { 0, 0, 0 };
 	//攻撃範囲
-	XMFLOAT3 m_AttackPos = { 0.0f, 0.0f, 0.0f };
+	XMFLOAT3 m_AttackPos = { 100.0f, 0.0f, 0.0f };
 
 	//キャラの状態
 	enum CharaState

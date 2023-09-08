@@ -30,18 +30,20 @@ bool NormalEnemy::Initialize() {
 	m_Object->Initialize();
 	m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::ENEMY));
 	effect = IKESprite::Create(ImageManager::CUTEFFECT, {});
-	effect->SetPosition({ 700.0f,300.0f });
 	_charaState =  StartState;
 	_EnemyType = m_EnemyType;
 
 	if (_EnemyType == RED_ENEMY) {
 		m_Color = { 1.0f,0.2f,0.0f,1.0f };
+		effect->SetPosition({ 800.0f,250.0f });
 	}
 	else if (_EnemyType == GREEN_ENEMY) {
 		m_Color = { 0.0f,1.0f,0.2f,1.0f };
+		effect->SetPosition({ 800.0f,350.0f });
 	}
 	else {
 		m_Color = { 0.2f,0.0f,1.0f,1.0f };
+		effect->SetPosition({ 800.0f,450.0f });
 	}
 
 	effect->SetColor(m_Color);
