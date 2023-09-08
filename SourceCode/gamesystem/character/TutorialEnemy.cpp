@@ -248,6 +248,15 @@ void TutorialEnemy::SlowCollide() {
 			m_ViewEffect = true;
 		}
 		else {
+<<<<<<< HEAD
+			if ((input->TriggerButton(input->A))) {
+				m_Alive = false;
+				_charaState = STATE_INTER;
+				m_ResPornTimer = {};
+				int num = Random::GetRanNum(40, 50);
+				float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
+				ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
+=======
 			if (m_EnemyType == RED_ENEMY) {
 				if ((input->TriggerButton(input->B))) {
 					m_Death = true;
@@ -274,6 +283,7 @@ void TutorialEnemy::SlowCollide() {
 					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
 					BirthEffect();
 				}
+>>>>>>> main
 			}
 		}
 	}

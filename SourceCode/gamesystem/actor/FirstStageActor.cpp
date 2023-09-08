@@ -95,6 +95,7 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 	lightgroup->Update();
 	skydome->Update();
 	BackObj::GetInstance()->Update();
+
 	Timer::GetInstance()->Update();
 	if (!Timer::GetInstance()->GetStop()) {
 		Player::GetInstance()->Update();
@@ -104,7 +105,7 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 			if (enemy[i] == nullptr)continue;
 			enemy[i]->Update();
 		}
-	//	enemy->Update();
+
 	}
 	//タイマーを図る
 	if (!Slow::GetInstance()->GetSlow()) {
@@ -214,15 +215,15 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 		{
 			blood[i]->counter++;
 			float scale = blood[i]->object->GetScale().x;
-			scale += 0.05f;
-			scale = min(0.5f, scale);
+			scale += 0.03f;
+			scale = min(0.3f, scale);
 			blood[i]->object->SetScale({ scale, scale, scale });
 		}
 		//消える
 		else
 		{
 			XMFLOAT4 color = blood[i]->object->GetColor();
-			color.w -= 0.02f;
+			color.w -= 0.01f;
 			color.w = max(0, color.w);
 			blood[i]->object->SetColor(color);
 			if (color.w <= 0)
@@ -285,7 +286,7 @@ void FirstStageActor::FrontDraw(DirectXCommon* dxCommon) {
 }
 //ポストエフェクトかかる
 void FirstStageActor::BackDraw(DirectXCommon* dxCommon) {
-	IKEObject3d::PreDraw();
+IKEObject3d::PreDraw();
 	BackObj::GetInstance()->Draw(dxCommon);
 	Player::GetInstance()->Draw(dxCommon);
 	IKETexture::PreDraw2(dxCommon, AlphaBlendType);
@@ -302,8 +303,6 @@ void FirstStageActor::BackDraw(DirectXCommon* dxCommon) {
 	//ground->Draw();
 	IKEObject3d::PostDraw();
 	ParticleEmitter::GetInstance()->FlontDrawAll();
-
-	
 }
 //導入しーんの更新
 void FirstStageActor::IntroUpdate(DebugCamera* camera) {

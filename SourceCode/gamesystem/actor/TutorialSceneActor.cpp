@@ -44,6 +44,26 @@ void TutorialSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera
 	Player::GetInstance()->InitState({ 0.0f,0.0f,8.0f });
 	Player::GetInstance()->Initialize();
 
+	//テクスチャ
+	for (int i = 0; i < AREA_NUM; i++) {
+		tex[i].reset(IKETexture::Create(ImageManager::AREA, { 0,0,0 }, { 0.5f,0.5f,0.5f }, { 1,1,1,1 }));
+		tex[i]->TextureCreate();
+
+		tex[i]->SetRotation({ 90.0f,0.0f,0.0f });
+		tex[i]->SetColor({ 1.0f,0.0,0.0f,0.5f });
+	}
+
+	tex[0]->SetPosition({ 0.0f,0.0f,8.0f });
+	tex[1]->SetPosition({ 0.0f,0.0f,-8.0f });
+	tex[2]->SetPosition({ 9.3f,0.0f,0.0f });
+	tex[3]->SetPosition({ -9.3f,0.0f,0.0f });
+	tex[0]->SetScale({ 2.0f,0.1f,0.1f });
+	tex[1]->SetScale({ 2.0f,0.1f,0.1f });
+	tex[2]->SetScale({ 0.1f,1.6f,0.1f });
+	tex[3]->SetScale({ 0.1f,1.6f,0.1f });
+
+	blood.resize(ENEMY_MAX + 1);
+
 	//タイマー
 	Timer::GetInstance()->Initialize();
 
@@ -75,6 +95,7 @@ void TutorialSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera
 }
 
 void TutorialSceneActor::Finalize() {
+	blood.clear();
 }
 
 void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, LightGroup* lightgroup) {
@@ -130,6 +151,15 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 
 		if (enemys[i]->GetDeath() && !enemys[i]->GetDamage()) {
 			ui->SetMag(true);
+			for (auto& m : blood)
+			{
+				if (m->counter == 0)
+				{
+					m->object->SetPosition(enemys[i]->GetPosition());
+					m->counter = 1;
+					break;
+				}
+			}
 			m_EnemyCount--;
 			if (ScoreManager::GetInstance()->GetMagnification() < 5) {
 				ScoreManager::GetInstance()->SetMagnification(ScoreManager::GetInstance()->GetMagnification() + 1);
@@ -146,9 +176,43 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 		}
 	}
 
-
 	for (auto i = 0; i < enemys.size(); i++) {
 		enemys[i]->Update();
+  }
+	//血だまりのエフェクト
+	for (int i = 0; i < blood.size(); i++)
+	{
+		if (blood[i]->counter == 0)
+		{
+			continue;
+		}
+
+		//拡大
+		if (0 < blood[i]->counter && blood[i]->counter < 60)
+		{
+			blood[i]->counter++;
+			float scale = blood[i]->object->GetScale().x;
+			scale += 0.03f;
+			scale = min(0.3f, scale);
+			blood[i]->object->SetScale({ scale, scale, scale });
+		}
+		//消える
+		else
+		{
+			XMFLOAT4 color = blood[i]->object->GetColor();
+			color.w -= 0.01f;
+			color.w = max(0, color.w);
+			blood[i]->object->SetColor(color);
+			if (color.w <= 0)
+			{
+				blood.erase(cbegin(blood) + i);
+			}
+		}
+	}
+	//更新
+	for (auto& m : blood)
+	{
+		m->object->Update();
 	}
 
 	//倍率UIの表示
@@ -173,6 +237,7 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 			magtext.erase(cbegin(magtext) + i);
 		}
 	}
+	ScoreManager::GetInstance()->Update();
 	SceneChanger::GetInstance()->Update();
 
 	//タイマーを図る
@@ -261,6 +326,15 @@ void TutorialSceneActor::BackDraw(DirectXCommon* dxCommon) {
 	IKEObject3d::PostDraw();
 	ParticleEmitter::GetInstance()->FlontDrawAll();
 
+	IKETexture::PreDraw2(dxCommon, AlphaBlendType);
+	for (int i = 0; i < AREA_NUM; i++) {
+		tex[i]->Draw();
+	}
+	for (auto& m : blood)
+	{
+		m->object->Draw();
+	}
+	IKETexture::PostDraw();
 }
 //導入しーんの更新
 void TutorialSceneActor::IntroUpdate(DebugCamera* camera) {
@@ -429,6 +503,11 @@ void TutorialSceneActor::BirthEnemy(bool Move,bool End) {
 		newEnemy->SetEnemyType(0);
 		enemys.push_back(newEnemy);
 		m_EnemyCount++;
+
+		EnemyDeadEffect* newEffect = new EnemyDeadEffect(IKETexture::Create(ImageManager::BLOOD, { 0, 0, 0 }, { 0, 0, 0 }, { 1, 1, 1, 1 }));
+		newEffect->object->TextureCreate();
+		newEffect->object->SetRotation({ 90.0f, 0.0f, 0.0f });
+		blood.push_back(newEffect);
 	}
 	else {
 		m_TutorialEnd = true;
@@ -449,9 +528,15 @@ void TutorialSceneActor::BirthEnemy(bool Move,bool End) {
 			newEnemy->SetMove(Move);
 			enemys.push_back(newEnemy);
 			m_EnemyCount++;
+
+			EnemyDeadEffect* newEffect = new EnemyDeadEffect(IKETexture::Create(ImageManager::BLOOD, { 0, 0, 0 }, { 0, 0, 0 }, { 1, 1, 1, 1 }));
+			newEffect->object->TextureCreate();
+			newEffect->object->SetRotation({ 90.0f, 0.0f, 0.0f });
+			blood.push_back(newEffect);
 		}
 	}
 }
+
 //倍率スコアの生成
 void TutorialSceneActor::BirthScoreText(const int EnemyCount, const int Magnification) {
 	MagText* newtext;

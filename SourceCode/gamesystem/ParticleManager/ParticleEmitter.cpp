@@ -59,24 +59,32 @@ void ParticleEmitter::SplatterEffect(const int life, const int num, const XMFLOA
 	for (int i = 0; i < num; i++)
 	{
 		XMFLOAT3 vel = vec;
-		float div = 10;
-		const int rnd_vel = 4;
+		float div = 100;
+		const int rnd_vel = 30;
 		if (vec.x == 0)
 		{
 			vel.x += static_cast<float>(Random::GetRanNum(0, rnd_vel) - rnd_vel / 2) / div;
 		}
-		else
+		else if (0 < vec.x)
 		{
 			vel.x += static_cast<float>(Random::GetRanNum(0, rnd_vel)) / div;
 		}
-		vel.y += static_cast<float>(Random::GetRanNum(2, 4)) / div;
+		else
+		{
+			vel.x -= static_cast<float>(Random::GetRanNum(0, rnd_vel)) / div;
+		}
+		vel.y += static_cast<float>(Random::GetRanNum(20, 40)) / div;
 		if (vec.z == 0)
 		{
 			vel.z += static_cast<float>(Random::GetRanNum(0, rnd_vel) - rnd_vel / 2) / div;
 		}
-		else
+		else if (0 < vec.z)
 		{
 			vel.z += static_cast<float>(Random::GetRanNum(0, rnd_vel)) / div;
+		}
+		else
+		{
+			vel.z -= static_cast<float>(Random::GetRanNum(0, rnd_vel)) / div;
 		}
 
 		bloodParticle->Add(life, { pos.x, pos.y, pos.z }, vel, { -vel.x / life, -0.02f, -vel.z / life }, startscale, endscale, bloodcolor, bloodcolor, 1.0f);
