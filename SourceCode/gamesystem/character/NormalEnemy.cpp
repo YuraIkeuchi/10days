@@ -179,10 +179,11 @@ void NormalEnemy::UpMove() {
 
 void NormalEnemy::SlowCollide() {
 	Input* input = Input::GetInstance();
-	if (Collision::CircleCollision(m_Position.x, m_Position.z, m_radius, Player::GetInstance()->GetPosition().x, Player::GetInstance()->GetPosition().z, m_radius)) {
+	if (Collision::CircleCollision(m_Position.x, m_Position.z, m_radius, Player::GetInstance()->GetAttackPos().x, Player::GetInstance()->GetAttackPos().z, m_radius)) {
 		if (!m_Slow && Player::GetInstance()->GetAttack()) {
-			m_Slow = true;
 			Slow::GetInstance()->SetSlow(true);
+			Slow::GetInstance()->SetSlowTimer(25);
+			m_Slow = true;
 		}
 		else {
 			if (m_EnemyType == RED_ENEMY) {

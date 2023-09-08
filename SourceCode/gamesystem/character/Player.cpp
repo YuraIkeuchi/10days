@@ -226,6 +226,19 @@ void Player::Attack() {
 		m_playerVec = { m_Position.x - oldX, 0, 0 };
 	}
 
+	if (_MoveState == MOVE_UP) {
+		m_AttackPos = { m_Position.x,m_Position.y,m_Position.z + 2.0f };
+	}
+	else if (_MoveState == MOVE_DOWN) {
+		m_AttackPos = { m_Position.x,m_Position.y,m_Position.z - 2.0f };
+	}
+	else if (_MoveState == MOVE_RIGHT) {
+		m_AttackPos = { m_Position.x + 2.0f,m_Position.y,m_Position.z };
+	}
+	else {
+		m_AttackPos = { m_Position.x - 2.0f,m_Position.y,m_Position.z };
+	}
+
 	if (m_Frame > 0.9f) {
 		m_CameraZoom = false;
 	}

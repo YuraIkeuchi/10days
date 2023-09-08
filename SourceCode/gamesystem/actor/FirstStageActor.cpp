@@ -307,7 +307,7 @@ void FirstStageActor::ImGuiDraw() {
 	ImGui::End();
 	////enemy->ImGuiDraw();
 	//Player::GetInstance()->ImGuiDraw();
-	//Slow::GetInstance()->ImGuiDraw();
+	Slow::GetInstance()->ImGuiDraw();
 
 	//Timer::GetInstance()->ImGuiDraw();
 	//ScoreManager::GetInstance()->ImGuiDraw();
