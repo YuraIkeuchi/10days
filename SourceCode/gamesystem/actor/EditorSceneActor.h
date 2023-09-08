@@ -53,7 +53,9 @@ private:
 
 	bool ResetF;	std::vector <unique_ptr<InterEnemy>> enemy;
 	std::vector<int>EnemyMoveType;
+	std::vector<int>InitEnemyMoveType;
 	std::vector<int>ResCount;
 	//unique_ptr<IKETexture> tex[AREA_NUM];
 	std::vector<XMFLOAT3>EPos;
+	int m_EnemyType;
 };

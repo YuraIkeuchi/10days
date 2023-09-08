@@ -75,10 +75,12 @@ void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 	enemy.resize(Quantity);
 	EPos.resize(Quantity);
 	EnemyMoveType.resize(Quantity);
+	InitEnemyMoveType.resize(Quantity);
 	ResCount.resize(Quantity);
 	blood.resize(Quantity);
 	LoadCSV::LoadCsvParam_XMFLOAT3("Resources/csv/enemy.csv", EPos, "POP");
 		LoadCSV::LoadCsvParam_Int("Resources/csv/enemy.csv", EnemyMoveType, "MoveType");
+		LoadCSV::LoadCsvParam_Int("Resources/csv/enemy.csv", InitEnemyMoveType, "EnemyType");
 		LoadCSV::LoadCsvParam_Int("Resources/csv/enemy.csv", ResCount, "ResCount");
 
 	for (auto i = 0; i < Quantity; i++) {
@@ -86,6 +88,7 @@ void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 		enemy[i].reset(new NormalEnemy());
 		enemy[i]->SetMovingTime(ResCount[i]);
 		enemy[i]->SetState(EnemyMoveType[i]);
+		enemy[i]->SetEnemyType(InitEnemyMoveType[i]);
 		enemy[i]->SetPosition(EPos[i]);
 		enemy[i]->Initialize();
 
@@ -293,6 +296,11 @@ void FirstStageActor::Draw(DirectXCommon* dxCommon) {
 void FirstStageActor::FrontDraw(DirectXCommon* dxCommon) {
 	IKESprite::PreDraw();
 	ui->FrontDraw();
+	for (auto i = 0; i < enemy.size(); i++)
+	{
+		if (enemy[i] == nullptr)continue;
+		enemy[i]->EffectDraw(dxCommon);
+	}
 	//倍率テキスト
 	for (auto i = 0; i < magtext.size(); i++)
 	{
@@ -351,7 +359,7 @@ void FirstStageActor::ImGuiDraw() {
 	ImGui::End();
 	////enemy->ImGuiDraw();
 	//Player::GetInstance()->ImGuiDraw();
-	//Slow::GetInstance()->ImGuiDraw();
+	Slow::GetInstance()->ImGuiDraw();
 
 	//Timer::GetInstance()->ImGuiDraw();
 	//ScoreManager::GetInstance()->ImGuiDraw();

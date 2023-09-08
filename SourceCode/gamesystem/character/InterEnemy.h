@@ -1,5 +1,6 @@
 #pragma once
 #include "ObjCommon.h"
+#include "IKESprite.h"
 //“GŠî’ê
 class InterEnemy :
 	public ObjCommon {
@@ -31,8 +32,10 @@ public://getter setter
 	int _charaState = STATE_INTER;
 	int StartState;
 	int GetState() { return StartState; }
+	int GetEnemyType() { return m_EnemyType; }
 
 	void SetState(int state) { StartState=state; }
+	void SetEnemyType(int Type) { m_EnemyType = Type; }
 	bool CheckPos[4];
 	void SetResPos(PosSt pos,float otpos);
 	void SetPosX(float posx) { m_Position.x = posx; }
@@ -77,6 +80,8 @@ public:
 	/// </summary>
 	virtual void Draw(DirectXCommon* dxCommon)override;
 
+	virtual void EffectDraw(DirectXCommon* dxCommon) = 0;
+
 	void ImGuiDraw();
 
 	virtual void ImGui_Origin() = 0;
@@ -90,8 +95,19 @@ public://gettersetter
 	const bool GetDestroy() { return m_Destroy; }
 protected:
 	
+	unique_ptr<IKESprite> effect;
+	XMFLOAT4 m_EffectColor = {};
 	bool m_SlowMove = false;
 	bool m_Move = true;
 	bool m_Alive = true;
 	bool m_Destroy = false;
+
+	enum EnemyType {
+		RED_ENEMY,
+		GREEN_ENEMY,
+		BLUE_ENEMY,
+	};
+	int _EnemyType = RED_ENEMY;
+
+	int m_EnemyType = {};
 };

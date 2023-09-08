@@ -14,6 +14,7 @@ public:
 	float GetSlowPower() { return  m_SlowPower; }
 	float GetPlayerSlowPower() { return  m_PlayerSlowPower; }
 	void SetSlow(bool Slow) { this->m_Slow = Slow; }
+	void SetSlowTimer(int SlowTimer) { this->m_SlowTimer = SlowTimer; }
 	void SetTutorial(bool Tutorial) { this->m_Tutorial = Tutorial; }
 private:
 	bool m_Slow = false;//ヒットストップ

@@ -230,6 +230,11 @@ void TutorialSceneActor::Draw(DirectXCommon* dxCommon) {
 void TutorialSceneActor::FrontDraw(DirectXCommon* dxCommon) {
 	IKESprite::PreDraw();
 	ui->FrontDraw();
+	for (auto i = 0; i < enemys.size(); i++)
+	{
+		if (enemys[i] == nullptr)continue;
+		enemys[i]->EffectDraw(dxCommon);
+	}
 	//倍率テキスト
 	for (auto i = 0; i < magtext.size(); i++)
 	{
@@ -449,6 +454,7 @@ void TutorialSceneActor::BirthEnemy(bool Move,bool End) {
 		newEnemy->Initialize();
 		newEnemy->SetPosition({ 0.0f,0.0f,0.0f });
 		newEnemy->SetMove(Move);
+		newEnemy->SetEnemyType(0);
 		enemys.push_back(newEnemy);
 		m_EnemyCount++;
 	}
@@ -457,14 +463,17 @@ void TutorialSceneActor::BirthEnemy(bool Move,bool End) {
 		for (int i = 0; i < ENEMY_MAX; i++) {
 			InterEnemy* newEnemy;
 			newEnemy = new TutorialEnemy();
-			newEnemy->Initialize();
 			if (i == 0) {
 				newEnemy->SetPosition({ 0.0f,0.0f,0.0f });
+				newEnemy->SetEnemyType(0);
 			}else if (i == 1) {
 				newEnemy->SetPosition({ 3.0f,0.0f,0.0f });
+				newEnemy->SetEnemyType(1);
 			}else if (i == 2) {
 				newEnemy->SetPosition({ -3.0f,0.0f,0.0f });
+				newEnemy->SetEnemyType(2);
 			}
+			newEnemy->Initialize();
 			newEnemy->SetMove(Move);
 			enemys.push_back(newEnemy);
 			m_EnemyCount++;
