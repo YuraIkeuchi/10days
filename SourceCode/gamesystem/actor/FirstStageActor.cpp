@@ -184,7 +184,8 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 			continue;
 		}
 		if (!enemy[i]->GetAlive()) {
-			for (auto& m : blood)
+			if (!enemy[i]->GetDestroy()) {
+				for (auto& m : blood)
 			{
 				if (m->counter == 0)
 				{
@@ -193,7 +194,6 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 					break;
 				}
 			}
-			if (!enemy[i]->GetDestroy()) {
 				ui->SetMag(true);
 				if (ScoreManager::GetInstance()->GetMagnification() < 5) {
 					ScoreManager::GetInstance()->SetMagnification(ScoreManager::GetInstance()->GetMagnification() + 1);

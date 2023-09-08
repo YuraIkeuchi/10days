@@ -117,6 +117,11 @@ void NormalEnemy::RightMove() {
 	else {
 		m_velocity = m_BaseSpeed;
 	}
+
+	m_AddPower -= m_Gravity;
+	if (Helper::GetInstance()->CheckMax(m_Position.y, {}, m_AddPower * Slow::GetInstance()->GetSlowPower())) {
+		m_AddPower = 0.2f;
+	}
 	
 	if (Helper::GetInstance()->CheckMin(m_Position.x, l_MAX, m_velocity)) {
 		m_Position.x = MapMinX;
@@ -134,6 +139,11 @@ void NormalEnemy::LeftMove() {
 	}
 	else {
 		m_velocity = -m_BaseSpeed;
+	}
+
+	m_AddPower -= m_Gravity;
+	if (Helper::GetInstance()->CheckMax(m_Position.y, {}, m_AddPower * Slow::GetInstance()->GetSlowPower())) {
+		m_AddPower = 0.2f;
 	}
 
 	if (Helper::GetInstance()->CheckMax(m_Position.x, l_MIN, m_velocity)) {
@@ -154,6 +164,11 @@ void NormalEnemy::BottomMove() {
 		m_velocity = -m_BaseSpeed;
 	}
 
+	m_AddPower -= m_Gravity;
+	if (Helper::GetInstance()->CheckMax(m_Position.y, {}, m_AddPower * Slow::GetInstance()->GetSlowPower())) {
+		m_AddPower = 0.2f;
+	}
+
 	if (Helper::GetInstance()->CheckMax(m_Position.z, l_MIN, m_velocity)) {
 		m_Position.z = MapMaxZ;
 		m_Alive = false;
@@ -169,6 +184,11 @@ void NormalEnemy::UpMove() {
 	}
 	else {
 		m_velocity = m_BaseSpeed;
+	}
+
+	m_AddPower -= m_Gravity;
+	if (Helper::GetInstance()->CheckMax(m_Position.y, {}, m_AddPower * Slow::GetInstance()->GetSlowPower())) {
+		m_AddPower = 0.2f;
 	}
 	
 	if (Helper::GetInstance()->CheckMin(m_Position.z, l_MIN, m_velocity)) {
@@ -193,7 +213,9 @@ void NormalEnemy::SlowCollide() {
 					m_Alive = false;
 					_charaState = STATE_INTER;
 					m_ResPornTimer = {};
-					ParticleEmitter::GetInstance()->SplatterEffect(20, Random::GetRanNum(3, 6), m_Position, Player::GetInstance()->GetPlayerVec(), 1.0f, 1.0f, { 1, 0, 0, 1 });
+					int num = Random::GetRanNum(30, 40);
+					float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
+					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
 				}
 			}
 			else if (m_EnemyType == GREEN_ENEMY) {
@@ -201,7 +223,9 @@ void NormalEnemy::SlowCollide() {
 					m_Alive = false;
 					_charaState = STATE_INTER;
 					m_ResPornTimer = {};
-					ParticleEmitter::GetInstance()->SplatterEffect(20, Random::GetRanNum(3, 6), m_Position, Player::GetInstance()->GetPlayerVec(), 1.0f, 1.0f, { 1, 0, 0, 1 });
+					int num = Random::GetRanNum(30, 40);
+					float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
+					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
 				}
 			}
 			else {
@@ -209,15 +233,10 @@ void NormalEnemy::SlowCollide() {
 					m_Alive = false;
 					_charaState = STATE_INTER;
 					m_ResPornTimer = {};
-					ParticleEmitter::GetInstance()->SplatterEffect(20, Random::GetRanNum(3, 6), m_Position, Player::GetInstance()->GetPlayerVec(), 1.0f, 1.0f, { 1, 0, 0, 1 });
+					int num = Random::GetRanNum(30, 40);
+					float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
+					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
 				}
-			if ((input->TriggerButton(input->A))) {
-				m_Alive = false;
-				_charaState = STATE_INTER;
-				m_ResPornTimer = {};
-				int num = Random::GetRanNum(30, 40);
-				float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
-				ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
 			}
 		}
 	}

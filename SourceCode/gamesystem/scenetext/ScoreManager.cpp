@@ -66,17 +66,17 @@ void ScoreManager::Initialize() {
 void ScoreManager::Update() {
 	//ŒJ‚èã‚°ˆ—
 	//‚Ð‚Æ‚¯‚½–Ú
-	if (m_FirstNumber >= NUMBER_MAX) {
+	if (m_FirstNumber > NUMBER_MAX) {
 		m_FirstNumber = m_FirstNumber - NUMBER_MAX;
 		m_SecondNumber++;
 	}
 	//“ñŒ…‚ß
-	if (m_SecondNumber >= NUMBER_MAX) {
+	if (m_SecondNumber > NUMBER_MAX) {
 		m_SecondNumber = m_SecondNumber - NUMBER_MAX;
 		m_ThirdNumber++;
 	}
 	//ŽOŒ…–Ú
-	if (m_ThirdNumber >= NUMBER_MAX) {
+	if (m_ThirdNumber > NUMBER_MAX) {
 		m_ThirdNumber = m_FourthNumber - NUMBER_MAX;
 		m_FourthNumber++;
 	}
