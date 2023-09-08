@@ -1,6 +1,7 @@
 #pragma once
 #include "ObjCommon.h"
 #include "IKESprite.h"
+#include "SlashEffect.h"
 //“GŠî’ê
 class InterEnemy :
 	public ObjCommon {
@@ -91,11 +92,18 @@ public://gettersetter
 	void SetStopF(bool f) { StopF = f; }
 	void SetSlowMove(const bool SlowMove) { m_SlowMove = SlowMove; }
 	void SetMove(const bool Move) { m_Move = Move; }
+	void SetDamage(const bool Damage) { m_Damage = Damage; }
 	const bool GetAlive() { return m_Alive; }
+	const bool GetDeath() { return m_Death; }
+	const bool GetDamage() { return m_Damage; }
 	const bool GetDestroy() { return m_Destroy; }
 protected:
 	
-	unique_ptr<IKESprite> effect;
+	unique_ptr<IKESprite> effect_up;
+	unique_ptr<IKESprite> effect_down;
+	unique_ptr<IKESprite> gauge_up;
+	unique_ptr<IKESprite> gauge_down;
+	std::vector<SlashEffect*> slash;
 	XMFLOAT4 m_EffectColor = {};
 	bool m_SlowMove = false;
 	bool m_Move = true;
@@ -110,4 +118,13 @@ protected:
 	int _EnemyType = RED_ENEMY;
 
 	int m_EnemyType = {};
+
+	XMFLOAT2 m_UpPos = {};
+	XMFLOAT2 m_DownPos = {};
+	bool m_Death = false;
+	bool m_Damage = false;
+
+	bool m_ViewEffect = false;
+	float m_Frame = {};
+	float m_Alpha = 1.0f;
 };

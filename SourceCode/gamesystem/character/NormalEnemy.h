@@ -27,19 +27,22 @@ private:
 	void LeftMove();//左向き
 	void UpMove();//右向き
 	void BottomMove();//左向き
+	void DeathMove();//死んだときの動き
+	void BirthEffect();
 protected:
 
 private:
 	float m_velocity = 0.2f;
 	bool m_Slow = false;
-	float m_radius = 0.8f;
+	float m_radius = 1.4f;
 	//float m_radius = 1.0f;
 
 	int m_ResPornTimer = 0;
 
-public:
+private:
 	float m_BaseSpeed = {};
 	float m_Gravity = 0.01f;
 	float m_AddPower = {};
+
 };
 

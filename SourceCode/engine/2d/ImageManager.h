@@ -29,7 +29,10 @@ public:
 		SCOREGAGE,
 		MAGGAGE,
 		MAGNIFICATION,
-		CUTEFFECT,
+		CUT_UP,
+		CUT_DOWN,
+		CUTGAGE_UP,
+		CUTGAGE_DOWN,
 	};
 	//テクスチャの名前
 	enum tex2dName
@@ -37,6 +40,10 @@ public:
 		MAGIC,
 		AREA,
 		BLOOD,
+		GRASS,
+		GROUND,
+		BASE_GROUND,
+		SLASH,
 	};
 	enum particleName
 	{

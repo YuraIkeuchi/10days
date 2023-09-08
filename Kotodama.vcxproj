@@ -176,6 +176,7 @@
     <ClCompile Include="SourceCode\gamesystem\character\NormalEnemy.cpp" />
     <ClCompile Include="SourceCode\gamesystem\character\Player.cpp" />
     <ClCompile Include="SourceCode\gamesystem\character\TutorialEnemy.cpp" />
+    <ClCompile Include="SourceCode\gamesystem\effect\SlashEffect.cpp" />
     <ClCompile Include="SourceCode\gamesystem\effect\Slow.cpp" />
     <ClCompile Include="SourceCode\gamesystem\gamecamera\CameraWork.cpp" />
     <ClCompile Include="SourceCode\gamesystem\MessageWindow\MessageWindow.cpp" />
@@ -282,6 +283,7 @@
     <ClInclude Include="SourceCode\gamesystem\character\NormalEnemy.h" />
     <ClInclude Include="SourceCode\gamesystem\character\Player.h" />
     <ClInclude Include="SourceCode\gamesystem\character\TutorialEnemy.h" />
+    <ClInclude Include="SourceCode\gamesystem\effect\SlashEffect.h" />
     <ClInclude Include="SourceCode\gamesystem\effect\Slow.h" />
     <ClInclude Include="SourceCode\gamesystem\gamecamera\CameraWork.h" />
     <ClInclude Include="SourceCode\gamesystem\MessageWindow\MessageWindow.h" />
