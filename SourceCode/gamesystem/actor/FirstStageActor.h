@@ -25,10 +25,21 @@ private:
 	void IntroUpdate(DebugCamera* camera)override;		//登場シーン
 	void MainUpdate(DebugCamera* camera)override;		//バトルシーン
 	void FinishUpdate(DebugCamera* camera)override;		//撃破シーン
-
-	void ImGuiDraw();
-
 	void BirthScoreText(const int EnemyCount, const int Magnification);
+	void ImGuiDraw();
+private:
+	//敵死亡時のエフェクト
+	struct EnemyDeadEffect
+	{
+		unique_ptr<IKETexture> object;
+		int counter;
+
+		EnemyDeadEffect(IKETexture* effect)
+		{
+			object.reset(effect);
+			counter = 0;
+		}
+	};
 private:
 	static const int AREA_NUM = 4;
 private:
@@ -42,6 +53,7 @@ private:
 	std::vector<int>ResCount;
 	std::vector<int>InitEnemyMoveType;
 	unique_ptr<IKETexture> tex[AREA_NUM];
+	std::vector<unique_ptr<EnemyDeadEffect>> blood;
 private:
 	unique_ptr<UI> ui;
 	float radPower = 0;

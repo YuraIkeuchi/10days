@@ -211,6 +211,13 @@ void NormalEnemy::SlowCollide() {
 					m_ResPornTimer = {};
 					ParticleEmitter::GetInstance()->SplatterEffect(20, Random::GetRanNum(3, 6), m_Position, Player::GetInstance()->GetPlayerVec(), 1.0f, 1.0f, { 1, 0, 0, 1 });
 				}
+			if ((input->TriggerButton(input->A))) {
+				m_Alive = false;
+				_charaState = STATE_INTER;
+				m_ResPornTimer = {};
+				int num = Random::GetRanNum(30, 40);
+				float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
+				ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
 			}
 		}
 	}

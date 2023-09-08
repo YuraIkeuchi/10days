@@ -32,6 +32,7 @@ void ImageManager::StartLoadTex2D()
 {
 	IKETexture::LoadTexture(MAGIC, L"Resources/2d/objicon/magic.png");
 	IKETexture::LoadTexture(AREA, L"Resources/2d/effect/DArea.png");
+	IKETexture::LoadTexture(BLOOD, L"Resources/2d/effect/blood.png");
 }
 
 //非同期処理でのテクスチャの読み込み

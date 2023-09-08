@@ -207,6 +207,7 @@ public: // ƒƒ“ƒoŠÖ”
 	}
 
 	void SetIsBillboard(bool isBillboard);
+	const XMFLOAT4& GetColor() { return color; }
 	void SetColor(const XMFLOAT4& color) { this->color = color; }
 	void SetRotation(const XMFLOAT3& rotation) { this->rotation = rotation; }
 	void SetScale(const XMFLOAT3& scale) { this->scale = scale; }
