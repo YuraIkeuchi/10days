@@ -1,4 +1,4 @@
-#include "ScoreManager.h"
+﻿#include "ScoreManager.h"
 #include "imgui.h"
 #include "ImageManager.h"
 #include "Helper.h"

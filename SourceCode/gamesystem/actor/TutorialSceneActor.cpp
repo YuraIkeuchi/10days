@@ -44,24 +44,6 @@ void TutorialSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera
 	Player::GetInstance()->InitState({ 0.0f,0.0f,8.0f });
 	Player::GetInstance()->Initialize();
 
-	//テクスチャ
-	for (int i = 0; i < AREA_NUM; i++) {
-		tex[i].reset(IKETexture::Create(ImageManager::AREA, { 0,0,0 }, { 0.5f,0.5f,0.5f }, { 1,1,1,1 }));
-		tex[i]->TextureCreate();
-
-		tex[i]->SetRotation({ 90.0f,0.0f,0.0f });
-		tex[i]->SetColor({ 1.0f,0.0,0.0f,0.5f });
-	}
-
-	tex[0]->SetPosition({ 0.0f,0.0f,8.0f });
-	tex[1]->SetPosition({ 0.0f,0.0f,-8.0f });
-	tex[2]->SetPosition({ 9.3f,0.0f,0.0f });
-	tex[3]->SetPosition({ -9.3f,0.0f,0.0f });
-	tex[0]->SetScale({ 2.0f,0.1f,0.1f });
-	tex[1]->SetScale({ 2.0f,0.1f,0.1f });
-	tex[2]->SetScale({ 0.1f,1.6f,0.1f });
-	tex[3]->SetScale({ 0.1f,1.6f,0.1f });
-
 	blood.resize(ENEMY_MAX + 1);
 
 	//タイマー
@@ -178,7 +160,7 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 
 	for (auto i = 0; i < enemys.size(); i++) {
 		enemys[i]->Update();
-  }
+	}
 	//血だまりのエフェクト
 	for (int i = 0; i < blood.size(); i++)
 	{
@@ -327,9 +309,6 @@ void TutorialSceneActor::BackDraw(DirectXCommon* dxCommon) {
 	ParticleEmitter::GetInstance()->FlontDrawAll();
 
 	IKETexture::PreDraw2(dxCommon, AlphaBlendType);
-	for (int i = 0; i < AREA_NUM; i++) {
-		tex[i]->Draw();
-	}
 	for (auto& m : blood)
 	{
 		m->object->Draw();
