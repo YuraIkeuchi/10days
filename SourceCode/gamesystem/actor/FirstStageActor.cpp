@@ -311,7 +311,6 @@ void FirstStageActor::BackDraw(DirectXCommon* dxCommon) {
 	IKEObject3d::PreDraw();
 	BackObj::GetInstance()->Draw();
 	Player::GetInstance()->Draw(dxCommon);
-
 	for (auto i = 0; i < enemy.size(); i++)
 	{
 		if (enemy[i] == nullptr)continue;

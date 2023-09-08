@@ -44,6 +44,20 @@ private:
 	static const int AREA_NUM = 4;
 	static const int ENEMY_MAX = 3;
 private:
+	//敵死亡時のエフェクト
+	struct EnemyDeadEffect
+	{
+		IKETexture* object = nullptr;
+		int counter;
+
+		EnemyDeadEffect(IKETexture* effect)
+		{
+			object = effect;
+			counter = 0;
+		}
+	};
+private:
+	std::vector<EnemyDeadEffect*> blood;
 	unique_ptr<IKESprite> window;
 	unique_ptr<TutorialText> text_;
 	unique_ptr<IKEObject3d> ground;
