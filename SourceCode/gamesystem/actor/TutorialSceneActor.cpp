@@ -44,8 +44,6 @@ void TutorialSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera
 	Player::GetInstance()->InitState({ 0.0f,0.0f,8.0f });
 	Player::GetInstance()->Initialize();
 
-	blood.resize(ENEMY_MAX + 1);
-
 	//タイマー
 	Timer::GetInstance()->Initialize();
 
