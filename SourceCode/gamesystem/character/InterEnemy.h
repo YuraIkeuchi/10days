@@ -127,4 +127,7 @@ protected:
 	bool m_ViewEffect = false;
 	float m_Frame = {};
 	float m_Alpha = 1.0f;
+
+	bool m_Miss = false;
+	int SlowStopTimer = {};
 };

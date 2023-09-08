@@ -13,6 +13,7 @@ public:
 	bool GetSlow() { return  m_Slow; }
 	float GetSlowPower() { return  m_SlowPower; }
 	float GetPlayerSlowPower() { return  m_PlayerSlowPower; }
+	float GetMovePower() { return  m_MovePower; }
 	void SetSlow(bool Slow) { this->m_Slow = Slow; }
 	void SetSlowTimer(int SlowTimer) { this->m_SlowTimer = SlowTimer; }
 	void SetTutorial(bool Tutorial) { this->m_Tutorial = Tutorial; }
@@ -23,4 +24,5 @@ private:
 	float m_SlowPower = 1.0f;
 	float m_PlayerSlowPower = 1.0f;
 	bool m_Tutorial = false;
+	float m_MovePower = 1.0f;
 };

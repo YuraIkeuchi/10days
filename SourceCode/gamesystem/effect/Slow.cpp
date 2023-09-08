@@ -25,23 +25,20 @@ void Slow::Update() {
 	if (m_Slow) {
 		if (!m_Tutorial) {
 			m_SlowPower = 0.2f;
-			m_PlayerSlowPower = 0.5f;
-			m_SlowTimer--;
+			m_PlayerSlowPower = 0.4f;
+			m_MovePower = 0.2f;
+			//m_SlowTimer--;
 		}
 		else {
 			m_SlowPower = 0.0f;
 			m_PlayerSlowPower = 0.0f;
-		}
-
-		if (m_SlowTimer <= 0) {
-			m_SlowTimer = {};
-			m_Slow = false;
 		}
 	}
 	else {
 		m_SlowTimer = {};
 		m_SlowPower = 1.0f;
 		m_PlayerSlowPower = 1.0f;
+		m_MovePower = 1.0f;
 	}
 }
 void Slow::ImGuiDraw() {

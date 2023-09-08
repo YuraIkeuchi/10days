@@ -177,7 +177,7 @@ void NormalEnemy::RightMove() {
 	const float l_MAX = MapMaxX;
 	
 	if (m_SlowMove) {
-		m_velocity = m_BaseSpeed * Slow::GetInstance()->GetSlowPower();
+		m_velocity = m_BaseSpeed * Slow::GetInstance()->GetSlowPower() * Slow::GetInstance()->GetMovePower();
 	}
 	else {
 		m_velocity = m_BaseSpeed;
@@ -198,7 +198,7 @@ void NormalEnemy::RightMove() {
 void NormalEnemy::LeftMove() {
 	const float l_MIN = MapMinX;
 	if (m_SlowMove) {
-		m_velocity = -m_BaseSpeed * Slow::GetInstance()->GetSlowPower();
+		m_velocity = -m_BaseSpeed * Slow::GetInstance()->GetSlowPower() * Slow::GetInstance()->GetMovePower();
 	}
 	else {
 		m_velocity = -m_BaseSpeed;
@@ -220,7 +220,7 @@ void NormalEnemy::LeftMove() {
 void NormalEnemy::BottomMove() {
 	const float l_MIN = MapMinZ;
 	if (m_SlowMove) {
-		m_velocity = -m_BaseSpeed * Slow::GetInstance()->GetSlowPower();
+		m_velocity = -m_BaseSpeed * Slow::GetInstance()->GetSlowPower() * Slow::GetInstance()->GetMovePower();
 	}
 	else {
 		m_velocity = -m_BaseSpeed;
@@ -241,7 +241,7 @@ void NormalEnemy::BottomMove() {
 void NormalEnemy::UpMove() {
 	const float l_MIN =MapMaxZ;
 	if (m_SlowMove) {
-		m_velocity = m_BaseSpeed * Slow::GetInstance()->GetSlowPower();
+		m_velocity = m_BaseSpeed * Slow::GetInstance()->GetSlowPower() * Slow::GetInstance()->GetMovePower();
 	}
 	else {
 		m_velocity = m_BaseSpeed;
@@ -259,8 +259,11 @@ void NormalEnemy::UpMove() {
 	}
 }
 
+//スローの当たり判定
 void NormalEnemy::SlowCollide() {
+	const float l_DamageRadius = 0.5f;
 	Input* input = Input::GetInstance();
+	/*
 	if (Collision::CircleCollision(m_Position.x, m_Position.z, m_radius, Player::GetInstance()->GetAttackPos().x, Player::GetInstance()->GetAttackPos().z, m_radius)) {
 		if (!m_Slow && Player::GetInstance()->GetAttack()) {
 			Slow::GetInstance()->SetSlow(true);
@@ -305,6 +308,76 @@ void NormalEnemy::SlowCollide() {
 		m_ViewEffect = false;
 		m_Slow = false;
 		Player::GetInstance()->SetDamage(true);
+	}*/
+	if (Collision::CircleCollision(m_Position.x, m_Position.z, m_radius, Player::GetInstance()->GetAttackPos().x, Player::GetInstance()->GetAttackPos().z, m_radius)
+		) {
+		if (Player::GetInstance()->GetAttack()) {
+			Slow::GetInstance()->SetSlow(true);
+			m_Slow = true;
+			m_ViewEffect = true;
+		}
+	}
+	else {
+		m_Slow = false;
+		m_ViewEffect = false;
+	}
+
+	if(m_Slow) {
+		if ((input->TriggerButton(input->B))) {		//Bボタンパターン
+			if (m_EnemyType == RED_ENEMY) {
+				m_Death = true;
+				_charaState = STATE_INTER;
+				int num = Random::GetRanNum(30, 40);
+				float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
+				ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
+				BirthEffect();
+			}
+			else {		//違ったボタンを押すとミス
+				m_Miss = true;
+				Player::GetInstance()->SetDamage(true);
+				Slow::GetInstance()->SetSlow(false);
+			}
+		}
+		else if ((input->TriggerButton(input->A))) {
+			if (m_EnemyType == GREEN_ENEMY) {
+				m_Death = true;
+					_charaState = STATE_INTER;
+					int num = Random::GetRanNum(30, 40);
+					float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
+					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
+					BirthEffect();
+			}
+			else {		//違ったボタンを押すとミス
+				m_Miss = true;
+				Player::GetInstance()->SetDamage(true);
+				Slow::GetInstance()->SetSlow(false);
+			}
+		}
+		else if ((input->TriggerButton(input->X))) {
+			if (m_EnemyType == BLUE_ENEMY) {
+				m_Death = true;
+				_charaState = STATE_INTER;
+				int num = Random::GetRanNum(30, 40);
+				float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
+				ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
+				BirthEffect();
+			}
+			else {		//違ったボタンを押すとミス
+				m_Miss = true;
+				Player::GetInstance()->SetDamage(true);
+				Slow::GetInstance()->SetSlow(false);
+			}
+		}
+		if (Collision::CircleCollision(m_Position.x, m_Position.z, l_DamageRadius, Player::GetInstance()->GetPosition().x, Player::GetInstance()->GetPosition().z, l_DamageRadius)
+			&& !m_Death) {
+			m_Miss = true;
+			Player::GetInstance()->SetDamage(true);
+			Slow::GetInstance()->SetSlow(false);
+		}
+	}
+
+	if (!Player::GetInstance()->GetAttack()) {
+		m_Slow = false;
 	}
 }
 //死んだときの動き
@@ -330,6 +403,11 @@ void NormalEnemy::DeathMove() {
 	m_UpPos.x = Ease(In, Cubic, m_Frame, m_UpPos.x, 700.0f);
 	m_DownPos.x = Ease(In, Cubic, m_Frame, m_DownPos.x, 900.0f);
 	m_Alpha = Ease(In, Cubic, m_Frame, m_Alpha, 0.0f);
+
+	SlowStopTimer++;
+	if (SlowStopTimer == 10) {
+		Slow::GetInstance()->SetSlow(false);
+	}
 }
 //エフェクトの生成
 void NormalEnemy::BirthEffect() {
