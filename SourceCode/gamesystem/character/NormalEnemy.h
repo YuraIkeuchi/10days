@@ -11,6 +11,7 @@ public:
 	void ImGui_Origin()override;
 
 	void Draw(DirectXCommon* dxCommon) override;//描画
+	void EffectDraw(DirectXCommon* dxCommon) override;//エフェクト描画
 
 private:
 	void SlowCollide();

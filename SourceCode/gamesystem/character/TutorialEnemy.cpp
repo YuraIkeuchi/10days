@@ -58,6 +58,10 @@ void TutorialEnemy::Draw(DirectXCommon* dxCommon) {
 		Obj_Draw();
 	}
 }
+//エフェクト描画
+void TutorialEnemy::EffectDraw(DirectXCommon* dxCommon) {
+
+}
 //ImGui描画
 void TutorialEnemy::ImGui_Origin() {
 	ImGui::Begin("Enemy");

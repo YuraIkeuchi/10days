@@ -11,6 +11,7 @@
 #include "SceneManager.h"
 #include"Timer.h"
 #include "Random.h"
+#include "ImageManager.h"
 
 #define MapMinX -10
 #define MapMaxX 10
@@ -28,12 +29,22 @@ bool NormalEnemy::Initialize() {
 	m_Object.reset(new IKEObject3d());
 	m_Object->Initialize();
 	m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::ENEMY));
-	m_Color = { 1.0f,0.5f,0.0f,1.0f };
-	if(StartState==0)
-	{
-	//	_charaState =
-	}
+	effect = IKESprite::Create(ImageManager::CUTEFFECT, {});
+	effect->SetPosition({ 700.0f,300.0f });
 	_charaState =  StartState;
+	_EnemyType = m_EnemyType;
+
+	if (_EnemyType == RED_ENEMY) {
+		m_Color = { 1.0f,0.2f,0.0f,1.0f };
+	}
+	else if (_EnemyType == GREEN_ENEMY) {
+		m_Color = { 0.0f,1.0f,0.2f,1.0f };
+	}
+	else {
+		m_Color = { 0.2f,0.0f,1.0f,1.0f };
+	}
+
+	effect->SetColor(m_Color);
 	m_Alive = true;
 	//_charaState =  StartState;
 	m_Move = false;
@@ -65,6 +76,12 @@ void NormalEnemy::Draw(DirectXCommon* dxCommon) {
 
 	if (StopF||SceneManager::GetInstance()->GetEditF()||Timer::GetInstance()->getNowTime()<MovingTime && m_Alive) {
 		Obj_Draw();
+	}
+}
+//エフェクト描画
+void NormalEnemy::EffectDraw(DirectXCommon* dxCommon) {
+	if (m_Slow) {
+		effect->Draw();
 	}
 }
 //ImGui描画
@@ -168,11 +185,29 @@ void NormalEnemy::SlowCollide() {
 			Slow::GetInstance()->SetSlow(true);
 		}
 		else {
-			if ((input->TriggerButton(input->A))) {
-				m_Alive = false;
-				_charaState = STATE_INTER;
-				m_ResPornTimer = {};
-				ParticleEmitter::GetInstance()->SplatterEffect(20, Random::GetRanNum(3, 6), m_Position, Player::GetInstance()->GetPlayerVec(), 1.0f, 1.0f, {1, 0, 0, 1});
+			if (m_EnemyType == RED_ENEMY) {
+				if ((input->TriggerButton(input->B))) {
+					m_Alive = false;
+					_charaState = STATE_INTER;
+					m_ResPornTimer = {};
+					ParticleEmitter::GetInstance()->SplatterEffect(20, Random::GetRanNum(3, 6), m_Position, Player::GetInstance()->GetPlayerVec(), 1.0f, 1.0f, { 1, 0, 0, 1 });
+				}
+			}
+			else if (m_EnemyType == GREEN_ENEMY) {
+				if ((input->TriggerButton(input->A))) {
+					m_Alive = false;
+					_charaState = STATE_INTER;
+					m_ResPornTimer = {};
+					ParticleEmitter::GetInstance()->SplatterEffect(20, Random::GetRanNum(3, 6), m_Position, Player::GetInstance()->GetPlayerVec(), 1.0f, 1.0f, { 1, 0, 0, 1 });
+				}
+			}
+			else {
+				if ((input->TriggerButton(input->X))) {
+					m_Alive = false;
+					_charaState = STATE_INTER;
+					m_ResPornTimer = {};
+					ParticleEmitter::GetInstance()->SplatterEffect(20, Random::GetRanNum(3, 6), m_Position, Player::GetInstance()->GetPlayerVec(), 1.0f, 1.0f, { 1, 0, 0, 1 });
+				}
 			}
 		}
 	}

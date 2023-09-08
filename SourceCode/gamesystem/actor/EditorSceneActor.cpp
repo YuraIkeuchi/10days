@@ -62,9 +62,11 @@ void EditorSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, 
 	enemy.resize(Quantity);
 	EPos.resize(Quantity);
 	EnemyMoveType.resize(Quantity);
+	InitEnemyMoveType.resize(Quantity);
 	ResCount.resize(Quantity);
 	LoadCSV::LoadCsvParam_XMFLOAT3("Resources/csv/enemy.csv", EPos, "POP");
 	LoadCSV::LoadCsvParam_Int("Resources/csv/enemy.csv", EnemyMoveType, "MoveType");
+	LoadCSV::LoadCsvParam_Int("Resources/csv/enemy.csv", InitEnemyMoveType, "EnemyType");
 	LoadCSV::LoadCsvParam_Int("Resources/csv/enemy.csv", ResCount, "ResCount");
 
 	for (auto i = 0; i < Quantity; i++) {
@@ -72,7 +74,7 @@ void EditorSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, 
 		enemy[i]->SetMovingTime(ResCount[i]);
 		enemy[i]->SetState(EnemyMoveType[i]);
 		enemy[i]->SetPosition(EPos[i]);
-
+		enemy[i]->SetEnemyType(InitEnemyMoveType[i]);
 		enemy[i]->EditPos(EPos[i]);
 		enemy[i]->Initialize();
 		enemys.emplace_back(enemy[i].get());
@@ -129,10 +131,11 @@ void EditorSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Ligh
 			if (checkPos[2] || checkPos[3])
 				l_enemy->SetResPos(ini_enmeypos, PosY);
 
-
+			l_enemy->SetEnemyType(m_EnemyType);
 			l_enemy->Initialize();
 			l_enemy->SetMovingTime(timer);
 			l_enemy->EditPos(l_enemy->GetPosition());
+		
 			enemys.emplace_back(l_enemy);
 			ArgF = false;
 		}
@@ -237,9 +240,20 @@ void EditorSceneActor::ImGuiDraw() {
 	ImGui::SliderFloat("Interval", &IntervalRes, 0.f, 180.f);
 	ImGui::SliderFloat("PosX", &PosX, 0, 400);
 	ImGui::SliderFloat("PosY", &PosY, 0, 400);
-	if(ImGui::Button("Argment",ImVec2(100,100)))
+	if(ImGui::Button("ArgmentRED",ImVec2(100,100)))
 	{
 		ArgF = true;
+		m_EnemyType = 0;
+	}
+	if (ImGui::Button("ArgmentGREEN", ImVec2(100, 100)))
+	{
+		ArgF = true;
+		m_EnemyType = 1;
+	}
+	if (ImGui::Button("ArgmentBLUE", ImVec2(100, 100)))
+	{
+		ArgF = true;
+		m_EnemyType = 2;
 	}
 	//
 	ImGui::Checkbox("Z_Max", &checkPos[0]);
@@ -332,6 +346,7 @@ void EditorSceneActor::FileWriting()
 			<< "," << enemys[i]->GetEditPos().z << std::endl;
 		ofs << "ResCount" << "," << enemys[i]->GetMovingT() << endl;
 		ofs << "MoveType" << "," << enemys[i]->GetState() << endl;
+		ofs << "EnemyType" << "," << enemys[i]->GetEnemyType() << endl;
 		ofs << "/*--------------------------------*/" << endl;
 	}
 	if (ResetF) {

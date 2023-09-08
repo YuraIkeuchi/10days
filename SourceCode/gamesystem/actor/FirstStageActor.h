@@ -40,6 +40,7 @@ private:
 	std::vector<MagText*> magtext;
 	std::vector<int>EnemyMoveType;
 	std::vector<int>ResCount;
+	std::vector<int>InitEnemyMoveType;
 	unique_ptr<IKETexture> tex[AREA_NUM];
 private:
 	unique_ptr<UI> ui;
