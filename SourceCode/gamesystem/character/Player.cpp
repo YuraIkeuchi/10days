@@ -18,7 +18,7 @@ Player* Player::GetInstance()
 void Player::LoadResource() {
 	m_Object.reset(new IKEObject3d());
 	m_Object->Initialize();
-	m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::PLAYERMODEL));
+	m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::PLAYER_1));
 	m_Object->SetScale({ 2.f,2.f,2.f });
 	m_Object->SetPosition({ 0.0f,0.0f,0.0f });
 	m_Object->VertexCheck();
@@ -197,6 +197,15 @@ void Player::Move() {
 	}
 	else {
 		m_Rotation = { 0.0f, 0.0f, 0.0f };
+	}
+	if(_charaState==STATE_ATTACK)
+	{
+		m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::PLAYER_2));
+	}
+	else
+	{
+		m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::PLAYER_1));
+
 	}
 	//Helper::GetInstance()->Clamp(m_Position.x, -9.5f, 9.5f);
 }

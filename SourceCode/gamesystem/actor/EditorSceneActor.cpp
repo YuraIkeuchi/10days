@@ -59,6 +59,8 @@ void EditorSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, 
 
 	int Quantity = static_cast<int>(std::any_cast<double>(LoadCSV::LoadCsvParam("Resources/csv/enemy.csv", "Enemy_Quantity")));
 
+	IKEModel* model=IKEModel::LoadFromOBJ("samurai2");
+
 	enemy.resize(Quantity);
 	EPos.resize(Quantity);
 	EnemyMoveType.resize(Quantity);

@@ -18,6 +18,9 @@ void ModelManager::StartInitialize()
 	LoadModel(SKYDOME, "skydome");
 	LoadModel(WALL_UP, "WallUp");
 	LoadModel(WALL_UNDER, "WallUnder");
+	LoadModel(PLAYER_1, "Samuraiidle2");
+
+	LoadModel(PLAYER_2, "Samuraiidle");
 	LoadModel(ENEMY, "Particle");
 	LoadFBXModel(PLAYER, "kotoko");
 }
