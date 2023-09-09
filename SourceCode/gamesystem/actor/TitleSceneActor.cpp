@@ -3,6 +3,9 @@
 #include "ImageManager.h"
 #include "ParticleEmitter.h"
 #include "SceneManager.h"
+#include "SceneChanger.h"
+#include "ScoreManager.h"
+#include "Timer.h"
 //初期化
 void TitleSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, LightGroup* lightgroup) {
 	//共通の初期化
@@ -12,23 +15,47 @@ void TitleSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 	text_ = make_unique<TitleText>();
 	text_->Initialize(dxCommon);
 	text_->SelectText(TextManager::FIRST);
+	if (!s_GameLoop) {
+		SceneChanger::GetInstance()->Initialize();
+		ScoreManager::GetInstance()->LoadResource();
+		Timer::GetInstance()->LoadResource();
+		s_GameLoop = true;
+	}
 }
 //更新
 void TitleSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, LightGroup* lightgroup) {
 
 	camerawork->Update(camera);
 	Input* input = Input::GetInstance();
+	//シーンチェンジ
 	if ((input->TriggerButton(input->B))) {
-		SceneManager::GetInstance()->ChangeScene("FIRSTSTAGE");
+		_SceneType = PLAY;
+		SceneChanger::GetInstance()->SetChangeStart(true);
 	}
 	if ((input->TriggerButton(input->A))) {
+		_SceneType = EDITOR;
+		SceneChanger::GetInstance()->SetChangeStart(true);
 		SceneManager::GetInstance()->SetEditF(true);
-		SceneManager::GetInstance()->ChangeScene("EDITOR");
 	}
 	if ((input->TriggerButton(input->X))) {
-		SceneManager::GetInstance()->ChangeScene("TUTORIAL");
-
+		_SceneType = TUTORIAL;
+		SceneChanger::GetInstance()->SetChangeStart(true);
 	}
+
+	if (SceneChanger::GetInstance()->GetChange()) {
+		if (_SceneType == PLAY) {
+			SceneManager::GetInstance()->ChangeScene("FIRSTSTAGE");
+		}
+		else if (_SceneType == EDITOR) {
+			SceneManager::GetInstance()->ChangeScene("EDITOR");
+		}
+		else {
+			SceneManager::GetInstance()->ChangeScene("TUTORIAL");
+		}
+		SceneChanger::GetInstance()->SetChange(false);
+	}
+
+	SceneChanger::GetInstance()->Update();
 }
 //描画
 void TitleSceneActor::Draw(DirectXCommon* dxCommon) {
@@ -58,6 +85,9 @@ void TitleSceneActor::FrontDraw(DirectXCommon* dxCommon) {
 	//完全に前に書くスプライト
 	IKESprite::PreDraw();
 	text_->SpriteDraw(dxCommon);
+	IKESprite::PostDraw();
+	IKESprite::PreDraw();
+	SceneChanger::GetInstance()->Draw();
 	IKESprite::PostDraw();
 }
 //背面描画

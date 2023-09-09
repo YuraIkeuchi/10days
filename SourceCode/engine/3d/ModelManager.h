@@ -14,7 +14,6 @@ private:
 public:
 	//OBJの名前
 	enum ModelName {
-		GROUND,
 		PLAYERMODEL,
 		SKYDOME,
 		WALL_UP,

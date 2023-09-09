@@ -1,37 +1,88 @@
-#include "ScoreManager.h"
+ï»¿#include "ScoreManager.h"
 #include "imgui.h"
+#include "ImageManager.h"
+#include "Helper.h"
 ScoreManager* ScoreManager::GetInstance() {
 	static ScoreManager instance;
 
 	return &instance;
 }
 
-//‰Šú‰»
-void ScoreManager::Initialize() {
-	m_FirstNumber = 0;//ˆêŒ…–Ú
-	m_SecondNumber = 0;//“ñŒ…‚ß
-	m_ThirdNumber = 0;//OŒ…‚ß
-	m_FourthNumber = 0;//lŒ…–Ú
-	m_Magnification = 0;//”{—¦
+//èª­ã¿è¾¼ã¿
+void ScoreManager::LoadResource() {
+	const int NumberCount = NUMBER_MAX;
+	const float l_Width_Cut = 64.0f;
+	const float l_Height_Cut = 64.0f;
+
+	for (int i = 0; i < Score_First.size(); i++) {
+		//ã²ã¨ã‘ãŸç›®
+		Score_First[i] = IKESprite::Create(ImageManager::NUMBER, { 0.0f,0.0f });
+		int number_index_y = i / NumberCount;
+		int number_index_x = i % NumberCount;
+		Score_First[i]->SetTextureRect(
+			{ static_cast<float>(number_index_x) * l_Width_Cut, static_cast<float>(number_index_y) * l_Height_Cut },
+			{ static_cast<float>(l_Width_Cut), static_cast<float>(l_Height_Cut) });
+		Score_First[i]->SetAnchorPoint({ 0.5f,0.5f });
+		Score_First[i]->SetPosition({ 1250.0f,40.0f });
+		Score_First[i]->SetSize({ l_Width_Cut,l_Height_Cut });
+		Score_First[i]->SetScale(0.8f);
+		//äºŒæ¡ã‚
+		Score_Second[i] = IKESprite::Create(ImageManager::NUMBER, { 0.0f,0.0f });
+		Score_Second[i]->SetTextureRect(
+			{ static_cast<float>(number_index_x) * l_Width_Cut, static_cast<float>(number_index_y) * l_Height_Cut },
+			{ static_cast<float>(l_Width_Cut), static_cast<float>(l_Height_Cut) });
+		Score_Second[i]->SetAnchorPoint({ 0.5f,0.5f });
+		Score_Second[i]->SetPosition({ 1210.0f,40.0f });
+		Score_Second[i]->SetSize({ l_Width_Cut,l_Height_Cut });
+		Score_Second[i]->SetScale(0.8f);
+		//ä¸‰æ¡ç›®
+		Score_Third[i] = IKESprite::Create(ImageManager::NUMBER, { 0.0f,0.0f });
+		Score_Third[i]->SetTextureRect(
+			{ static_cast<float>(number_index_x) * l_Width_Cut, static_cast<float>(number_index_y) * l_Height_Cut },
+			{ static_cast<float>(l_Width_Cut), static_cast<float>(l_Height_Cut) });
+		Score_Third[i]->SetAnchorPoint({ 0.5f,0.5f });
+		Score_Third[i]->SetPosition({ 1170.0f,40.0f });
+		Score_Third[i]->SetSize({ l_Width_Cut,l_Height_Cut });
+		Score_Third[i]->SetScale(0.8f);
+		//å››æ¡ç›®
+		Score_Fourth[i] = IKESprite::Create(ImageManager::NUMBER, { 0.0f,0.0f });
+		Score_Fourth[i]->SetTextureRect(
+			{ static_cast<float>(number_index_x) * l_Width_Cut, static_cast<float>(number_index_y) * l_Height_Cut },
+			{ static_cast<float>(l_Width_Cut), static_cast<float>(l_Height_Cut) });
+		Score_Fourth[i]->SetAnchorPoint({ 0.5f,0.5f });
+		Score_Fourth[i]->SetPosition({ 1130.0f,40.0f });
+		Score_Fourth[i]->SetSize({ l_Width_Cut,l_Height_Cut });
+		Score_Fourth[i]->SetScale(0.8f);
+	}
 }
-//XV
+//åˆæœŸåŒ–
+void ScoreManager::Initialize() {
+	m_FirstNumber = 0;//ä¸€æ¡ç›®
+	m_SecondNumber = 0;//äºŒæ¡ã‚
+	m_ThirdNumber = 0;//ä¸‰æ¡ã‚
+	m_FourthNumber = 0;//å››æ¡ç›®
+	m_Magnification = 0;//å€ç‡
+}
+//æ›´æ–°
 void ScoreManager::Update() {
-	//ŒJ‚èã‚°ˆ—
-	//‚Ğ‚Æ‚¯‚½–Ú
-	if (m_FirstNumber >= NUMBER_MAX) {
+	//ç¹°ã‚Šä¸Šã’å‡¦ç†
+	//ã²ã¨ã‘ãŸç›®
+	if (m_FirstNumber > NUMBER_MAX - 1) {
 		m_FirstNumber = m_FirstNumber - NUMBER_MAX;
 		m_SecondNumber++;
 	}
-	//“ñŒ…‚ß
-	if (m_SecondNumber >= NUMBER_MAX) {
+	//äºŒæ¡ã‚
+	if (m_SecondNumber > NUMBER_MAX - 1) {
 		m_SecondNumber = m_SecondNumber - NUMBER_MAX;
 		m_ThirdNumber++;
 	}
-	//OŒ…–Ú
-	if (m_ThirdNumber >= NUMBER_MAX) {
+	//ä¸‰æ¡ç›®
+	if (m_ThirdNumber > NUMBER_MAX - 1) {
 		m_ThirdNumber = m_FourthNumber - NUMBER_MAX;
 		m_FourthNumber++;
 	}
+
+	//Helper::GetInstance()->Clamp(m_FirstNumber, 0, NUMBER_MAX - 1);
 }
 //ImGui
 void ScoreManager::ImGuiDraw() {
@@ -42,4 +93,11 @@ void ScoreManager::ImGuiDraw() {
 	ImGui::Text("Fourth:%d", m_FourthNumber);
 	ImGui::Text("Magnification:%d", m_Magnification);
 	ImGui::End();
+}
+//æç”»
+void ScoreManager::SpriteDraw() {
+	Score_First[m_FirstNumber]->Draw();
+	Score_Second[m_SecondNumber]->Draw();
+	Score_Third[m_ThirdNumber]->Draw();
+	Score_Fourth[m_FourthNumber]->Draw();
 }

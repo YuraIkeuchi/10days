@@ -448,6 +448,9 @@ void IKESprite::SetScale(float scale)
 {
 	size.x *= scale;
 	size.y *= scale;
+
+	// 頂点バッファへのデータ転送
+	TransferVertices();
 }
 
 void IKESprite::SetAnchorPoint(const XMFLOAT2& anchorpoint)

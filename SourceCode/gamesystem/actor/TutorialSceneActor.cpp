@@ -9,6 +9,7 @@
 #include "TutorialTask.h"
 #include "BackObj.h"
 #include "ScoreManager.h"
+#include "SceneChanger.h"
 //状態遷移
 /*stateの並び順に合わせる*/
 void (TutorialSceneActor::* TutorialSceneActor::TutorialTable[])() = {
@@ -30,15 +31,6 @@ void TutorialSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera
 
 	m_SceneState = SceneState::IntroState;
 
-	
-	//地面
-	ground.reset(new IKEObject3d());
-	ground->Initialize();
-	ground->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::GROUND));
-	ground->SetScale({ 1.f,1.f,1.f });
-	ground->SetPosition({ 0.0f,5.0f,0.0f });
-	ground->SetTiling(10.0f);
-	
 	//スカイドーム
 	skydome.reset(new IKEObject3d());
 	skydome->Initialize();
@@ -51,24 +43,6 @@ void TutorialSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera
 	Player::GetInstance()->LoadResource();
 	Player::GetInstance()->InitState({ 0.0f,0.0f,8.0f });
 	Player::GetInstance()->Initialize();
-
-	//テクスチャ
-	for (int i = 0; i < AREA_NUM; i++) {
-		tex[i].reset(IKETexture::Create(ImageManager::AREA, { 0,0,0 }, { 0.5f,0.5f,0.5f }, { 1,1,1,1 }));
-		tex[i]->TextureCreate();
-
-		tex[i]->SetRotation({ 90.0f,0.0f,0.0f });
-		tex[i]->SetColor({ 1.0f,0.0,0.0f,0.5f });
-	}
-
-	tex[0]->SetPosition({ 0.0f,0.0f,8.0f });
-	tex[1]->SetPosition({ 0.0f,0.0f,-8.0f });
-	tex[2]->SetPosition({ 9.3f,0.0f,0.0f });
-	tex[3]->SetPosition({ -9.3f,0.0f,0.0f });
-	tex[0]->SetScale({ 2.0f,0.1f,0.1f });
-	tex[1]->SetScale({ 2.0f,0.1f,0.1f });
-	tex[2]->SetScale({ 0.1f,1.6f,0.1f });
-	tex[3]->SetScale({ 0.1f,1.6f,0.1f });
 
 	//タイマー
 	Timer::GetInstance()->Initialize();
@@ -92,9 +66,16 @@ void TutorialSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera
 
 	//スコア
 	ScoreManager::GetInstance()->Initialize();
+	//スロー
+	Slow::GetInstance()->Initialize();
+
+	//UI
+	ui = make_unique<UI>();
+	ui->Initialize();
 }
 
 void TutorialSceneActor::Finalize() {
+	blood.clear();
 }
 
 void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, LightGroup* lightgroup) {
@@ -106,12 +87,10 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 	camerawork->TutorialUpdate(camera);
 	lightgroup->Update();
 	skydome->Update();
-	ground->Update();
-	ground->UpdateWorldMatrix();
 	window->SetSize(window_size);
 	window->SetColor({ 1.0f,1.0f,1.0f,m_Alpha });
 	BackObj::GetInstance()->Update();
-	ScoreManager::GetInstance()->Update();
+
 	if (!TutorialTask::GetInstance()->GetStop()) {
 		Player::GetInstance()->TutorialUpdate();
 		Slow::GetInstance()->Update();
@@ -135,34 +114,122 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 	}
 	//ゲーム終了
 	if (m_EndCount == 2) {
+		SceneChanger::GetInstance()->SetChangeStart(true);
+	}
+	if (SceneChanger::GetInstance()->GetChange()) {
 		SceneManager::GetInstance()->ChangeScene("FIRSTSTAGE");
+		SceneChanger::GetInstance()->SetChange(false);
 	}
 
-	for (int i = 0; i < AREA_NUM; i++) {
-		tex[i]->Update();
-	}
 	ParticleEmitter::GetInstance()->Update();
 
-	for (auto i = 0; i < enemys.size(); i++) {
-		enemys[i]->Update();
-	}
 	//敵の削除
 	for (int i = 0; i < enemys.size(); i++) {
 		if (enemys[i] == nullptr) {
 			continue;
 		}
 
-		if (!enemys[i]->GetAlive()) {
-			enemys.erase(cbegin(enemys) + i);
+		if (enemys[i]->GetDeath() && !enemys[i]->GetDamage()) {
+			ui->SetMag(true);
+			for (auto& m : blood)
+			{
+				if (m->counter == 0)
+				{
+					m->object->SetPosition(enemys[i]->GetPosition());
+					m->counter = 1;
+					break;
+				}
+			}
 			m_EnemyCount--;
 			if (ScoreManager::GetInstance()->GetMagnification() < 5) {
 				ScoreManager::GetInstance()->SetMagnification(ScoreManager::GetInstance()->GetMagnification() + 1);
 			}
 			m_AddScore = (ScoreManager::GetInstance()->GetMagnification() * 1);
+			BirthScoreText(1, ScoreManager::GetInstance()->GetMagnification());
 			ScoreManager::GetInstance()->SetFirstNumber(ScoreManager::GetInstance()->GetFirstNumber() + m_AddScore);
 			m_AddScore = 0;
+			enemys[i]->SetDamage(true);
+		}
+
+		if (!enemys[i]->GetAlive()) {
+			enemys.erase(cbegin(enemys) + i);
 		}
 	}
+
+	for (auto i = 0; i < enemys.size(); i++) {
+		enemys[i]->Update();
+	}
+	//血だまりのエフェクト
+	for (int i = 0; i < blood.size(); i++)
+	{
+		//拡大
+		if (0 < blood[i]->counter && blood[i]->counter < 60)
+		{
+			blood[i]->counter++;
+			float scale = blood[i]->object->GetScale().x;
+			scale += 0.03f;
+			scale = min(0.3f, scale);
+			blood[i]->object->SetScale({ scale, scale, scale });
+		}
+		//消える
+		else
+		{
+			XMFLOAT4 color = blood[i]->object->GetColor();
+			color.w -= 0.01f;
+			color.w = max(0, color.w);
+			blood[i]->object->SetColor(color);
+			if (color.w <= 0)
+			{
+				blood.erase(cbegin(blood) + i);
+			}
+		}
+	}
+	//更新
+	for (auto& m : blood)
+	{
+		m->object->Update();
+	}
+
+	//倍率UIの表示
+	if (!Player::GetInstance()->GetAttack()) {
+		ui->SetMag(false);
+	}
+	ui->Update();
+
+	//倍率テキスト
+	for (auto i = 0; i < magtext.size(); i++)
+	{
+		if (magtext[i] == nullptr)continue;
+		magtext[i]->Update();
+	}
+	//テキストの削除
+	for (int i = 0; i < magtext.size(); i++) {
+		if (magtext[i] == nullptr) {
+			continue;
+		}
+
+		if (!magtext[i]->GetAlive()) {
+			magtext.erase(cbegin(magtext) + i);
+		}
+	}
+	ScoreManager::GetInstance()->Update();
+	SceneChanger::GetInstance()->Update();
+
+	//タイマーを図る
+	if (!Slow::GetInstance()->GetSlow()) {
+		//Timer::GetInstance()->Update();
+		PlayPostEffect = false;
+		radPower -= addPower;
+		radPower = max(0, radPower);
+		postEffect->SetRadPower(radPower);
+	}
+	else {
+		PlayPostEffect = true;
+		radPower += addPower;
+		radPower = min(radPower, 10.0f);
+		postEffect->SetRadPower(radPower);
+	}
+	ScoreManager::GetInstance()->Update();
 }
 
 void TutorialSceneActor::Draw(DirectXCommon* dxCommon) {
@@ -171,11 +238,10 @@ void TutorialSceneActor::Draw(DirectXCommon* dxCommon) {
 	if (PlayPostEffect) {
 		postEffect->PreDrawScene(dxCommon->GetCmdList());
 		BackDraw(dxCommon);
-		FrontDraw(dxCommon);
 		postEffect->PostDrawScene(dxCommon->GetCmdList());
-
 		dxCommon->PreDraw();
 		postEffect->Draw(dxCommon->GetCmdList());
+		FrontDraw(dxCommon);
 		ImGuiDraw();
 		dxCommon->PostDraw();
 	}
@@ -192,6 +258,23 @@ void TutorialSceneActor::Draw(DirectXCommon* dxCommon) {
 }
 //ポストエフェクトかからない
 void TutorialSceneActor::FrontDraw(DirectXCommon* dxCommon) {
+	IKESprite::PreDraw();
+	ui->FrontDraw();
+	IKESprite::PostDraw();
+	for (auto i = 0; i < enemys.size(); i++)
+	{
+		if (enemys[i] == nullptr)continue;
+		enemys[i]->EffectDraw(dxCommon);
+	}
+	//倍率テキスト
+	for (auto i = 0; i < magtext.size(); i++)
+	{
+		if (magtext[i] == nullptr)continue;
+		magtext[i]->Draw();
+	}
+	IKESprite::PreDraw();
+	ui->BackDraw();
+	IKESprite::PostDraw();
 	//完全に前に書くスプライト
 	IKESprite::PreDraw();
 	window->Draw();
@@ -203,22 +286,25 @@ void TutorialSceneActor::FrontDraw(DirectXCommon* dxCommon) {
 	IKESprite::PreDraw();
 	TutorialTask::GetInstance()->Draw();
 	IKESprite::PostDraw();
+	IKESprite::PreDraw();
+	SceneChanger::GetInstance()->Draw();
+	IKESprite::PostDraw();
 }
 //ポストエフェクトかかる
 void TutorialSceneActor::BackDraw(DirectXCommon* dxCommon) {
 	IKEObject3d::PreDraw();
-	BackObj::GetInstance()->Draw();
+	BackObj::GetInstance()->Draw(dxCommon);
 	Player::GetInstance()->Draw(dxCommon);
 	for (auto i = 0; i < enemys.size(); i++) {
 		enemys[i]->Draw(dxCommon);
 	}
-	ground->Draw();
 	IKEObject3d::PostDraw();
 	ParticleEmitter::GetInstance()->FlontDrawAll();
 
 	IKETexture::PreDraw2(dxCommon, AlphaBlendType);
-	for (int i = 0; i < AREA_NUM; i++) {
-		tex[i]->Draw();
+	for (auto& m : blood)
+	{
+		m->object->Draw();
 	}
 	IKETexture::PostDraw();
 }
@@ -236,22 +322,23 @@ void TutorialSceneActor::FinishUpdate(DebugCamera* camera) {
 }
 
 void TutorialSceneActor::ImGuiDraw() {
-	ImGui::Begin("TUTORIAL");
-	ImGui::Text("Timer:%d", m_TexTimer);
-	ImGui::Text("Count:%d", m_EnemyCount);
-	ImGui::End();
-	Player::GetInstance()->ImGuiDraw();
-	camerawork->ImGuiDraw();
+	
+	Slow::GetInstance()->ImGuiDraw();
 	for (auto i = 0; i < enemys.size(); i++) {
 		enemys[i]->ImGuiDraw();
 	}
-	ScoreManager::GetInstance()->ImGuiDraw();
+
+	ImGui::Begin("Tuto");
+	ImGui::Text("Timer:%d", m_TexTimer);
+	ImGui::Text("Count:%d", m_EnemyCount);
+	ImGui::Text("State:%d", _AttackState);
+	ImGui::End();
 }
 
 //移動
 void TutorialSceneActor::MoveState() {
 	m_TexTimer++;
-	if (m_TexTimer == 100) {
+	if (m_TexTimer == 200) {
 		text_->SelectText(TextManager::MOVE);
 	}
 
@@ -313,13 +400,14 @@ void TutorialSceneActor::AttackState() {
 		if (Slow::GetInstance()->GetSlow()) {
 			Slow::GetInstance()->SetTutorial(true);
 			text_->SelectText(TextManager::ATTACK5);
+		}
 
-			if (m_EnemyCount == 0) {
-				m_TexTimer = {};
-				Slow::GetInstance()->SetTutorial(false);
-				_AttackState = ENEMY_INTERVAL;
-				text_->SelectText(TextManager::ATTACK6);
-			}
+		if (m_EnemyCount == 0) {	//敵を倒した瞬間
+			Slow::GetInstance()->SetTutorial(false);
+			m_TexTimer = {};
+			_AttackState = ENEMY_INTERVAL;
+			text_->SelectText(TextManager::ATTACK6);
+			Slow::GetInstance()->SetSlow(false);
 		}
 	}
 	else if (_AttackState == ENEMY_INTERVAL) {
@@ -358,6 +446,7 @@ void TutorialSceneActor::EndState() {
 		m_TexTimer = {};
 		m_TutorialEnd = false;
 	}
+
 }
 //スキップの更新
 void TutorialSceneActor::SkipUpdate() {
@@ -384,25 +473,48 @@ void TutorialSceneActor::BirthEnemy(bool Move,bool End) {
 		newEnemy->Initialize();
 		newEnemy->SetPosition({ 0.0f,0.0f,0.0f });
 		newEnemy->SetMove(Move);
+		newEnemy->SetEnemyType(0);
+		newEnemy->SetEffectMove(false);
 		enemys.push_back(newEnemy);
 		m_EnemyCount++;
+
+		EnemyDeadEffect* newEffect = new EnemyDeadEffect(IKETexture::Create(ImageManager::BLOOD, { 0, 0, 0 }, { 0, 0, 0 }, { 1, 1, 1, 1 }));
+		newEffect->object->TextureCreate();
+		newEffect->object->SetRotation({ 90.0f, 0.0f, 0.0f });
+		blood.push_back(newEffect);
 	}
 	else {
 		m_TutorialEnd = true;
 		for (int i = 0; i < ENEMY_MAX; i++) {
 			InterEnemy* newEnemy;
 			newEnemy = new TutorialEnemy();
-			newEnemy->Initialize();
 			if (i == 0) {
 				newEnemy->SetPosition({ 0.0f,0.0f,0.0f });
+				newEnemy->SetEnemyType(0);
 			}else if (i == 1) {
 				newEnemy->SetPosition({ 3.0f,0.0f,0.0f });
+				newEnemy->SetEnemyType(1);
 			}else if (i == 2) {
 				newEnemy->SetPosition({ -3.0f,0.0f,0.0f });
+				newEnemy->SetEnemyType(2);
 			}
+			newEnemy->Initialize();
 			newEnemy->SetMove(Move);
 			enemys.push_back(newEnemy);
 			m_EnemyCount++;
+
+			EnemyDeadEffect* newEffect = new EnemyDeadEffect(IKETexture::Create(ImageManager::BLOOD, { 0, 0, 0 }, { 0, 0, 0 }, { 1, 1, 1, 1 }));
+			newEffect->object->TextureCreate();
+			newEffect->object->SetRotation({ 90.0f, 0.0f, 0.0f });
+			blood.push_back(newEffect);
 		}
 	}
+}
+
+//倍率スコアの生成
+void TutorialSceneActor::BirthScoreText(const int EnemyCount, const int Magnification) {
+	MagText* newtext;
+	newtext = new MagText(EnemyCount, Magnification);
+	newtext->Initialize();
+	magtext.push_back(newtext);
 }

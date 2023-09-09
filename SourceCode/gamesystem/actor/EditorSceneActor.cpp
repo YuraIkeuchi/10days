@@ -8,6 +8,7 @@
 #include "Helper.h"
 #include "Slow.h"
 #include"NormalEnemy.h"
+#include "BackObj.h"
 #include "Timer.h"
 
 void EditorSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, LightGroup* lightgroup) {
@@ -26,14 +27,6 @@ void EditorSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, 
 	lightgroup->SetCircleShadowActive(0, true);
 	lightgroup->SetCircleShadowActive(1, true);
 
-	//地面
-	ground.reset(new IKEObject3d());
-	ground->Initialize();
-	ground->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::GROUND));
-	ground->SetScale({ 1.f,1.f,1.f });
-	ground->SetPosition({ 0.0f,5.0f,0.0f });
-	ground->SetTiling(10.0f);
-
 	//スカイドーム
 	skydome.reset(new IKEObject3d());
 	skydome->Initialize();
@@ -47,16 +40,6 @@ void EditorSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, 
 	Player::GetInstance()->InitState({ 0.0f,0.0f,8.0f });
 	Player::GetInstance()->Initialize();
 
-	
-	//テクスチャ
-	for (int i = 0; i < AREA_NUM; i++) {
-		tex[i].reset(IKETexture::Create(ImageManager::AREA, { 0,0,0 }, { 0.5f,0.5f,0.5f }, { 1,1,1,1 }));
-		tex[i]->TextureCreate();
-
-		tex[i]->SetRotation({ 90.0f,0.0f,0.0f });
-		tex[i]->SetColor({ 1.0f,0.0,0.0f,0.5f });
-	}
-
 	int Quantity = static_cast<int>(std::any_cast<double>(LoadCSV::LoadCsvParam("Resources/csv/enemy.csv", "Enemy_Quantity")));
 
 	IKEModel* model=IKEModel::LoadFromOBJ("samurai2");
@@ -64,9 +47,11 @@ void EditorSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, 
 	enemy.resize(Quantity);
 	EPos.resize(Quantity);
 	EnemyMoveType.resize(Quantity);
+	InitEnemyMoveType.resize(Quantity);
 	ResCount.resize(Quantity);
 	LoadCSV::LoadCsvParam_XMFLOAT3("Resources/csv/enemy.csv", EPos, "POP");
 	LoadCSV::LoadCsvParam_Int("Resources/csv/enemy.csv", EnemyMoveType, "MoveType");
+	LoadCSV::LoadCsvParam_Int("Resources/csv/enemy.csv", InitEnemyMoveType, "EnemyType");
 	LoadCSV::LoadCsvParam_Int("Resources/csv/enemy.csv", ResCount, "ResCount");
 
 	for (auto i = 0; i < Quantity; i++) {
@@ -74,25 +59,21 @@ void EditorSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, 
 		enemy[i]->SetMovingTime(ResCount[i]);
 		enemy[i]->SetState(EnemyMoveType[i]);
 		enemy[i]->SetPosition(EPos[i]);
-
+		enemy[i]->SetEnemyType(InitEnemyMoveType[i]);
 		enemy[i]->EditPos(EPos[i]);
 		enemy[i]->Initialize();
 		enemys.emplace_back(enemy[i].get());
 	}
-	tex[0]->SetPosition({ 0.0f,2.0f,8.0f });
-	tex[1]->SetPosition({ 0.0f,2.0f,-8.0f });
-	tex[2]->SetPosition({ 9.3f,2.0f,0.0f });
-	tex[3]->SetPosition({ -9.3f,2.0f,0.0f });
-	tex[0]->SetScale({ 2.0f,0.1f,0.1f });
-	tex[1]->SetScale({ 2.0f,0.1f,0.1f });
-	tex[2]->SetScale({ 0.1f,1.6f,0.1f });
-	tex[3]->SetScale({ 0.1f,1.6f,0.1f });
+
 	//敵
 	Sample.reset(new NormalEnemy());
 	Sample->Initialize();
 
 
 	Timer::GetInstance()->Initialize();
+
+	//背景
+	BackObj::GetInstance()->Initialize();
 }
 
 void EditorSceneActor::Finalize() {
@@ -102,14 +83,12 @@ void EditorSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Ligh
 	(this->*stateTable[static_cast<size_t>(m_SceneState)])(camera);
 		camerawork->Update(camera);
 	lightgroup->Update();
-	ground->Update();
 	skydome->Update();
 	Sample->SetColor({ 1,1,1,0.5f });
 	Player::GetInstance()->Update();
+	BackObj::GetInstance()->Update();
 	Slow::GetInstance()->Update();
-	for (int i = 0; i < AREA_NUM; i++) {
-		tex[i]->Update();
-	}
+	
 	if (!delf) {
 		//各クラス更新
 		
@@ -131,10 +110,11 @@ void EditorSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Ligh
 			if (checkPos[2] || checkPos[3])
 				l_enemy->SetResPos(ini_enmeypos, PosY);
 
-
+			l_enemy->SetEnemyType(m_EnemyType);
 			l_enemy->Initialize();
 			l_enemy->SetMovingTime(timer);
 			l_enemy->EditPos(l_enemy->GetPosition());
+		
 			enemys.emplace_back(l_enemy);
 			ArgF = false;
 		}
@@ -186,7 +166,7 @@ void EditorSceneActor::FrontDraw(DirectXCommon* dxCommon) {
 //ポストエフェクトかかる
 void EditorSceneActor::BackDraw(DirectXCommon* dxCommon) {
 	IKEObject3d::PreDraw();
-	ground->Draw();
+
 	skydome->Draw();
 	if (viewf)
 	{
@@ -209,13 +189,11 @@ if (enemys[i] == nullptr)continue;
 	}
 
 	Sample->Draw(dxCommon);
+	BackObj::GetInstance()->Draw(dxCommon);
 	Player::GetInstance()->Draw(dxCommon);
 	IKEObject3d::PostDraw();
 
 	IKETexture::PreDraw2(dxCommon, AlphaBlendType);
-	for (int i = 0; i < AREA_NUM; i++) {
-		tex[i]->Draw();
-	}
 	IKETexture::PostDraw();
 }
 //導入しーんの更新
@@ -239,9 +217,20 @@ void EditorSceneActor::ImGuiDraw() {
 	ImGui::SliderFloat("Interval", &IntervalRes, 0.f, 180.f);
 	ImGui::SliderFloat("PosX", &PosX, 0, 400);
 	ImGui::SliderFloat("PosY", &PosY, 0, 400);
-	if(ImGui::Button("Argment",ImVec2(100,100)))
+	if(ImGui::Button("ArgmentRED",ImVec2(100,100)))
 	{
 		ArgF = true;
+		m_EnemyType = 0;
+	}
+	if (ImGui::Button("ArgmentGREEN", ImVec2(100, 100)))
+	{
+		ArgF = true;
+		m_EnemyType = 1;
+	}
+	if (ImGui::Button("ArgmentBLUE", ImVec2(100, 100)))
+	{
+		ArgF = true;
+		m_EnemyType = 2;
 	}
 	//
 	ImGui::Checkbox("Z_Max", &checkPos[0]);
@@ -334,6 +323,7 @@ void EditorSceneActor::FileWriting()
 			<< "," << enemys[i]->GetEditPos().z << std::endl;
 		ofs << "ResCount" << "," << enemys[i]->GetMovingT() << endl;
 		ofs << "MoveType" << "," << enemys[i]->GetState() << endl;
+		ofs << "EnemyType" << "," << enemys[i]->GetEnemyType() << endl;
 		ofs << "/*--------------------------------*/" << endl;
 	}
 	if (ResetF) {

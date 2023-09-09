@@ -9,6 +9,8 @@
 #include "SceneManager.h"
 #include"CsvLoader.h"
 #include "BackObj.h"
+#include "ScoreManager.h"
+#include "SceneChanger.h"
 
 void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, LightGroup* lightgroup) {
 	dxCommon->SetFullScreen(true);
@@ -26,14 +28,6 @@ void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 	lightgroup->SetCircleShadowActive(0, true);
 	lightgroup->SetCircleShadowActive(1, true);
 
-	//地面
-	ground.reset(new IKEObject3d());
-	ground->Initialize();
-	ground->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::GROUND));
-	ground->SetScale({ 1.f,1.f,1.f });
-	ground->SetPosition({ 0.0f,5.0f,0.0f });
-	ground->SetTiling(10.0f);
-
 	//スカイドーム
 	skydome.reset(new IKEObject3d());
 	skydome->Initialize();
@@ -47,36 +41,17 @@ void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 	Player::GetInstance()->InitState({ 0.0f,0.0f,8.0f });
 	Player::GetInstance()->Initialize();
 
-//	enemy.reset(new NormalEnemy());
-//	enemy->Initialize();
-
-
-	//テクスチャ
-	for (int i = 0; i < AREA_NUM; i++) {
-		tex[i].reset(IKETexture::Create(ImageManager::AREA, { 0,0,0 }, { 0.5f,0.5f,0.5f }, { 1,1,1,1 }));
-		tex[i]->TextureCreate();
-
-		tex[i]->SetRotation({ 90.0f,0.0f,0.0f });
-		tex[i]->SetColor({ 1.0f,0.0,0.0f,0.5f });
-	}
-
-	tex[0]->SetPosition({ 0.0f,0.0f,8.0f });
-	tex[1]->SetPosition({ 0.0f,0.0f,-8.0f });
-	tex[2]->SetPosition({ 9.3f,0.0f,0.0f });
-	tex[3]->SetPosition({ -9.3f,0.0f,0.0f });
-	tex[0]->SetScale({ 2.0f,0.1f,0.1f });
-	tex[1]->SetScale({ 2.0f,0.1f,0.1f });
-	tex[2]->SetScale({ 0.1f,1.6f,0.1f });
-	tex[3]->SetScale({ 0.1f,1.6f,0.1f });
-
 	int Quantity = static_cast<int>(std::any_cast<double>(LoadCSV::LoadCsvParam("Resources/csv/enemy.csv", "Enemy_Quantity")));
 
 	enemy.resize(Quantity);
 	EPos.resize(Quantity);
 	EnemyMoveType.resize(Quantity);
+	InitEnemyMoveType.resize(Quantity);
 	ResCount.resize(Quantity);
-LoadCSV::LoadCsvParam_XMFLOAT3("Resources/csv/enemy.csv", EPos, "POP");
+	blood.resize(Quantity);
+	LoadCSV::LoadCsvParam_XMFLOAT3("Resources/csv/enemy.csv", EPos, "POP");
 		LoadCSV::LoadCsvParam_Int("Resources/csv/enemy.csv", EnemyMoveType, "MoveType");
+		LoadCSV::LoadCsvParam_Int("Resources/csv/enemy.csv", InitEnemyMoveType, "EnemyType");
 		LoadCSV::LoadCsvParam_Int("Resources/csv/enemy.csv", ResCount, "ResCount");
 
 	for (auto i = 0; i < Quantity; i++) {
@@ -84,14 +59,28 @@ LoadCSV::LoadCsvParam_XMFLOAT3("Resources/csv/enemy.csv", EPos, "POP");
 		enemy[i].reset(new NormalEnemy());
 		enemy[i]->SetMovingTime(ResCount[i]);
 		enemy[i]->SetState(EnemyMoveType[i]);
+		enemy[i]->SetEnemyType(InitEnemyMoveType[i]);
 		enemy[i]->SetPosition(EPos[i]);
 		enemy[i]->Initialize();
+
+		blood[i].reset(new EnemyDeadEffect(IKETexture::Create(ImageManager::BLOOD, { 0, 0, 0 }, { 0, 0, 0 }, { 1, 1, 1, 1 })));
+		blood[i]->object->TextureCreate();
+		blood[i]->object->SetRotation({ 90.0f, 0.0f, 0.0f });
 	}
 
 	Timer::GetInstance()->Initialize();
 
 	//背景
 	BackObj::GetInstance()->Initialize();
+
+	//スコア
+	ScoreManager::GetInstance()->Initialize();
+	//スロー
+	Slow::GetInstance()->Initialize();
+
+	//UI
+	ui = make_unique<UI>();
+	ui->Initialize();
 }
 
 void FirstStageActor::Finalize() {
@@ -105,9 +94,9 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 	camerawork->Update(camera);
 	lightgroup->Update();
 	skydome->Update();
-	ground->Update();
-	ground->UpdateWorldMatrix();
 	BackObj::GetInstance()->Update();
+
+	Timer::GetInstance()->Update();
 	if (!Timer::GetInstance()->GetStop()) {
 		Player::GetInstance()->Update();
 		Slow::GetInstance()->Update();
@@ -116,11 +105,29 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 			if (enemy[i] == nullptr)continue;
 			enemy[i]->Update();
 		}
-	//	enemy->Update();
+
 	}
+	if (!Slow::GetInstance()->GetCheck()) {
+		for (auto i = 0; i < enemy.size(); i++)
+		{
+			if (enemy[i] == nullptr)continue;
+			if (enemy[i]->CheckCollide() && !enemy[i]->GetHitCheck()) {
+				enemy[i]->SetHitCheck(true);
+				Slow::GetInstance()->SetCheck(true);
+				break;
+			}
+		}
+	}
+
+	//for (auto i = 0; i < enemy.size(); i++) {
+	//	if (enemy[i] == nullptr)continue;
+	//	if (enemy[i]->GetHitCheck()) {
+	//		enemy[i]->AttackCollide();
+	//	}
+	//}
 	//タイマーを図る
 	if (!Slow::GetInstance()->GetSlow()) {
-		Timer::GetInstance()->Update();
+		
 		for (auto i = 0; i < enemy.size(); i++)
 		{
 			if (enemy[i] == nullptr)continue;
@@ -145,12 +152,14 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 
 	//ゲーム終了
 	if (Timer::GetInstance()->GetEnd()) {
-		SceneManager::GetInstance()->ChangeScene("TITLE");
+		SceneChanger::GetInstance()->SetChangeStart(true);
 	}
 	
-	for (int i = 0; i < AREA_NUM; i++) {
-		tex[i]->Update();
+	if (SceneChanger::GetInstance()->GetChange() && Timer::GetInstance()->GetEnd()) {
+		SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
+		SceneChanger::GetInstance()->SetChange(false);
 	}
+
 	ParticleEmitter::GetInstance()->Update();
 
 	//敵の削除
@@ -158,11 +167,95 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 		if (enemy[i] == nullptr) {
 			continue;
 		}
+		if (enemy[i]->GetDeath() && !enemy[i]->GetDamage()) {
+			if (!enemy[i]->GetDestroy()) {
+				for (auto& m : blood)
+			{
+				if (m->counter == 0)
+				{
+					m->object->SetPosition(enemy[i]->GetPosition());
+					m->counter = 1;
+					break;
+				}
+			}
+				ui->SetMag(true);
+				if (ScoreManager::GetInstance()->GetMagnification() < 5) {
+					ScoreManager::GetInstance()->SetMagnification(ScoreManager::GetInstance()->GetMagnification() + 1);
+				}
+				m_AddScore = (ScoreManager::GetInstance()->GetMagnification() * 1);
+				BirthScoreText(1, ScoreManager::GetInstance()->GetMagnification());
+				ScoreManager::GetInstance()->SetFirstNumber(ScoreManager::GetInstance()->GetFirstNumber() + m_AddScore);
+				m_AddScore = 0;
+			}
+			enemy[i]->SetDamage(true);
+		}
 
 		if (!enemy[i]->GetAlive()) {
 			enemy.erase(cbegin(enemy) + i);
 		}
 	}
+
+	SceneChanger::GetInstance()->Update();
+
+	//倍率UIの表示
+	if (!Player::GetInstance()->GetAttack()) {
+		ui->SetMag(false);
+	}
+	ui->Update();
+
+	//倍率テキスト
+	for (auto i = 0; i < magtext.size(); i++)
+	{
+		if (magtext[i] == nullptr)continue;
+		magtext[i]->Update();
+	}
+	//テキストの削除
+	for (int i = 0; i < magtext.size(); i++) {
+		if (magtext[i] == nullptr) {
+			continue;
+		}
+
+		if (!magtext[i]->GetAlive()) {
+			magtext.erase(cbegin(magtext) + i);
+		}
+	}
+
+	//血だまりのエフェクト
+	for (int i = 0; i < blood.size(); i++)
+	{
+		if (blood[i]->counter == 0)
+		{
+			continue;
+		}
+
+		//拡大
+		if (0 < blood[i]->counter && blood[i]->counter < 60)
+		{
+			blood[i]->counter++;
+			float scale = blood[i]->object->GetScale().x;
+			scale += 0.03f;
+			scale = min(0.3f, scale);
+			blood[i]->object->SetScale({ scale, scale, scale });
+		}
+		//消える
+		else
+		{
+			XMFLOAT4 color = blood[i]->object->GetColor();
+			color.w -= 0.01f;
+			color.w = max(0, color.w);
+			blood[i]->object->SetColor(color);
+			if (color.w <= 0)
+			{
+				blood.erase(cbegin(blood) + i);
+			}
+		}
+	}
+	//更新
+	for (auto& m : blood)
+	{
+		m->object->Update();
+	}
+	ScoreManager::GetInstance()->Update();
 }
 
 void FirstStageActor::Draw(DirectXCommon* dxCommon) {
@@ -171,11 +264,10 @@ void FirstStageActor::Draw(DirectXCommon* dxCommon) {
 	if (PlayPostEffect) {
 		postEffect->PreDrawScene(dxCommon->GetCmdList());
 		BackDraw(dxCommon);
-		FrontDraw(dxCommon);
 		postEffect->PostDrawScene(dxCommon->GetCmdList());
-
 		dxCommon->PreDraw();
 		postEffect->Draw(dxCommon->GetCmdList());
+		FrontDraw(dxCommon);
 		ImGuiDraw();
 		dxCommon->PostDraw();
 	} else {
@@ -191,30 +283,44 @@ void FirstStageActor::Draw(DirectXCommon* dxCommon) {
 }
 //ポストエフェクトかからない
 void FirstStageActor::FrontDraw(DirectXCommon* dxCommon) {
-
+	IKESprite::PreDraw();
+	ui->FrontDraw();
+	for (auto i = 0; i < enemy.size(); i++)
+	{
+		if (enemy[i] == nullptr)continue;
+		enemy[i]->EffectDraw(dxCommon);
+	}
+	//倍率テキスト
+	for (auto i = 0; i < magtext.size(); i++)
+	{
+		if (magtext[i] == nullptr)continue;
+		magtext[i]->Draw();
+	}
+	ui->BackDraw();
+	IKESprite::PostDraw();
+	IKESprite::PreDraw();
+	SceneChanger::GetInstance()->Draw();
+	IKESprite::PostDraw();
 }
 //ポストエフェクトかかる
 void FirstStageActor::BackDraw(DirectXCommon* dxCommon) {
-	IKEObject3d::PreDraw();
-	BackObj::GetInstance()->Draw();
+IKEObject3d::PreDraw();
+	BackObj::GetInstance()->Draw(dxCommon);
 	Player::GetInstance()->Draw(dxCommon);
-
+	IKETexture::PreDraw2(dxCommon, AlphaBlendType);
+	for (auto& m : blood)
+	{
+		m->object->Draw();
+	}
+	IKETexture::PostDraw();
 	for (auto i = 0; i < enemy.size(); i++)
 	{
 		if (enemy[i] == nullptr)continue;
 		enemy[i]->Draw(dxCommon);
 	}
-	//enemy->Draw(dxCommon);
-	//enemy->Draw(dxCommon);
-	ground->Draw();
+	//ground->Draw();
 	IKEObject3d::PostDraw();
 	ParticleEmitter::GetInstance()->FlontDrawAll();
-
-	IKETexture::PreDraw2(dxCommon, AlphaBlendType);
-	for (int i = 0; i < AREA_NUM; i++) {
-		tex[i]->Draw();
-	}
-	IKETexture::PostDraw();
 }
 //導入しーんの更新
 void FirstStageActor::IntroUpdate(DebugCamera* camera) {
@@ -230,14 +336,25 @@ void FirstStageActor::FinishUpdate(DebugCamera* camera) {
 }
 
 void FirstStageActor::ImGuiDraw() {
-	ImGui::Begin("FIRST");
-	if (Slow::GetInstance()->GetSlow()) {
-		ImGui::Text("PUSH A!!!");
-	}
-	ImGui::End();
-	//enemy->ImGuiDraw();
-	Player::GetInstance()->ImGuiDraw();
-	Slow::GetInstance()->ImGuiDraw();
-
-	Timer::GetInstance()->ImGuiDraw();
+	///*ImGui::Begin("FIRST");
+	//if (Slow::GetInstance()->GetSlow()) {
+	//	ImGui::Text("PUSH A!!!");
+	//}
+	//ImGui::End();
+	//
+	//}*/
+	//Slow::GetInstance()->ImGuiDraw();
+	//Player::GetInstance()->ImGuiDraw();
+	//for (auto i = 0; i < enemy.size(); i++)
+	//{
+	//	if (enemy[i] == nullptr)continue;
+	//	enemy[i]->ImGuiDraw();
+	//}
+}
+//倍率スコアの生成
+void FirstStageActor::BirthScoreText(const int EnemyCount, const int Magnification) {
+	MagText* newtext;
+	newtext = new MagText(EnemyCount, Magnification);
+	newtext->Initialize();
+	magtext.push_back(newtext);
 }

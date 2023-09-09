@@ -176,11 +176,13 @@
     <ClCompile Include="SourceCode\gamesystem\character\NormalEnemy.cpp" />
     <ClCompile Include="SourceCode\gamesystem\character\Player.cpp" />
     <ClCompile Include="SourceCode\gamesystem\character\TutorialEnemy.cpp" />
+    <ClCompile Include="SourceCode\gamesystem\effect\SlashEffect.cpp" />
     <ClCompile Include="SourceCode\gamesystem\effect\Slow.cpp" />
     <ClCompile Include="SourceCode\gamesystem\gamecamera\CameraWork.cpp" />
     <ClCompile Include="SourceCode\gamesystem\MessageWindow\MessageWindow.cpp" />
     <ClCompile Include="SourceCode\gamesystem\ParticleManager\ParticleEmitter.cpp" />
     <ClCompile Include="SourceCode\gamesystem\ParticleManager\ParticleManager.cpp" />
+    <ClCompile Include="SourceCode\gamesystem\scenetext\MagText.cpp" />
     <ClCompile Include="SourceCode\gamesystem\scenetext\ScoreManager.cpp" />
     <ClCompile Include="SourceCode\gamesystem\scenetext\TitleText.cpp" />
     <ClCompile Include="SourceCode\gamesystem\scenetext\TutorialText.cpp" />
@@ -281,11 +283,13 @@
     <ClInclude Include="SourceCode\gamesystem\character\NormalEnemy.h" />
     <ClInclude Include="SourceCode\gamesystem\character\Player.h" />
     <ClInclude Include="SourceCode\gamesystem\character\TutorialEnemy.h" />
+    <ClInclude Include="SourceCode\gamesystem\effect\SlashEffect.h" />
     <ClInclude Include="SourceCode\gamesystem\effect\Slow.h" />
     <ClInclude Include="SourceCode\gamesystem\gamecamera\CameraWork.h" />
     <ClInclude Include="SourceCode\gamesystem\MessageWindow\MessageWindow.h" />
     <ClInclude Include="SourceCode\gamesystem\ParticleManager\ParticleEmitter.h" />
     <ClInclude Include="SourceCode\gamesystem\ParticleManager\ParticleManager.h" />
+    <ClInclude Include="SourceCode\gamesystem\scenetext\MagText.h" />
     <ClInclude Include="SourceCode\gamesystem\scenetext\ScoreManager.h" />
     <ClInclude Include="SourceCode\gamesystem\scenetext\TitleText.h" />
     <ClInclude Include="SourceCode\gamesystem\scenetext\TutorialText.h" />

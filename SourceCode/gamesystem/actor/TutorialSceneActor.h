@@ -5,7 +5,8 @@
 #include "TutorialEnemy.h"
 #include<windows.h>
 #include<vector>
-
+#include "UI.h"
+#include "MagText.h"
 class TutorialSceneActor :public BaseActor
 {
 public:
@@ -25,6 +26,7 @@ private:
 	void FinishUpdate(DebugCamera* camera)override;		//撃破シーン
 
 	void ImGuiDraw();
+	void BirthScoreText(const int EnemyCount, const int Magnification);
 private:
 	enum class state {
 		MOVE,
@@ -42,14 +44,26 @@ private:
 	static const int AREA_NUM = 4;
 	static const int ENEMY_MAX = 3;
 private:
+	//敵死亡時のエフェクト
+	struct EnemyDeadEffect
+	{
+		IKETexture* object = nullptr;
+		int counter;
+
+		EnemyDeadEffect(IKETexture* effect)
+		{
+			object = effect;
+			counter = 0;
+		}
+	};
+private:
+	std::vector<EnemyDeadEffect*> blood;
 	unique_ptr<IKESprite> window;
 	unique_ptr<TutorialText> text_;
-	unique_ptr<IKEObject3d> ground;
 	IKEModel* model;
 	unique_ptr<IKEObject3d> skydome;
 	XMFLOAT2 m_AddOffset = {};
 	std::vector<InterEnemy*> enemys;
-	unique_ptr<IKETexture> tex[AREA_NUM];
 	int m_TexTimer = {};
 	int m_EndCount = {};
 	int m_ResetTimer = {};
@@ -73,5 +87,11 @@ private:
 
 	bool m_TutorialEnd = false;
 	int m_AddScore = {};
+
+	float radPower = 0;
+	const float addPower = 0.5f;
+
+	unique_ptr<UI> ui;
+	std::vector<MagText*> magtext;
 };
 

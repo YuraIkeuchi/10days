@@ -18,7 +18,7 @@ void ParticleEmitter::Initialize()
 	LoadTexture();
 	//パーティクルマネージャー生成
 	circleParticle.reset(ParticleManager::Create(ImageManager::Normal));
-	bloodParticle.reset(ParticleManager::Create(ImageManager::Blood));
+	bloodParticle.reset(ParticleManager::Create(ImageManager::Normal));
 }
 
 void ParticleEmitter::Update()
@@ -32,7 +32,7 @@ void ParticleEmitter::IntroDraw() {
 }
 void ParticleEmitter::FlontDrawAll() {
 	circleParticle->Draw(AddBlendType);
-	bloodParticle->Draw(AlphaBlendType);
+	bloodParticle->Draw(AddBlendType);
 }
 
 void ParticleEmitter::DeathDrawAll() {
@@ -59,27 +59,35 @@ void ParticleEmitter::SplatterEffect(const int life, const int num, const XMFLOA
 	for (int i = 0; i < num; i++)
 	{
 		XMFLOAT3 vel = vec;
-		float div = 10;
-		const int rnd_vel = 5;
+		float div = 100;
+		const int rnd_vel = 30;
 		if (vec.x == 0)
 		{
 			vel.x += static_cast<float>(Random::GetRanNum(0, rnd_vel) - rnd_vel / 2) / div;
 		}
+		else if (0 < vec.x)
+		{
+			vel.x += static_cast<float>(Random::GetRanNum(0, rnd_vel)) / div;
+		}
 		else
 		{
-			vel.x += static_cast<float>(Random::GetRanNum(0, rnd_vel / 2)) / div;
+			vel.x -= static_cast<float>(Random::GetRanNum(0, rnd_vel)) / div;
 		}
-		vel.y += static_cast<float>(Random::GetRanNum(2, 4)) / div;
+		vel.y += static_cast<float>(Random::GetRanNum(20, 40)) / div;
 		if (vec.z == 0)
 		{
 			vel.z += static_cast<float>(Random::GetRanNum(0, rnd_vel) - rnd_vel / 2) / div;
 		}
+		else if (0 < vec.z)
+		{
+			vel.z += static_cast<float>(Random::GetRanNum(0, rnd_vel)) / div;
+		}
 		else
 		{
-			vel.z += static_cast<float>(Random::GetRanNum(0, rnd_vel / 2)) / div;
+			vel.z -= static_cast<float>(Random::GetRanNum(0, rnd_vel)) / div;
 		}
 
-		bloodParticle->Add(life, { pos.x, pos.y, pos.z }, vel, { -vel.x / life, -0.04f, -vel.z / life }, startscale, endscale, bloodcolor, bloodcolor, 1.0f);
+		bloodParticle->Add(life, { pos.x, pos.y, pos.z }, vel, { -vel.x / life, -0.02f, -vel.z / life }, startscale, endscale, bloodcolor, bloodcolor, 1.0f);
 	}
 }
 

@@ -154,6 +154,9 @@ public: // ƒƒ“ƒoŠÖ”
 	XMMATRIX GetMatrot() { return matRot; }
 	XMMATRIX GetMatScl() { return matScale; }
 
+	// F‚Ìæ“¾
+	const XMFLOAT4& GetColor() { return color; }
+
 	/// <summary>
 /// ƒ‚ƒfƒ‹‚ğæ“¾
 /// </summary>

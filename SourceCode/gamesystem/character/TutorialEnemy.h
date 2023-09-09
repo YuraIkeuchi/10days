@@ -11,9 +11,11 @@ public:
 	void ImGui_Origin()override;
 
 	void Draw(DirectXCommon* dxCommon) override;//描画
-
+	void EffectDraw(DirectXCommon* dxCommon) override;//エフェクト描画
 private:
 	void SlowCollide();
+	void DeathMove();
+	void TutoBirthEffect();
 private:
 
 	//関数ポインタ
@@ -31,11 +33,11 @@ protected:
 
 private:
 	float m_velocity = 0.2f;
-	bool m_Slow = false;
-	float m_radius = 1.2f;
 
 	int m_ResPornTimer = 0;
 
 	float m_BaseSpeed = {};
+	float m_Gravity = 0.01f;
+	float m_AddPower = {};
 };
 

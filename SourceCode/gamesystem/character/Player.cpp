@@ -56,6 +56,8 @@ void Player::InitState(const XMFLOAT3& pos) {
 	m_MoveTimer = {};
 
 	m_Attack = false;
+
+	_charaState = STATE_MOVE;
 }
 /*CharaStateのState並び順に合わせる*/
 void (Player::* Player::stateTable[])() = {
@@ -70,6 +72,14 @@ void Player::Update()
 
 	Obj_SetParam();
 	m_MoveTimer = {};
+
+	if (m_Damage) {
+		m_DamageTimer++;
+		if (m_DamageTimer >= 10) {
+			m_Damage = false;
+			m_DamageTimer = {};
+		}
+	}
 }
 //VECTOR
 XMFLOAT3 Player::MoveVECTOR(XMVECTOR v, float angle)
@@ -83,7 +93,9 @@ XMFLOAT3 Player::MoveVECTOR(XMVECTOR v, float angle)
 //描画
 void Player::Draw(DirectXCommon* dxCommon)
 {
-	Obj_Draw();
+	if (!m_Damage) {
+		Obj_Draw();
+	}
 }
 
 //ImGui
@@ -91,6 +103,7 @@ void Player::ImGuiDraw() {
 	ImGui::Begin("Player");
 	ImGui::Text("POSZ%f", m_Position.z);
 	ImGui::Text("Timer:%d", m_MoveTimer);
+	ImGui::Text("Damage:%d", m_Damage);
 	ImGui::End();
 }
 
@@ -231,6 +244,19 @@ void Player::Attack() {
 		float oldX = m_Position.x;
 		m_Position.x = Ease(In, Cubic, m_Frame * Slow::GetInstance()->GetPlayerSlowPower(), m_Position.x, m_AfterPosX);
 		m_playerVec = { m_Position.x - oldX, 0, 0 };
+	}
+
+	if (_MoveState == MOVE_UP) {
+		m_AttackPos = { m_Position.x,m_Position.y,m_Position.z + 1.0f };
+	}
+	else if (_MoveState == MOVE_DOWN) {
+		m_AttackPos = { m_Position.x,m_Position.y,m_Position.z - 1.0f };
+	}
+	else if (_MoveState == MOVE_RIGHT) {
+		m_AttackPos = { m_Position.x + 1.0f,m_Position.y,m_Position.z };
+	}
+	else {
+		m_AttackPos = { m_Position.x - 1.0f,m_Position.y,m_Position.z };
 	}
 
 	if (m_Frame > 0.9f) {

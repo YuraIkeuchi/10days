@@ -9,7 +9,7 @@
 #include "Collision.h"
 #include "ParticleEmitter.h"
 #include "Random.h"
-
+#include "ImageManager.h"
 #define MapMinX -10
 #define MapMaxX 10
 
@@ -26,12 +26,43 @@ bool TutorialEnemy::Initialize() {
 	m_Object.reset(new IKEObject3d());
 	m_Object->Initialize();
 	m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::ENEMY));
-	m_Color = { 1.0f,0.5f,0.0f,1.0f };
-	if(StartState==0)
-	{
-	//	_charaState =
+	effect_up = IKESprite::Create(ImageManager::CUT_UP, {});
+	effect_up->SetAnchorPoint({ 0.5f,1.0f });
+	effect_down = IKESprite::Create(ImageManager::CUT_DOWN, {});
+	effect_down->SetAnchorPoint({ 0.5f,0.0f });
+	gauge_up = IKESprite::Create(ImageManager::CUTGAGE_UP, {});
+	gauge_up->SetAnchorPoint({ 0.5f,1.0f });
+	gauge_down = IKESprite::Create(ImageManager::CUTGAGE_DOWN, {});
+	gauge_down->SetAnchorPoint({ 0.5f,0.0f });
+	_charaState = StartState;
+	_EnemyType = m_EnemyType;
+
+	if (_EnemyType == RED_ENEMY) {
+		m_Color = { 1.0f,0.2f,0.0f,1.0f };
+		m_UpPos = { 1000.0f,200.0f };
+		m_DownPos = { 1000.0f,195.0f };
 	}
-	_charaState =  CharaState::STATE_LEFT;//StartState;
+	else if (_EnemyType == GREEN_ENEMY) {
+		m_Color = { 0.0f,1.0f,0.2f,1.0f };
+		m_UpPos = { 800.0f,280.0f };
+		m_DownPos = { 800.0f,275.0f };
+	}
+	else {
+		m_Color = { 0.2f,0.0f,1.0f,1.0f };
+		m_UpPos = { 800.0f,360.0f };
+		m_DownPos = { 800.0f,355.0f };
+	}
+	gauge_up->SetScale(0.25f);
+	gauge_down->SetScale(0.25f);
+	effect_up->SetScale(0.25f);
+	effect_down->SetScale(0.25f);
+	gauge_up->SetColor(m_Color);
+	gauge_down->SetColor(m_Color);
+
+	gauge_up->SetPosition(m_UpPos);
+	gauge_down->SetPosition(m_DownPos);
+	effect_up->SetPosition(m_UpPos);
+	effect_down->SetPosition(m_DownPos);
 	m_BaseSpeed = static_cast<float>(std::any_cast<double>(LoadCSV::LoadCsvParam("Resources/csv/chara/enemy/enemy.csv", "speed")));
 	return true;
 }
@@ -46,22 +77,81 @@ void (TutorialEnemy::* TutorialEnemy::stateTable[])() = {
 
 //行動
 void TutorialEnemy::Action() {
-	(this->*stateTable[_charaState])();
+	if (!m_Death) {
+		(this->*stateTable[_charaState])();
+	}
+	else {
+		DeathMove();
+	}
+	
 
 	//当たり判定
-	SlowCollide();
+	if (!m_Death) {
+		SlowCollide();
+	}
+	
+	//エフェクト関係
+	gauge_up->SetPosition(m_UpPos);
+	gauge_down->SetPosition(m_DownPos);
+	effect_up->SetPosition(m_UpPos);
+	effect_down->SetPosition(m_DownPos);
+	gauge_up->SetColor({ m_Color.x,m_Color.y,m_Color.z,m_Alpha });
+	gauge_down->SetColor({ m_Color.x,m_Color.y,m_Color.z,m_Alpha });
+	effect_up->SetColor({ 1.0f,1.0f,1.0f,m_Alpha });
+	effect_down->SetColor({ 1.0f,1.0f,1.0f,m_Alpha });
+
+	//斬撃エフェクト
+	for (auto i = 0; i < slash.size(); i++)
+	{
+		if (slash[i] == nullptr)continue;
+		slash[i]->Update();
+	}
+	//斬撃エフェクトの削除
+	for (int i = 0; i < slash.size(); i++) {
+		if (slash[i] == nullptr) {
+			continue;
+		}
+
+		if (!slash[i]->GetAlive()) {
+			slash.erase(cbegin(slash) + i);
+		}
+	}
+
+	if (m_EffectMove) {
+		EffectCountDown();
+	}
 	Obj_SetParam();
 }
 //描画
 void TutorialEnemy::Draw(DirectXCommon* dxCommon) {
-	if (_charaState != STATE_INTER) {
-		Obj_Draw();
+	Obj_Draw();
+}
+//エフェクト描画
+void TutorialEnemy::EffectDraw(DirectXCommon* dxCommon) {
+	//斬撃エフェクト
+	for (auto i = 0; i < slash.size(); i++)
+	{
+		if (slash[i] == nullptr)continue;
+		slash[i]->Draw(dxCommon);
 	}
+
+	IKESprite::PreDraw();
+	if (m_ViewEffect) {
+		gauge_up->Draw();
+		gauge_down->Draw();
+		effect_up->Draw();
+		effect_down->Draw();
+	}
+	IKESprite::PostDraw();
 }
 //ImGui描画
 void TutorialEnemy::ImGui_Origin() {
 	ImGui::Begin("Enemy");
-	ImGui::Text("Slow:%f", m_velocity);
+	ImGui::Text("Damage:%d", m_Damage);
+	ImGui::Text("Death:%d", m_Death);
+	ImGui::Text("Scale.x:%f", m_Scale.x);
+	ImGui::Text("AddPower:%f", m_AddPower);
+	ImGui::Text("PosY:%f", m_Position.y);
 	ImGui::End();
 }
 //開放
@@ -90,7 +180,10 @@ void TutorialEnemy::RightMove() {
 	else {
 		m_velocity = m_BaseSpeed;
 	}
-
+	m_AddPower -= m_Gravity;
+	if (Helper::GetInstance()->CheckMax(m_Position.y, {}, m_AddPower * Slow::GetInstance()->GetSlowPower())) {
+		m_AddPower = 0.2f;
+	}
 	if (m_Move) {
 		if (Helper::GetInstance()->CheckMin(m_Position.x, l_MAX, m_velocity)) {
 			m_Position.x = MapMinX;
@@ -109,7 +202,10 @@ void TutorialEnemy::LeftMove() {
 	else {
 		m_velocity = -m_BaseSpeed;
 	}
-
+	m_AddPower -= m_Gravity;
+	if (Helper::GetInstance()->CheckMax(m_Position.y, {}, m_AddPower * Slow::GetInstance()->GetSlowPower())) {
+		m_AddPower = 0.2f;
+	}
 	if (m_Move) {
 		if (Helper::GetInstance()->CheckMax(m_Position.x, l_MIN, m_velocity)) {
 			m_Position.x = MapMaxX;
@@ -121,7 +217,10 @@ void TutorialEnemy::LeftMove() {
 void TutorialEnemy::BottomMove() {
 	const float l_MIN = MapMinZ;
 	m_velocity = -m_BaseSpeed;
-
+	m_AddPower -= m_Gravity;
+	if (Helper::GetInstance()->CheckMax(m_Position.y, {}, m_AddPower * Slow::GetInstance()->GetSlowPower())) {
+		m_AddPower = 0.2f;
+	}
 	if (m_Move) {
 		if (Helper::GetInstance()->CheckMax(m_Position.z, l_MIN, m_velocity)) {
 			m_Position.z = MapMaxZ;
@@ -133,7 +232,10 @@ void TutorialEnemy::BottomMove() {
 void TutorialEnemy::UpMove() {
 	const float l_MIN =MapMaxZ;
 	m_velocity = m_BaseSpeed;
-	
+	m_AddPower -= m_Gravity;
+	if (Helper::GetInstance()->CheckMax(m_Position.y, {}, m_AddPower * Slow::GetInstance()->GetSlowPower())) {
+		m_AddPower = 0.2f;
+	}
 	if (m_Move) {
 		if (Helper::GetInstance()->CheckMin(m_Position.z, l_MIN, m_velocity)) {
 			m_Position.z = MapMinZ;
@@ -144,21 +246,76 @@ void TutorialEnemy::UpMove() {
 
 void TutorialEnemy::SlowCollide() {
 	Input* input = Input::GetInstance();
-	if (Collision::CircleCollision(m_Position.x, m_Position.z, m_radius, Player::GetInstance()->GetPosition().x, Player::GetInstance()->GetPosition().z, m_radius)) {
+	if (Collision::CircleCollision(m_Position.x, m_Position.z, m_radius, Player::GetInstance()->GetAttackPos().x, Player::GetInstance()->GetAttackPos().z, m_radius)) {
 		if (!m_Slow) {
-			m_Slow = true;
 			Slow::GetInstance()->SetSlow(true);
+			Slow::GetInstance()->SetSlowTimer(60);
+			m_Slow = true;
+			m_ViewEffect = true;
 		}
 		else {
-			if ((input->TriggerButton(input->A))) {
-				m_Alive = false;
-				_charaState = STATE_INTER;
-				m_ResPornTimer = {};
-				ParticleEmitter::GetInstance()->SplatterEffect(20, Random::GetRanNum(3, 6), m_Position, Player::GetInstance()->GetPlayerVec(), 1.0f, 1.0f, { 1, 0, 0, 1 });
+			if (m_EnemyType == RED_ENEMY) {
+				if ((input->TriggerButton(input->B))) {
+					m_Death = true;
+					int num = Random::GetRanNum(30, 40);
+					float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
+					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
+					TutoBirthEffect();
+				}
+			}
+			else if (m_EnemyType == GREEN_ENEMY) {
+				if ((input->TriggerButton(input->A))) {
+					m_Death = true;
+					int num = Random::GetRanNum(30, 40);
+					float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
+					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
+					TutoBirthEffect();
+				}
+			}
+			else {
+				if ((input->TriggerButton(input->X))) {
+					m_Death = true;
+					int num = Random::GetRanNum(30, 40);
+					float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
+					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
+					TutoBirthEffect();
+				}
 			}
 		}
 	}
 	else {
+		m_ViewEffect = false;
 		m_Slow = false;
 	}
+}
+//死んだときの動き
+void TutorialEnemy::DeathMove() {
+	const float l_AddFrame = 0.05f;
+	m_Slow = false;
+	m_AddPower -= m_Gravity;
+	if (Helper::GetInstance()->CheckMax(m_Position.y, {}, m_AddPower * Slow::GetInstance()->GetSlowPower())) {
+		m_Scale = { Ease(In,Cubic,0.5f * Slow::GetInstance()->GetSlowPower(),m_Scale.x,0.0f),
+					Ease(In,Cubic,0.5f * Slow::GetInstance()->GetSlowPower(),m_Scale.y,0.0f),
+					Ease(In,Cubic,0.5f * Slow::GetInstance()->GetSlowPower(),m_Scale.z,0.0f), };
+
+		m_Rotation.y += 2.0f;
+
+		if (m_Scale.x <= 0.1f) {
+			m_Alive = false;
+		}
+	}
+
+	if (Helper::GetInstance()->FrameCheck(m_Frame, l_AddFrame)) {
+		m_ViewEffect = false;
+	}
+	m_UpPos.x = Ease(In, Cubic, m_Frame, m_UpPos.x, 700.0f);
+	m_DownPos.x = Ease(In, Cubic, m_Frame, m_DownPos.x, 900.0f);
+	m_Alpha = Ease(In, Cubic, m_Frame, m_Alpha, 0.0f);
+}
+//エフェクトの生成
+void TutorialEnemy::TutoBirthEffect() {
+	SlashEffect* effect;
+	effect = new SlashEffect(m_Position);
+	effect->Initialize();
+	slash.push_back(effect);
 }
