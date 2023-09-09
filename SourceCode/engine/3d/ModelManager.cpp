@@ -20,7 +20,7 @@ void ModelManager::StartInitialize()
 	LoadModel(PLAYER_1, "Samuraiidle2");
 
 	LoadModel(PLAYER_2, "Samuraiidle");
-	LoadModel(ENEMY, "Particle");
+	LoadModel(ENEMY, "slime");
 	LoadFBXModel(PLAYER, "kotoko");
 }
 
