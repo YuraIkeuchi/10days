@@ -53,4 +53,5 @@ void ImageManager::LoadParticle()
 	ParticleManager::LoadTexture(Smoke, "hootEffect.png");
 	ParticleManager::LoadTexture(Heal, "effect2.png");
 	ParticleManager::LoadTexture(Blood, "blood.png");
+	ParticleManager::LoadTexture(Dash, "hootEffect.png");
 }

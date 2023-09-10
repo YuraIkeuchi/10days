@@ -131,15 +131,6 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 
 		if (enemys[i]->GetDeath() && !enemys[i]->GetDamage()) {
 			ui->SetMag(true);
-			for (auto& m : blood)
-			{
-				if (m->counter == 0)
-				{
-					m->object->SetPosition(enemys[i]->GetPosition());
-					m->counter = 1;
-					break;
-				}
-			}
 			m_EnemyCount--;
 			if (ScoreManager::GetInstance()->GetMagnification() < 5) {
 				ScoreManager::GetInstance()->SetMagnification(ScoreManager::GetInstance()->GetMagnification() + 1);
@@ -151,7 +142,17 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 			enemys[i]->SetDamage(true);
 		}
 
-		if (!enemys[i]->GetAlive()) {
+		if (!enemys[i]->GetAlive())
+		{
+			for (auto& m : blood)
+			{
+				if (m->counter == 0)
+				{
+					m->object->SetPosition(enemys[i]->GetPosition());
+					m->counter = 1;
+					break;
+				}
+			}
 			enemys.erase(cbegin(enemys) + i);
 		}
 	}

@@ -109,6 +109,8 @@ void Player::Move() {
 		input->TiltPushStick(Input::L_RIGHT, 0.0f) ||
 		input->TiltPushStick(Input::L_LEFT, 0.0f))
 	{
+		ParticleEmitter::GetInstance()->DashEffect(10, 1, m_Position, {}, 0.5f, 1.0f, { 1, 1, 1, 0.5f });
+
 		//右入力
 		if (_MoveState == MOVE_UP || _MoveState == MOVE_DOWN) {
 			//右入力
@@ -217,11 +219,13 @@ void Player::Attack() {
 	}
 	
 	if (_MoveState == MOVE_UP || _MoveState == MOVE_DOWN) {
-		float oldZ = m_Position.z;
 		m_Position.z = Ease(In, Cubic, m_Frame * Slow::GetInstance()->GetPlayerSlowPower(), m_Position.z, m_AfterPosZ);
+		float oldZ = m_Position.z;
 		m_playerVec = {0, 0, m_Position.z - oldZ};
+		ParticleEmitter::GetInstance()->DashEffect(10, 1, m_Position, {}, 0.5f, 1.0f, { 1, 1, 1, 0.5f });
 	}
 	else {
+		ParticleEmitter::GetInstance()->DashEffect(10, 1, m_Position, {}, 0.5f, 1.0f, { 1, 1, 1, 0.5f });
 		float oldX = m_Position.x;
 		m_Position.x = Ease(In, Cubic, m_Frame * Slow::GetInstance()->GetPlayerSlowPower(), m_Position.x, m_AfterPosX);
 		m_playerVec = { m_Position.x - oldX, 0, 0 };
