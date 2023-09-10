@@ -93,6 +93,8 @@ public:
 	bool CheckCollide();
 	void AttackCollide();
 	void BirthEffect();
+	void BirthMove();
+	void DeathMove();
 public://gettersetter
 	
 	void SetHitCheck(bool HitCheck) { m_HitCheck = HitCheck; }
@@ -119,7 +121,7 @@ protected:
 	bool m_Destroy = false;
 	bool m_HitCheck = false;
 	bool m_EffectMove = true;
-
+	bool m_Birth = false;
 	enum EnemyType {
 		RED_ENEMY,
 		GREEN_ENEMY,
@@ -141,10 +143,18 @@ protected:
 	bool m_Miss = false;
 	int SlowStopTimer = {};
 	bool m_Slow = false;
-	float m_radius = 1.2f;
+	float m_radius = 0.8f;
 
 	//エフェクトの大きさ
 	XMFLOAT2 EffectSize = {};
 	float m_EffectFrame = {};
 	int m_MissTimer = {};
+
+	float m_Gravity = 0.01f;
+	float m_AddPower = {};
+
+	enum BirthType {
+		BIRTH_SET,
+		BIRTH_START
+	}_BirthType = BIRTH_SET;
 };

@@ -4,6 +4,7 @@
 #include "Helper.h"
 #include "Timer.h"
 #include "ScoreManager.h"
+#include "Player.h"
 UI::UI() {
 	const int NumberCount = NUMBER_MAX;
 	const float l_Width_Cut = 64.0f;
@@ -31,6 +32,8 @@ UI::UI() {
 	MagGage->SetPosition({ 1080.0f,-10.0f });
 	MagGage->SetSize({ 200.0f,100.0f });
 	m_MagPos = { 1080.0f,-20.0f };
+
+	Miss = IKESprite::Create(ImageManager::MISS, {});
 }
 //‰Šú‰»
 void UI::Initialize() {
@@ -38,6 +41,13 @@ void UI::Initialize() {
 }
 //XV
 void UI::Update() {
+	if (Player::GetInstance()->GetDamage()) {
+		m_MissColor = { 1.0f,1.0f,1.0f,1.0f };
+	}
+	else {
+		m_MissColor.w = { Ease(In,Cubic,0.6f,m_MissColor.w,0.0f) };
+	}
+	Miss->SetColor(m_MissColor);
 	MagMove();
 }
 //•`‰æ(‘O–Ê)
@@ -48,6 +58,9 @@ void UI::FrontDraw() {
 }
 //•`‰æ(Œã‚ë)
 void UI::BackDraw() {
+	if (m_MissColor.w > 0.1f) {
+		Miss->Draw();
+	}
 	TimeGage->Draw();
 	ScoreGage->Draw();
 	Timer::GetInstance()->SpriteDraw();
@@ -59,7 +72,7 @@ void UI::MagMove() {
 		m_MagPos.y = Ease(In, Cubic, 0.5f, m_MagPos.y, 75.0f);
 	}
 	else {
-		m_MagPos.y = Ease(In, Cubic, 0.5f, m_MagPos.y, -20.0f);
+		m_MagPos.y = Ease(In, Cubic, 0.25f, m_MagPos.y, -20.0f);
 	}
 
 	MagGage->SetPosition(m_MagPos);

@@ -25,14 +25,11 @@ private:
 	static const int NUMBER_MAX = 10;
 private:
 	unique_ptr<TitleText> text_;
-	array<unique_ptr<IKESprite>,NUMBER_MAX> Sprite_First;
-	array<unique_ptr<IKESprite>,NUMBER_MAX> Sprite_Second;
-	array<unique_ptr<IKESprite>,NUMBER_MAX> Sprite_Third;
-	array<unique_ptr<IKESprite>,NUMBER_MAX> Sprite_Fourth;
-
+	unique_ptr<IKESprite> window;
 	enum SceneType {
 		PLAY,
 		TUTORIAL,
 		EDITOR,
 	}_SceneType = PLAY;
+	unique_ptr<IKESprite> title;
 };

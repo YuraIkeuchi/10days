@@ -173,18 +173,20 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 			{
 				if (m->counter == 0)
 				{
-					m->object->SetPosition(enemy[i]->GetPosition());
+					m->object->SetPosition({ enemy[i]->GetPosition().x,0.3f,enemy[i]->GetPosition().z });
 					m->counter = 1;
 					break;
 				}
 			}
+				//スコアを手に入れた瞬間
 				ui->SetMag(true);
 				if (ScoreManager::GetInstance()->GetMagnification() < 5) {
 					ScoreManager::GetInstance()->SetMagnification(ScoreManager::GetInstance()->GetMagnification() + 1);
 				}
 				m_AddScore = (ScoreManager::GetInstance()->GetMagnification() * 1);
 				BirthScoreText(1, ScoreManager::GetInstance()->GetMagnification());
-				ScoreManager::GetInstance()->SetFirstNumber(ScoreManager::GetInstance()->GetFirstNumber() + m_AddScore);
+				//ScoreManager::GetInstance()->SetFirstNumber(ScoreManager::GetInstance()->GetFirstNumber() + m_AddScore);
+				ScoreManager::GetInstance()->SetRealScore(ScoreManager::GetInstance()->GetRealScore() + (m_AddScore * 10));
 				m_AddScore = 0;
 			}
 			enemy[i]->SetDamage(true);
@@ -195,6 +197,10 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 		}
 	}
 
+	//コンボが途切れると倍率がもどる
+	if (Player::GetInstance()->GetDamage() && Player::GetInstance()->GetDamageTimer() == 1) {
+		ScoreManager::GetInstance()->SetMagnification(0);
+	}
 	SceneChanger::GetInstance()->Update();
 
 	//倍率UIの表示
@@ -233,8 +239,8 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 		{
 			blood[i]->counter++;
 			float scale = blood[i]->object->GetScale().x;
-			scale += 0.03f;
-			scale = min(0.3f, scale);
+			scale += 0.05f;
+			scale = min(0.4f, scale);
 			blood[i]->object->SetScale({ scale, scale, scale });
 		}
 		//消える
@@ -304,7 +310,7 @@ void FirstStageActor::FrontDraw(DirectXCommon* dxCommon) {
 }
 //ポストエフェクトかかる
 void FirstStageActor::BackDraw(DirectXCommon* dxCommon) {
-IKEObject3d::PreDraw();
+	IKEObject3d::PreDraw();
 	BackObj::GetInstance()->Draw(dxCommon);
 	Player::GetInstance()->Draw(dxCommon);
 	IKETexture::PreDraw2(dxCommon, AlphaBlendType);
@@ -350,6 +356,7 @@ void FirstStageActor::ImGuiDraw() {
 	//	if (enemy[i] == nullptr)continue;
 	//	enemy[i]->ImGuiDraw();
 	//}
+	//ScoreManager::GetInstance()->ImGuiDraw();
 }
 //倍率スコアの生成
 void FirstStageActor::BirthScoreText(const int EnemyCount, const int Magnification) {

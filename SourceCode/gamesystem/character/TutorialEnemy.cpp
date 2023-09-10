@@ -52,6 +52,20 @@ bool TutorialEnemy::Initialize() {
 		m_UpPos = { 800.0f,360.0f };
 		m_DownPos = { 800.0f,355.0f };
 	}
+
+	if (_charaState == STATE_RIGHT) {
+		m_Rotation.y = 0.0f;
+	}
+	else if (_charaState == STATE_LEFT) {
+		m_Rotation.y = 180.0f;
+	}
+	else if (_charaState == STATE_UP) {
+		m_Rotation.y = 270.0f;
+	}
+	else if (_charaState == STATE_DOWN) {
+		m_Rotation.y = 90.0f;
+	}
+
 	gauge_up->SetScale(0.25f);
 	gauge_down->SetScale(0.25f);
 	effect_up->SetScale(0.25f);
@@ -64,6 +78,8 @@ bool TutorialEnemy::Initialize() {
 	effect_up->SetPosition(m_UpPos);
 	effect_down->SetPosition(m_DownPos);
 	m_BaseSpeed = static_cast<float>(std::any_cast<double>(LoadCSV::LoadCsvParam("Resources/csv/chara/enemy/enemy.csv", "speed")));
+	m_Birth = false;
+	m_AddPower = 0.2f;
 	return true;
 }
 
@@ -288,30 +304,7 @@ void TutorialEnemy::SlowCollide() {
 		m_Slow = false;
 	}
 }
-//死んだときの動き
-void TutorialEnemy::DeathMove() {
-	const float l_AddFrame = 0.05f;
-	m_Slow = false;
-	m_AddPower -= m_Gravity;
-	if (Helper::GetInstance()->CheckMax(m_Position.y, {}, m_AddPower * Slow::GetInstance()->GetSlowPower())) {
-		m_Scale = { Ease(In,Cubic,0.5f * Slow::GetInstance()->GetSlowPower(),m_Scale.x,0.0f),
-					Ease(In,Cubic,0.5f * Slow::GetInstance()->GetSlowPower(),m_Scale.y,0.0f),
-					Ease(In,Cubic,0.5f * Slow::GetInstance()->GetSlowPower(),m_Scale.z,0.0f), };
 
-		m_Rotation.y += 2.0f;
-
-		if (m_Scale.x <= 0.1f) {
-			m_Alive = false;
-		}
-	}
-
-	if (Helper::GetInstance()->FrameCheck(m_Frame, l_AddFrame)) {
-		m_ViewEffect = false;
-	}
-	m_UpPos.x = Ease(In, Cubic, m_Frame, m_UpPos.x, 700.0f);
-	m_DownPos.x = Ease(In, Cubic, m_Frame, m_DownPos.x, 900.0f);
-	m_Alpha = Ease(In, Cubic, m_Frame, m_Alpha, 0.0f);
-}
 //エフェクトの生成
 void TutorialEnemy::TutoBirthEffect() {
 	SlashEffect* effect;

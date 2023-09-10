@@ -105,10 +105,10 @@ void ClearSceneActor::Draw(DirectXCommon* dxCommon) {
 void ClearSceneActor::FrontDraw() {
 	IKESprite::PreDraw();
 	back->Draw();
-	Sprite_First[ScoreManager::GetInstance()->GetFirstNumber()]->Draw();
-	Sprite_Second[ScoreManager::GetInstance()->GetSecondNumber()]->Draw();
-	Sprite_Third[ScoreManager::GetInstance()->GetThirdNumber()]->Draw();
-	Sprite_Fourth[ScoreManager::GetInstance()->GetFourthNumber()]->Draw();
+	Sprite_First[0]->Draw();
+	Sprite_Second[ScoreManager::GetInstance()->GetFirstNumber()]->Draw();
+	Sprite_Third[ScoreManager::GetInstance()->GetSecondNumber()]->Draw();
+	Sprite_Fourth[ScoreManager::GetInstance()->GetThirdNumber()]->Draw();
 	IKESprite::PostDraw();
 	IKESprite::PreDraw();
 	SceneChanger::GetInstance()->Draw();

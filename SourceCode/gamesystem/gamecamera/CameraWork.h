@@ -22,6 +22,7 @@ public:
 	void SplineSet();
 	void Update(DebugCamera* camera);//更新
 	void TutorialUpdate(DebugCamera* camera);//チュートリアルの更新
+	void TitleCamera(DebugCamera* camera);//タイトルカメラ
 	void ImGuiDraw();
 
 private:
@@ -41,4 +42,13 @@ private:
 	float m_Frame = {};
 	int m_LookTimer = {};
 	bool m_LookEnd = false;
+
+	//タイトルのカメラの変数
+	//円運動のため
+	float m_PI = 3.14f;
+	float m_TitleCameraRadius = 0.0f;
+	float m_TitleCameraSpeed = 0.0f;
+	float m_TitleCameraScale = 0.0f;
+	float m_TitleCameraCircleX = 0.0f;
+	float m_TitleCameraCircleZ = 0.0f;
 };
