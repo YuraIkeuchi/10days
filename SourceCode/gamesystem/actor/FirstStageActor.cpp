@@ -178,13 +178,14 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 					break;
 				}
 			}
+				//スコアを手に入れた瞬間
 				ui->SetMag(true);
-				if (ScoreManager::GetInstance()->GetMagnification() < 9) {
+				if (ScoreManager::GetInstance()->GetMagnification() < 5) {
 					ScoreManager::GetInstance()->SetMagnification(ScoreManager::GetInstance()->GetMagnification() + 1);
 				}
 				m_AddScore = (ScoreManager::GetInstance()->GetMagnification() * 1);
 				BirthScoreText(1, ScoreManager::GetInstance()->GetMagnification());
-				ScoreManager::GetInstance()->SetSecondNumber(ScoreManager::GetInstance()->GetSecondNumber() + m_AddScore);
+				//ScoreManager::GetInstance()->SetFirstNumber(ScoreManager::GetInstance()->GetFirstNumber() + m_AddScore);
 				ScoreManager::GetInstance()->SetRealScore(ScoreManager::GetInstance()->GetRealScore() + (m_AddScore * 10));
 				m_AddScore = 0;
 			}
@@ -196,6 +197,7 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 		}
 	}
 
+	//コンボが途切れると倍率がもどる
 	if (Player::GetInstance()->GetDamage() && Player::GetInstance()->GetDamageTimer() == 1) {
 		ScoreManager::GetInstance()->SetMagnification(0);
 	}

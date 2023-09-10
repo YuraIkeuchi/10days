@@ -28,7 +28,6 @@ private:
 	void LeftMove();//左向き
 	void UpMove();//右向き
 	void BottomMove();//左向き
-	void DeathMove();//死んだときの動き
 
 protected:
 

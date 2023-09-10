@@ -94,6 +94,7 @@ public:
 	void AttackCollide();
 	void BirthEffect();
 	void BirthMove();
+	void DeathMove();
 public://gettersetter
 	
 	void SetHitCheck(bool HitCheck) { m_HitCheck = HitCheck; }
@@ -151,4 +152,9 @@ protected:
 
 	float m_Gravity = 0.01f;
 	float m_AddPower = {};
+
+	enum BirthType {
+		BIRTH_SET,
+		BIRTH_START
+	}_BirthType = BIRTH_SET;
 };

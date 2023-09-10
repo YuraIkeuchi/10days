@@ -14,6 +14,10 @@ public:
 	void Update();
 	void ImGuiDraw();
 	void SpriteDraw();
+	//Š„‡‚ğ•Ô‚·
+	int getDigits(int value, int m, int n);
+private:
+
 private:
 	static const int NUMBER_MAX = 10;
 

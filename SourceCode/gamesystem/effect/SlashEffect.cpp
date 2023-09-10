@@ -25,9 +25,9 @@ void SlashEffect::Update() {
 		m_Alive = false;
 	}
 
-	m_Scale = { Ease(In, Cubic, m_Frame, m_Scale.x, 1.2f),
-		Ease(In, Cubic, m_Frame, m_Scale.y, 1.2f),
-		Ease(In, Cubic, m_Frame, m_Scale.z, 1.2f),
+	m_Scale = { Ease(In, Cubic, m_Frame, m_Scale.x, 1.5f),
+		Ease(In, Cubic, m_Frame, m_Scale.y, 1.5f),
+		Ease(In, Cubic, m_Frame, m_Scale.z, 1.5f),
 	};
 	m_Color.w = Ease(In, Cubic, m_Frame, m_Color.w, 0.0f);
 

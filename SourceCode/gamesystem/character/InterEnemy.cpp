@@ -62,7 +62,7 @@ void InterEnemy::ImGuiDraw() {
 
 bool InterEnemy::CheckCollide() {
 	if (Collision::CircleCollision(m_Position.x, m_Position.z, m_radius, Player::GetInstance()->GetAttackPos().x, Player::GetInstance()->GetAttackPos().z, m_radius)) {
-		if (Player::GetInstance()->GetAttack() && !m_Death && !m_Miss && _charaState != STATE_INTER
+		if (Player::GetInstance()->GetAttack() && !m_Death && !m_Miss && _charaState != STATE_INTER && m_Birth
 			&& Timer::GetInstance()->getNowTime() < MovingTime) {
 			Slow::GetInstance()->SetSlow(true);
 			m_Slow = true;
@@ -190,12 +190,44 @@ void InterEnemy::EffectCountDown() {
 	}
 }
 void InterEnemy::BirthMove() {
+	if (_BirthType == BIRTH_SET) {
+		m_Scale = { 0.0f,0.0f,0.0f };
+		_BirthType = BIRTH_START;
+	}
+	else {
+		m_AddPower -= m_Gravity;
+		if (Helper::GetInstance()->CheckMax(m_Position.y, {}, m_AddPower * Slow::GetInstance()->GetSlowPower()) && m_AddPower < 0.0f) {
+			m_Birth = true;
+		}
+
+		m_Scale = { Ease(In,Cubic,0.5f,m_Scale.x,0.5f),
+		Ease(In,Cubic,0.5f,m_Scale.y,0.5f),
+		Ease(In,Cubic,0.5f,m_Scale.z,0.5f), };
+	}
+}
+//死んだときの動き
+void InterEnemy::DeathMove() {
+	const float l_AddFrame = 0.05f;
+	m_Slow = false;
+	m_HitCheck = false;
 	m_AddPower -= m_Gravity;
-	if (Helper::GetInstance()->CheckMax(m_Position.y, {}, m_AddPower * Slow::GetInstance()->GetSlowPower()) && m_AddPower < 0.0f) {
-		m_Birth = true;
+	if (Helper::GetInstance()->CheckMax(m_Position.y, {}, m_AddPower * Slow::GetInstance()->GetSlowPower())) {
+		m_Scale = { Ease(In,Cubic,0.5f * Slow::GetInstance()->GetSlowPower(),m_Scale.x,0.0f),
+					Ease(In,Cubic,0.5f * Slow::GetInstance()->GetSlowPower(),m_Scale.y,0.0f),
+					Ease(In,Cubic,0.5f * Slow::GetInstance()->GetSlowPower(),m_Scale.z,0.0f), };
+
+		m_Rotation.y += 2.0f;
+
+		if (m_Scale.x <= 0.1f) {
+			m_Alive = false;
+		}
 	}
 
-	m_Scale = { Ease(In,Cubic,0.5f,m_Scale.x,0.5f),
-	Ease(In,Cubic,0.5f,m_Scale.y,0.5f),
-	Ease(In,Cubic,0.5f,m_Scale.z,0.5f), };
+	if (Helper::GetInstance()->FrameCheck(m_Frame, l_AddFrame)) {
+		m_ViewEffect = false;
+	}
+	m_UpPos.x = Ease(In, Cubic, m_Frame, m_UpPos.x, 600.0f);
+	m_DownPos.x = Ease(In, Cubic, m_Frame, m_DownPos.x, 1000.0f);
+	m_Alpha = Ease(In, Cubic, m_Frame, m_Alpha, 0.0f);
+
 }
