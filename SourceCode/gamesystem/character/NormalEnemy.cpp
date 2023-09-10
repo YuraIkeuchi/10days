@@ -134,6 +134,14 @@ void NormalEnemy::Action() {
 		m_Miss = false;
 		m_ViewEffect = false;
 		m_MissTimer = {};
+		gauge_up->SetSize({ 1632.0f,706 });
+		gauge_down->SetSize({ 1632.0f,819 });
+		effect_up->SetSize({ 1632.0f,703.0f });
+		effect_down->SetSize({ 1632.0f,823.0f });
+		gauge_up->SetScale(0.25f);
+		gauge_down->SetScale(0.25f);
+		effect_up->SetScale(0.25f);
+		effect_down->SetScale(0.25f);
 	}
 
 	EffectCountDown();
