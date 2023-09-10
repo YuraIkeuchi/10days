@@ -24,6 +24,7 @@ public:
 	const int GetThirdNumber() { return m_ThirdNumber; }
 	const int GetFourthNumber() { return m_FourthNumber; }
 	const int GetMagnification() { return m_Magnification; }
+	const int GetRealScore() { return m_RealScore; }
 
 	//
 	void SetFirstNumber(const int FirstNumber) { m_FirstNumber = FirstNumber; }
@@ -31,13 +32,14 @@ public:
 	void SetThirdNumber(const int ThirdNumber) { m_ThirdNumber = ThirdNumber; }
 	void SetFourthNumber(const int FourthNumber) { m_FourthNumber = FourthNumber; }
 	void SetMagnification(const int Magnification) { m_Magnification = Magnification; }
+	void SetRealScore(const int RealScore) { m_RealScore = RealScore; }
 private:
 	int m_FirstNumber = 0;//ˆêŒ…–Ú
 	int m_SecondNumber = 0;//“ñŒ…‚ß
 	int m_ThirdNumber = 0;//ŽOŒ…‚ß
 	int m_FourthNumber = 0;//ŽlŒ…–Ú
 	int m_Magnification = 0;//”{—¦
-
+	int m_RealScore = {};
 private:
 	array<unique_ptr<IKESprite>, NUMBER_MAX> Score_First;
 	array<unique_ptr<IKESprite>, NUMBER_MAX> Score_Second;

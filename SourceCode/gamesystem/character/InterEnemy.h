@@ -93,6 +93,7 @@ public:
 	bool CheckCollide();
 	void AttackCollide();
 	void BirthEffect();
+	void BirthMove();
 public://gettersetter
 	
 	void SetHitCheck(bool HitCheck) { m_HitCheck = HitCheck; }
@@ -119,7 +120,7 @@ protected:
 	bool m_Destroy = false;
 	bool m_HitCheck = false;
 	bool m_EffectMove = true;
-
+	bool m_Birth = false;
 	enum EnemyType {
 		RED_ENEMY,
 		GREEN_ENEMY,
@@ -147,4 +148,7 @@ protected:
 	XMFLOAT2 EffectSize = {};
 	float m_EffectFrame = {};
 	int m_MissTimer = {};
+
+	float m_Gravity = 0.01f;
+	float m_AddPower = {};
 };

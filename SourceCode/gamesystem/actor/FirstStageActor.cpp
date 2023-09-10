@@ -179,12 +179,13 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 				}
 			}
 				ui->SetMag(true);
-				if (ScoreManager::GetInstance()->GetMagnification() < 5) {
+				if (ScoreManager::GetInstance()->GetMagnification() < 9) {
 					ScoreManager::GetInstance()->SetMagnification(ScoreManager::GetInstance()->GetMagnification() + 1);
 				}
 				m_AddScore = (ScoreManager::GetInstance()->GetMagnification() * 1);
 				BirthScoreText(1, ScoreManager::GetInstance()->GetMagnification());
-				ScoreManager::GetInstance()->SetFirstNumber(ScoreManager::GetInstance()->GetFirstNumber() + m_AddScore);
+				ScoreManager::GetInstance()->SetSecondNumber(ScoreManager::GetInstance()->GetSecondNumber() + m_AddScore);
+				ScoreManager::GetInstance()->SetRealScore(ScoreManager::GetInstance()->GetRealScore() + (m_AddScore * 10));
 				m_AddScore = 0;
 			}
 			enemy[i]->SetDamage(true);
@@ -195,6 +196,9 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 		}
 	}
 
+	if (Player::GetInstance()->GetDamage() && Player::GetInstance()->GetDamageTimer() == 1) {
+		ScoreManager::GetInstance()->SetMagnification(0);
+	}
 	SceneChanger::GetInstance()->Update();
 
 	//倍率UIの表示
@@ -304,7 +308,7 @@ void FirstStageActor::FrontDraw(DirectXCommon* dxCommon) {
 }
 //ポストエフェクトかかる
 void FirstStageActor::BackDraw(DirectXCommon* dxCommon) {
-IKEObject3d::PreDraw();
+	IKEObject3d::PreDraw();
 	BackObj::GetInstance()->Draw(dxCommon);
 	Player::GetInstance()->Draw(dxCommon);
 	IKETexture::PreDraw2(dxCommon, AlphaBlendType);
@@ -350,6 +354,7 @@ void FirstStageActor::ImGuiDraw() {
 	//	if (enemy[i] == nullptr)continue;
 	//	enemy[i]->ImGuiDraw();
 	//}
+	ScoreManager::GetInstance()->ImGuiDraw();
 }
 //倍率スコアの生成
 void FirstStageActor::BirthScoreText(const int EnemyCount, const int Magnification) {

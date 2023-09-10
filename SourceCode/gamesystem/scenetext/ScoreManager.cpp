@@ -87,11 +87,7 @@ void ScoreManager::Update() {
 //ImGui
 void ScoreManager::ImGuiDraw() {
 	ImGui::Begin("Score");
-	ImGui::Text("First:%d", m_FirstNumber);
-	ImGui::Text("Second:%d", m_SecondNumber);
-	ImGui::Text("Third:%d", m_ThirdNumber);
-	ImGui::Text("Fourth:%d", m_FourthNumber);
-	ImGui::Text("Magnification:%d", m_Magnification);
+	ImGui::Text("Score:%d", m_RealScore);
 	ImGui::End();
 }
 //描画

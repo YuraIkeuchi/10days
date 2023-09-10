@@ -39,7 +39,7 @@ bool NormalEnemy::Initialize() {
 	gauge_down->SetAnchorPoint({ 0.5f,0.0f });
 	_charaState =  StartState;
 	_EnemyType = m_EnemyType;
-
+	m_Scale = { 0.0f,0.0f,0.0f };
 	if (_EnemyType == RED_ENEMY) {
 		m_Color = { 1.0f,0.2f,0.0f,1.0f };
 		m_UpPos = { 1000.0f,200.0f };
@@ -55,6 +55,7 @@ bool NormalEnemy::Initialize() {
 		m_UpPos = { 800.0f,360.0f };
 		m_DownPos = { 800.0f,355.0f };
 	}
+	
 	gauge_up->SetScale(0.25f);
 	gauge_down->SetScale(0.25f);
 	effect_up->SetScale(0.25f);
@@ -70,6 +71,9 @@ bool NormalEnemy::Initialize() {
 	//_charaState =  StartState;
 	m_Move = false;
 	m_BaseSpeed = static_cast<float>(std::any_cast<double>(LoadCSV::LoadCsvParam("Resources/csv/chara/enemy/enemy.csv", "speed")));
+	m_SlowSpeed = static_cast<float>(std::any_cast<double>(LoadCSV::LoadCsvParam("Resources/csv/chara/enemy/enemy.csv", "slow")));
+	m_Birth = false;
+	m_AddPower = 0.2f;
 	return true;
 }
 
@@ -85,16 +89,16 @@ void (NormalEnemy::* NormalEnemy::stateTable[])() = {
 //行動
 void NormalEnemy::Action() {
 	if (!StopF&&Timer::GetInstance()->getNowTime()<MovingTime) {
-		if (!m_Death) {
-			(this->*stateTable[_charaState])();
+		if (m_Birth) {
+			if (!m_Death) {
+				(this->*stateTable[_charaState])();
+			}
+			else {
+				DeathMove();
+			}
 		}
 		else {
-			DeathMove();
-		}
-
-		//当たり判
-		if (!m_Death) {
-			//SlowCollide();
+			BirthMove();
 		}
 	}
 	Obj_SetParam();
@@ -197,11 +201,11 @@ void NormalEnemy::Inter() {
 }
 //右に動く
 void NormalEnemy::RightMove() {
-
+	m_Rotation.y = 0.0f;
 	const float l_MAX = MapMaxX;
 	
 	if (m_SlowMove) {
-		m_velocity = m_BaseSpeed * Slow::GetInstance()->GetSlowPower() * Slow::GetInstance()->GetMovePower();
+		m_velocity = m_SlowSpeed * Slow::GetInstance()->GetSlowPower() * Slow::GetInstance()->GetMovePower();
 	}
 	else {
 		m_velocity = m_BaseSpeed;
@@ -220,9 +224,10 @@ void NormalEnemy::RightMove() {
 }
 //左に動く
 void NormalEnemy::LeftMove() {
+	m_Rotation.y = 180.0f;
 	const float l_MIN = MapMinX;
 	if (m_SlowMove) {
-		m_velocity = -m_BaseSpeed * Slow::GetInstance()->GetSlowPower() * Slow::GetInstance()->GetMovePower();
+		m_velocity = -m_SlowSpeed * Slow::GetInstance()->GetSlowPower() * Slow::GetInstance()->GetMovePower();
 	}
 	else {
 		m_velocity = -m_BaseSpeed;
@@ -242,9 +247,10 @@ void NormalEnemy::LeftMove() {
 }
 //下に動く
 void NormalEnemy::BottomMove() {
+	m_Rotation.y = 90.0f;
 	const float l_MIN = MapMinZ;
 	if (m_SlowMove) {
-		m_velocity = -m_BaseSpeed * Slow::GetInstance()->GetSlowPower() * Slow::GetInstance()->GetMovePower();
+		m_velocity = -m_SlowSpeed * Slow::GetInstance()->GetSlowPower() * Slow::GetInstance()->GetMovePower();
 	}
 	else {
 		m_velocity = -m_BaseSpeed;
@@ -263,9 +269,10 @@ void NormalEnemy::BottomMove() {
 }
 //上に動く
 void NormalEnemy::UpMove() {
+	m_Rotation.y = 270.0f;
 	const float l_MIN =MapMaxZ;
 	if (m_SlowMove) {
-		m_velocity = m_BaseSpeed * Slow::GetInstance()->GetSlowPower() * Slow::GetInstance()->GetMovePower();
+		m_velocity = m_SlowSpeed * Slow::GetInstance()->GetSlowPower() * Slow::GetInstance()->GetMovePower();
 	}
 	else {
 		m_velocity = m_BaseSpeed;

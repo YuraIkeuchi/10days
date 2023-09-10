@@ -30,6 +30,7 @@ private:
 	int m_Magnification = {};
 
 	array<unique_ptr<IKESprite>, NUMBER_MAX> Count_Sprite;
+	array<unique_ptr<IKESprite>, NUMBER_MAX> Count_Sprite2;
 	array<unique_ptr<IKESprite>, NUMBER_MAX> Mag_Sprite;
 	unique_ptr<IKESprite> Base_Sprite;
 	XMFLOAT2 m_CountPos = {};

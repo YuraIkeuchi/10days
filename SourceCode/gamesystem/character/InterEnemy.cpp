@@ -7,6 +7,7 @@
 #include "ParticleEmitter.h"
 #include "Input.h"
 #include "Timer.h"
+#include "Easing.h"
 //初期化
 bool InterEnemy::Initialize() {
 	return true;
@@ -187,4 +188,14 @@ void InterEnemy::EffectCountDown() {
 		effect_down->SetScale(0.25f);
 		m_MissTimer = {};
 	}
+}
+void InterEnemy::BirthMove() {
+	m_AddPower -= m_Gravity;
+	if (Helper::GetInstance()->CheckMax(m_Position.y, {}, m_AddPower * Slow::GetInstance()->GetSlowPower()) && m_AddPower < 0.0f) {
+		m_Birth = true;
+	}
+
+	m_Scale = { Ease(In,Cubic,0.5f,m_Scale.x,0.5f),
+	Ease(In,Cubic,0.5f,m_Scale.y,0.5f),
+	Ease(In,Cubic,0.5f,m_Scale.z,0.5f), };
 }
