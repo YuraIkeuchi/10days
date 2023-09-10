@@ -39,6 +39,8 @@ public:
 	const int GetMoveTimer() { return m_MoveTimer; }
 	const bool GetCameraZoom() { return m_CameraZoom; }
 	const bool GetAttack() { return m_Attack; }
+	const bool GetDamage() { return m_Damage; }
+	const bool GetDamageTimer() { return m_DamageTimer; }
 	const XMFLOAT3& GetPlayerVec() { return m_playerVec; }
 	const XMFLOAT3& GetAttackPos() { return m_AttackPos; }
 
@@ -77,4 +79,5 @@ private:
 	bool m_Attack = false;
 	float m_AddFrame = {};
 	bool m_Damage = false;
+	int m_DamageTimer = 0;
 };

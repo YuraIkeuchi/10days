@@ -49,6 +49,7 @@ public://getter setter
 	void SetMovingTime(int t) { MovingTime = t; }
 
 	const int GetMovingT() { return MovingTime; }
+	void SetEffectMove(bool EffectMove) { m_EffectMove = EffectMove; }
 protected:
 	int MovingTime;
 	bool StopF = false;
@@ -87,13 +88,22 @@ public:
 
 	virtual void ImGui_Origin() = 0;
 
+	void EffectCountDown();//制限時間
+public:
+	bool CheckCollide();
+	void AttackCollide();
+	void BirthEffect();
+	void BirthMove();
+	void DeathMove();
 public://gettersetter
 	
+	void SetHitCheck(bool HitCheck) { m_HitCheck = HitCheck; }
 	void SetStopF(bool f) { StopF = f; }
 	void SetSlowMove(const bool SlowMove) { m_SlowMove = SlowMove; }
 	void SetMove(const bool Move) { m_Move = Move; }
 	void SetDamage(const bool Damage) { m_Damage = Damage; }
 	const bool GetAlive() { return m_Alive; }
+	const bool GetHitCheck() { return m_HitCheck; }
 	const bool GetDeath() { return m_Death; }
 	const bool GetDamage() { return m_Damage; }
 	const bool GetDestroy() { return m_Destroy; }
@@ -109,7 +119,9 @@ protected:
 	bool m_Move = true;
 	bool m_Alive = true;
 	bool m_Destroy = false;
-
+	bool m_HitCheck = false;
+	bool m_EffectMove = true;
+	bool m_Birth = false;
 	enum EnemyType {
 		RED_ENEMY,
 		GREEN_ENEMY,
@@ -127,4 +139,22 @@ protected:
 	bool m_ViewEffect = false;
 	float m_Frame = {};
 	float m_Alpha = 1.0f;
+
+	bool m_Miss = false;
+	int SlowStopTimer = {};
+	bool m_Slow = false;
+	float m_radius = 0.8f;
+
+	//エフェクトの大きさ
+	XMFLOAT2 EffectSize = {};
+	float m_EffectFrame = {};
+	int m_MissTimer = {};
+
+	float m_Gravity = 0.01f;
+	float m_AddPower = {};
+
+	enum BirthType {
+		BIRTH_SET,
+		BIRTH_START
+	}_BirthType = BIRTH_SET;
 };
