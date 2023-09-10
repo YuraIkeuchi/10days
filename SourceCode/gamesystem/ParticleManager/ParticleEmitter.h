@@ -41,6 +41,8 @@ public: //メンバ関数
 	void FireEffect(const int life,const XMFLOAT3& pos,const float startscale, const float endscale,const XMFLOAT4& startcolor,const XMFLOAT4& endcolor);
 	//血しぶきエフェクト
 	void SplatterEffect(const int life, const int num, const XMFLOAT3& startpos, const XMFLOAT3& vec, const float startscale, const float endscale, const XMFLOAT4& bloodcolor);
+	//砂煙エフェクト
+	void DashEffect(const int life, const int num, const XMFLOAT3& startpos, const XMFLOAT3& vec, const float startscale, const float endscale, const XMFLOAT4& color);
 
 	void AllDelete();
 private: //メンバ関数
@@ -54,6 +56,8 @@ private: //メンバ変数
 	unique_ptr<ParticleManager> circleParticle;
 	//パーティクルマネージャー(血)
 	unique_ptr<ParticleManager> bloodParticle;
+	//パーティクルマネージャー(砂煙)
+	unique_ptr<ParticleManager> dashParticle;
 private:
 	int m_Timer = 0;
 };

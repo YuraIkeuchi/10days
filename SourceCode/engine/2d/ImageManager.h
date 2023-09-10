@@ -48,12 +48,14 @@ public:
 		BASE_GROUND,
 		SLASH,
 	};
+	//パーティクルの名前
 	enum particleName
 	{
 		Normal,
 		Smoke,
 		Heal,
 		Blood,
+		Dash,
 	};
 
 public:

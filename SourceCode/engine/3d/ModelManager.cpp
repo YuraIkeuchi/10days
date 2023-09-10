@@ -20,9 +20,7 @@ void ModelManager::StartInitialize()
 	LoadModel(PLAYER_1, "Samuraiidle2");
 
 	LoadModel(PLAYER_2, "Samuraiidle");
-	LoadModel(ENEMY, "slimeGreen");
-	LoadModel(ENEMY1, "slimeRed");
-	LoadModel(ENEMY2, "slimeBlue");
+	LoadModel(ENEMY, "slime");
 	LoadFBXModel(PLAYER, "kotoko");
 }
 
