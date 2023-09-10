@@ -68,7 +68,6 @@ void TutorialSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera
 	window2->SetPosition({ -20.0f, 0.0f });
 	window2->SetSize({ 300.0f, 100.0f });
 
-
 	const int TextCount = TEXT_MAX;
 	const float l_Width_Cut = 256.0f;
 	const float l_Height_Cut = 64.0f;
@@ -198,7 +197,8 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 			enemys[i]->SetDamage(true);
 		}
 
-		if (!enemys[i]->GetAlive()) {
+		if (!enemys[i]->GetAlive())
+		{
 			enemys.erase(cbegin(enemys) + i);
 		}
 	}

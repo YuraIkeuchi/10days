@@ -19,8 +19,6 @@ public:
 		WALL_UP,
 		WALL_UNDER,
 		ENEMY,
-		ENEMY1,
-		ENEMY2,
 		PLAYER_1,
 		PLAYER_2
 	};
