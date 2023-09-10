@@ -64,6 +64,27 @@ void TutorialSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera
 	window->SetSize({1300.0f, 220.0f});
 	window_size = { 0.f,0.f };
 
+	window2 = IKESprite::Create(ImageManager::TUTORIAL, {});
+	window2->SetPosition({ -20.0f, 0.0f });
+	window2->SetSize({ 300.0f, 100.0f });
+
+
+	const int TextCount = TEXT_MAX;
+	const float l_Width_Cut = 256.0f;
+	const float l_Height_Cut = 64.0f;
+
+	for (int i = 0; i < Skip_Text.size(); i++) {
+		//ひとけた目
+		Skip_Text[i] = IKESprite::Create(ImageManager::SKIP, { 0.0f,0.0f });
+		int number_index_y = i / TextCount;
+		int number_index_x = i % TextCount;
+		Skip_Text[i]->SetTextureRect(
+			{ static_cast<float>(number_index_x) * l_Width_Cut, static_cast<float>(number_index_y) * l_Height_Cut },
+			{ static_cast<float>(l_Width_Cut), static_cast<float>(l_Height_Cut) });
+		Skip_Text[i]->SetPosition({ -256.0f,20.0f });
+		m_Position[i] = { -256.0f,20.0f };
+		Skip_Text[i]->SetSize({ l_Width_Cut,l_Height_Cut });
+	}
 	//スコア
 	ScoreManager::GetInstance()->Initialize();
 	//スロー
@@ -112,6 +133,32 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 	else {
 		m_Alpha = Ease(In, Cubic, 0.8f, m_Alpha, 1.0f);
 	}
+
+	//スキップテキスト
+	if (nowstate_ != state::END) {
+		if (m_EndCount == 0) {
+			m_AfterPos[SKIP_Y].x = 0.0f;
+			m_AfterPos[ONE_MORE].x = -256.0f;
+			m_AfterPos[GAME_Y].x = -256.0f;
+		}
+		else if (m_EndCount >= 1) {
+			m_AfterPos[SKIP_Y].x = -256.0f;
+			m_AfterPos[ONE_MORE].x = 0.0f;
+			m_AfterPos[GAME_Y].x = -256.0f;
+		}
+	}
+	else {
+		m_AfterPos[SKIP_Y].x = -256.0f;
+		m_AfterPos[ONE_MORE].x = -256.0f;
+		m_AfterPos[GAME_Y].x = 0.0f;
+	}
+
+	m_Position[SKIP_Y].x = Ease(In, Cubic, 0.5f, m_Position[SKIP_Y].x, m_AfterPos[SKIP_Y].x);
+	m_Position[ONE_MORE].x = Ease(In, Cubic, 0.5f, m_Position[ONE_MORE].x, m_AfterPos[ONE_MORE].x);
+	m_Position[GAME_Y].x = Ease(In, Cubic, 0.5f, m_Position[GAME_Y].x, m_AfterPos[GAME_Y].x);
+	for (int i = 0; i < Skip_Text.size(); i++) {
+		Skip_Text[i]->SetPosition(m_Position[i]);
+	}
 	//ゲーム終了
 	if (m_EndCount == 2) {
 		SceneChanger::GetInstance()->SetChangeStart(true);
@@ -135,7 +182,7 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 			{
 				if (m->counter == 0)
 				{
-					m->object->SetPosition(enemys[i]->GetPosition());
+					m->object->SetPosition({ enemys[i]->GetPosition().x,0.3f,enemys[i]->GetPosition().z});
 					m->counter = 1;
 					break;
 				}
@@ -167,8 +214,8 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 		{
 			blood[i]->counter++;
 			float scale = blood[i]->object->GetScale().x;
-			scale += 0.03f;
-			scale = min(0.3f, scale);
+			scale += 0.05f;
+			scale = min(0.4f, scale);
 			blood[i]->object->SetScale({ scale, scale, scale });
 		}
 		//消える
@@ -260,6 +307,10 @@ void TutorialSceneActor::Draw(DirectXCommon* dxCommon) {
 void TutorialSceneActor::FrontDraw(DirectXCommon* dxCommon) {
 	IKESprite::PreDraw();
 	ui->FrontDraw();
+	window2->Draw();
+	for (int i = 0; i < Skip_Text.size(); i++) {
+		Skip_Text[i]->Draw();
+	}
 	IKESprite::PostDraw();
 	for (auto i = 0; i < enemys.size(); i++)
 	{
@@ -322,17 +373,17 @@ void TutorialSceneActor::FinishUpdate(DebugCamera* camera) {
 }
 
 void TutorialSceneActor::ImGuiDraw() {
-	
-	Slow::GetInstance()->ImGuiDraw();
-	for (auto i = 0; i < enemys.size(); i++) {
-		enemys[i]->ImGuiDraw();
-	}
+	//
+	//Slow::GetInstance()->ImGuiDraw();
+	//for (auto i = 0; i < enemys.size(); i++) {
+	//	enemys[i]->ImGuiDraw();
+	//}
 
-	ImGui::Begin("Tuto");
-	ImGui::Text("Timer:%d", m_TexTimer);
-	ImGui::Text("Count:%d", m_EnemyCount);
-	ImGui::Text("State:%d", _AttackState);
-	ImGui::End();
+	//ImGui::Begin("Tuto");
+	//ImGui::Text("Timer:%d", m_TexTimer);
+	//ImGui::Text("Count:%d", m_EnemyCount);
+	//ImGui::Text("State:%d", _AttackState);
+	//ImGui::End();
 }
 
 //移動
@@ -452,7 +503,7 @@ void TutorialSceneActor::EndState() {
 void TutorialSceneActor::SkipUpdate() {
 	Input* input = Input::GetInstance();
 	//二回ボタンを押すとチュートリアル終了する
-	if ((input->TriggerButton(input->X))) {
+	if ((input->TriggerButton(input->Y))) {
 		m_EndCount++;
 	}
 	//一定時間立つとスキップ状態リセットされる

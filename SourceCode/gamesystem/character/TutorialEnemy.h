@@ -14,7 +14,6 @@ public:
 	void EffectDraw(DirectXCommon* dxCommon) override;//エフェクト描画
 private:
 	void SlowCollide();
-	void DeathMove();
 	void TutoBirthEffect();
 private:
 

@@ -39,6 +39,7 @@ void Player::InitState(const XMFLOAT3& pos) {
 	m_Position = pos;
 	m_Rotation = { 0.0f,0.0f,0.0f };
 	m_Color = { 1.0f,1.0f,1.0f,1.0f };
+	m_Scale = { 0.6f,0.6f,0.6f };
 	//移動処理用
 	velocity /= 5.0f;
 
@@ -93,9 +94,7 @@ XMFLOAT3 Player::MoveVECTOR(XMVECTOR v, float angle)
 //描画
 void Player::Draw(DirectXCommon* dxCommon)
 {
-	if (!m_Damage) {
-		Obj_Draw();
-	}
+	Obj_Draw();
 }
 
 //ImGui
@@ -125,11 +124,13 @@ void Player::Move() {
 			if (input->TiltPushStick(Input::L_RIGHT, 0.0f) && (m_Position.x < 9.5f)) {
 				m_AddSpeed = m_BaseSpeed;
 				m_MoveTimer++;
+				m_Rotation.y = 0.0f;
 			}
 			//左入力
 			else if (input->TiltPushStick(Input::L_LEFT, 0.0f) && (m_Position.x > -9.5f)) {
 				m_AddSpeed = -m_BaseSpeed;
 				m_MoveTimer++;
+				m_Rotation.y = 180.0f;
 			}
 			//入力なし
 			else {
@@ -150,11 +151,13 @@ void Player::Move() {
 			if (input->TiltPushStick(Input::L_UP, 0.0f) && (m_Position.z < 8.0f)) {
 				m_AddSpeed = m_BaseSpeed;
 				m_MoveTimer++;
+				m_Rotation.y = 270.0f;
 			}
 			//下入力
 			else if (input->TiltPushStick(Input::L_DOWN, 0.0f) && (m_Position.z > -8.0f)) {
 				m_AddSpeed = -m_BaseSpeed;
 				m_MoveTimer++;
+				m_Rotation.y = 90.0f;
 			}
 			//入力なし
 			else {
@@ -199,7 +202,7 @@ void Player::Move() {
 			}
 		}
 	}
-	if (_MoveState == MOVE_LEFT) {
+	/*if (_MoveState == MOVE_LEFT) {
 		m_Rotation = { 0.0f,90.0f,0.0f };
 	}
 	else if (_MoveState == MOVE_RIGHT) {
@@ -210,7 +213,7 @@ void Player::Move() {
 	}
 	else {
 		m_Rotation = { 0.0f, 0.0f, 0.0f };
-	}
+	}*/
 	if(_charaState==STATE_ATTACK)
 	{
 		m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::PLAYER_2));
@@ -224,7 +227,7 @@ void Player::Move() {
 }
 //攻撃
 void Player::Attack() {
-	const float l_AddFrame = 0.01f;
+	const float l_AddFrame = 0.0125f;
 	m_AddFrame = l_AddFrame;
 	if (!Slow::GetInstance()->GetSlow()) {
 		if (Helper::GetInstance()->FrameCheck(m_Frame, m_AddFrame)) {
@@ -248,15 +251,19 @@ void Player::Attack() {
 
 	if (_MoveState == MOVE_UP) {
 		m_AttackPos = { m_Position.x,m_Position.y,m_Position.z + 1.0f };
+		m_Rotation.y = 270.0f;
 	}
 	else if (_MoveState == MOVE_DOWN) {
 		m_AttackPos = { m_Position.x,m_Position.y,m_Position.z - 1.0f };
+		m_Rotation.y = 90.0f;
 	}
 	else if (_MoveState == MOVE_RIGHT) {
 		m_AttackPos = { m_Position.x + 1.0f,m_Position.y,m_Position.z };
+		m_Rotation.y = 0.0f;
 	}
 	else {
 		m_AttackPos = { m_Position.x - 1.0f,m_Position.y,m_Position.z };
+		m_Rotation.y = 180.0f;
 	}
 
 	if (m_Frame > 0.9f) {

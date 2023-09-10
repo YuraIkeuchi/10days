@@ -39,7 +39,7 @@ bool NormalEnemy::Initialize() {
 	gauge_down->SetAnchorPoint({ 0.5f,0.0f });
 	_charaState =  StartState;
 	_EnemyType = m_EnemyType;
-
+	m_Scale = { 0.5f,0.5f,0.5f };
 	if (_EnemyType == RED_ENEMY) {
 		m_Color = { 1.0f,0.2f,0.0f,1.0f };
 		m_UpPos = { 1000.0f,200.0f };
@@ -55,6 +55,20 @@ bool NormalEnemy::Initialize() {
 		m_UpPos = { 800.0f,360.0f };
 		m_DownPos = { 800.0f,355.0f };
 	}
+
+	if (_charaState == STATE_RIGHT) {
+		m_Rotation.y = 0.0f;
+	}
+	else if (_charaState == STATE_LEFT) {
+		m_Rotation.y = 180.0f;
+	}
+	else if (_charaState == STATE_UP) {
+		m_Rotation.y = 270.0f;
+	}
+	else if (_charaState == STATE_DOWN) {
+		m_Rotation.y = 90.0f;
+	}
+	
 	gauge_up->SetScale(0.25f);
 	gauge_down->SetScale(0.25f);
 	effect_up->SetScale(0.25f);
@@ -70,9 +84,12 @@ bool NormalEnemy::Initialize() {
 	//_charaState =  StartState;
 	m_Move = false;
 	m_BaseSpeed = static_cast<float>(std::any_cast<double>(LoadCSV::LoadCsvParam("Resources/csv/chara/enemy/enemy.csv", "speed")));
+	m_SlowSpeed = static_cast<float>(std::any_cast<double>(LoadCSV::LoadCsvParam("Resources/csv/chara/enemy/enemy.csv", "slow")));
+	m_Birth = false;
+	m_AddPower = 0.2f;
 	return true;
 }
-
+//状態遷移
 void (NormalEnemy::* NormalEnemy::stateTable[])() = {
 	&NormalEnemy::Inter,//動きの合間
 	&NormalEnemy::RightMove,//右に移動
@@ -81,20 +98,19 @@ void (NormalEnemy::* NormalEnemy::stateTable[])() = {
 	&NormalEnemy::BottomMove,//下に移動
 
 };
-
 //行動
 void NormalEnemy::Action() {
 	if (!StopF&&Timer::GetInstance()->getNowTime()<MovingTime) {
-		if (!m_Death) {
-			(this->*stateTable[_charaState])();
+		if (m_Birth) {
+			if (!m_Death) {
+				(this->*stateTable[_charaState])();
+			}
+			else {
+				DeathMove();
+			}
 		}
 		else {
-			DeathMove();
-		}
-
-		//当たり判
-		if (!m_Death) {
-			//SlowCollide();
+			BirthMove();
 		}
 	}
 	Obj_SetParam();
@@ -185,7 +201,6 @@ void NormalEnemy::ImGui_Origin() {
 void NormalEnemy::Finalize() {
 
 }
-
 //リスポーン
 void NormalEnemy::Inter() {
 	m_ResPornTimer++;
@@ -197,11 +212,10 @@ void NormalEnemy::Inter() {
 }
 //右に動く
 void NormalEnemy::RightMove() {
-
 	const float l_MAX = MapMaxX;
 	
 	if (m_SlowMove) {
-		m_velocity = m_BaseSpeed * Slow::GetInstance()->GetSlowPower() * Slow::GetInstance()->GetMovePower();
+		m_velocity = m_SlowSpeed * Slow::GetInstance()->GetSlowPower() * Slow::GetInstance()->GetMovePower();
 	}
 	else {
 		m_velocity = m_BaseSpeed;
@@ -222,7 +236,7 @@ void NormalEnemy::RightMove() {
 void NormalEnemy::LeftMove() {
 	const float l_MIN = MapMinX;
 	if (m_SlowMove) {
-		m_velocity = -m_BaseSpeed * Slow::GetInstance()->GetSlowPower() * Slow::GetInstance()->GetMovePower();
+		m_velocity = -m_SlowSpeed * Slow::GetInstance()->GetSlowPower() * Slow::GetInstance()->GetMovePower();
 	}
 	else {
 		m_velocity = -m_BaseSpeed;
@@ -242,9 +256,10 @@ void NormalEnemy::LeftMove() {
 }
 //下に動く
 void NormalEnemy::BottomMove() {
+
 	const float l_MIN = MapMinZ;
 	if (m_SlowMove) {
-		m_velocity = -m_BaseSpeed * Slow::GetInstance()->GetSlowPower() * Slow::GetInstance()->GetMovePower();
+		m_velocity = -m_SlowSpeed * Slow::GetInstance()->GetSlowPower() * Slow::GetInstance()->GetMovePower();
 	}
 	else {
 		m_velocity = -m_BaseSpeed;
@@ -265,7 +280,7 @@ void NormalEnemy::BottomMove() {
 void NormalEnemy::UpMove() {
 	const float l_MIN =MapMaxZ;
 	if (m_SlowMove) {
-		m_velocity = m_BaseSpeed * Slow::GetInstance()->GetSlowPower() * Slow::GetInstance()->GetMovePower();
+		m_velocity = m_SlowSpeed * Slow::GetInstance()->GetSlowPower() * Slow::GetInstance()->GetMovePower();
 	}
 	else {
 		m_velocity = m_BaseSpeed;
@@ -345,31 +360,5 @@ void NormalEnemy::SlowCollide() {
 		m_Slow = false;
 		m_ViewEffect = false;
 	}
-
-}
-//死んだときの動き
-void NormalEnemy::DeathMove() {
-	const float l_AddFrame = 0.05f;
-	m_Slow = false;
-	m_HitCheck = false;
-	m_AddPower -= m_Gravity;
-	if (Helper::GetInstance()->CheckMax(m_Position.y, {}, m_AddPower * Slow::GetInstance()->GetSlowPower())) {
-		m_Scale = { Ease(In,Cubic,0.5f * Slow::GetInstance()->GetSlowPower(),m_Scale.x,0.0f),
-					Ease(In,Cubic,0.5f * Slow::GetInstance()->GetSlowPower(),m_Scale.y,0.0f),
-					Ease(In,Cubic,0.5f * Slow::GetInstance()->GetSlowPower(),m_Scale.z,0.0f), };
-
-		m_Rotation.y += 2.0f;
-
-		if (m_Scale.x <= 0.1f) {
-			m_Alive = false;
-		}
-	}
-
-	if (Helper::GetInstance()->FrameCheck(m_Frame, l_AddFrame)) {
-		m_ViewEffect = false;
-	}
-	m_UpPos.x = Ease(In, Cubic, m_Frame, m_UpPos.x, 600.0f);
-	m_DownPos.x = Ease(In, Cubic, m_Frame, m_DownPos.x, 1000.0f);
-	m_Alpha = Ease(In, Cubic, m_Frame, m_Alpha, 0.0f);
 
 }
