@@ -42,6 +42,8 @@ void EditorSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, 
 
 	int Quantity = static_cast<int>(std::any_cast<double>(LoadCSV::LoadCsvParam("Resources/csv/enemy.csv", "Enemy_Quantity")));
 
+	IKEModel* model=IKEModel::LoadFromOBJ("Samuraiidle");
+
 	enemy.resize(Quantity);
 	EPos.resize(Quantity);
 	EnemyMoveType.resize(Quantity);
@@ -288,6 +290,10 @@ void EditorSceneActor::ImGuiDraw() {
 	{
 		FileWriting();
 	}
+
+	ImGui::End();
+	
+	ImGui::Begin("Timer");
 	ImGui::InputInt("viewEnemy TimeRap", &TimeRap);
 	//ImGui::SameLine();
 	ImGui::Checkbox("View", &viewf);
@@ -296,11 +302,6 @@ void EditorSceneActor::ImGuiDraw() {
 		ResetF = true;
 	}
 	ImGui::End();
-
-	Timer::GetInstance()->ImGuiDraw();
-	//enemys->ImGuiDraw();
-	Player::GetInstance()->ImGuiDraw();
-	//Slow::GetInstance()->ImGuiDraw();
 }
 void EditorSceneActor::FileWriting()
 {

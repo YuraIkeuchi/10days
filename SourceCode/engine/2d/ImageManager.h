@@ -33,6 +33,9 @@ public:
 		CUT_DOWN,
 		CUTGAGE_UP,
 		CUTGAGE_DOWN,
+		TITLE,
+		SKIP,
+		MISS,
 	};
 	//テクスチャの名前
 	enum tex2dName

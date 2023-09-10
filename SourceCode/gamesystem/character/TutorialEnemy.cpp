@@ -27,16 +27,20 @@ bool TutorialEnemy::Initialize() {
 	m_Object->Initialize();
 	m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::ENEMY));
 	effect_up = IKESprite::Create(ImageManager::CUT_UP, {});
+	effect_up->SetAnchorPoint({ 0.5f,1.0f });
 	effect_down = IKESprite::Create(ImageManager::CUT_DOWN, {});
+	effect_down->SetAnchorPoint({ 0.5f,0.0f });
 	gauge_up = IKESprite::Create(ImageManager::CUTGAGE_UP, {});
+	gauge_up->SetAnchorPoint({ 0.5f,1.0f });
 	gauge_down = IKESprite::Create(ImageManager::CUTGAGE_DOWN, {});
+	gauge_down->SetAnchorPoint({ 0.5f,0.0f });
 	_charaState = StartState;
 	_EnemyType = m_EnemyType;
 
 	if (_EnemyType == RED_ENEMY) {
 		m_Color = { 1.0f,0.2f,0.0f,1.0f };
-		m_UpPos = { 800.0f,200.0f };
-		m_DownPos = { 800.0f,195.0f };
+		m_UpPos = { 1000.0f,200.0f };
+		m_DownPos = { 1000.0f,195.0f };
 	}
 	else if (_EnemyType == GREEN_ENEMY) {
 		m_Color = { 0.0f,1.0f,0.2f,1.0f };
@@ -48,10 +52,24 @@ bool TutorialEnemy::Initialize() {
 		m_UpPos = { 800.0f,360.0f };
 		m_DownPos = { 800.0f,355.0f };
 	}
-	gauge_up->SetScale(0.3f);
-	gauge_down->SetScale(0.3f);
-	effect_up->SetScale(0.3f);
-	effect_down->SetScale(0.3f);
+
+	if (_charaState == STATE_RIGHT) {
+		m_Rotation.y = 0.0f;
+	}
+	else if (_charaState == STATE_LEFT) {
+		m_Rotation.y = 180.0f;
+	}
+	else if (_charaState == STATE_UP) {
+		m_Rotation.y = 270.0f;
+	}
+	else if (_charaState == STATE_DOWN) {
+		m_Rotation.y = 90.0f;
+	}
+
+	gauge_up->SetScale(0.25f);
+	gauge_down->SetScale(0.25f);
+	effect_up->SetScale(0.25f);
+	effect_down->SetScale(0.25f);
 	gauge_up->SetColor(m_Color);
 	gauge_down->SetColor(m_Color);
 
@@ -60,6 +78,8 @@ bool TutorialEnemy::Initialize() {
 	effect_up->SetPosition(m_UpPos);
 	effect_down->SetPosition(m_DownPos);
 	m_BaseSpeed = static_cast<float>(std::any_cast<double>(LoadCSV::LoadCsvParam("Resources/csv/chara/enemy/enemy.csv", "speed")));
+	m_Birth = false;
+	m_AddPower = 0.2f;
 	return true;
 }
 
@@ -113,7 +133,9 @@ void TutorialEnemy::Action() {
 		}
 	}
 
-
+	if (m_EffectMove) {
+		EffectCountDown();
+	}
 	Obj_SetParam();
 }
 //描画
@@ -254,7 +276,7 @@ void TutorialEnemy::SlowCollide() {
 					int num = Random::GetRanNum(30, 40);
 					float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
 					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
-					BirthEffect();
+					TutoBirthEffect();
 				}
 			}
 			else if (m_EnemyType == GREEN_ENEMY) {
@@ -263,7 +285,7 @@ void TutorialEnemy::SlowCollide() {
 					int num = Random::GetRanNum(30, 40);
 					float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
 					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
-					BirthEffect();
+					TutoBirthEffect();
 				}
 			}
 			else {
@@ -272,7 +294,7 @@ void TutorialEnemy::SlowCollide() {
 					int num = Random::GetRanNum(30, 40);
 					float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
 					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
-					BirthEffect();
+					TutoBirthEffect();
 				}
 			}
 		}
@@ -282,32 +304,9 @@ void TutorialEnemy::SlowCollide() {
 		m_Slow = false;
 	}
 }
-//死んだときの動き
-void TutorialEnemy::DeathMove() {
-	const float l_AddFrame = 0.05f;
-	m_Slow = false;
-	m_AddPower -= m_Gravity;
-	if (Helper::GetInstance()->CheckMax(m_Position.y, {}, m_AddPower * Slow::GetInstance()->GetSlowPower())) {
-		m_Scale = { Ease(In,Cubic,0.5f * Slow::GetInstance()->GetSlowPower(),m_Scale.x,0.0f),
-					Ease(In,Cubic,0.5f * Slow::GetInstance()->GetSlowPower(),m_Scale.y,0.0f),
-					Ease(In,Cubic,0.5f * Slow::GetInstance()->GetSlowPower(),m_Scale.z,0.0f), };
 
-		m_Rotation.y += 2.0f;
-
-		if (m_Scale.x <= 0.1f) {
-			m_Alive = false;
-		}
-	}
-
-	if (Helper::GetInstance()->FrameCheck(m_Frame, l_AddFrame)) {
-		m_ViewEffect = false;
-	}
-	m_UpPos.x = Ease(In, Cubic, m_Frame, m_UpPos.x, 700.0f);
-	m_DownPos.x = Ease(In, Cubic, m_Frame, m_DownPos.x, 900.0f);
-	m_Alpha = Ease(In, Cubic, m_Frame, m_Alpha, 0.0f);
-}
 //エフェクトの生成
-void TutorialEnemy::BirthEffect() {
+void TutorialEnemy::TutoBirthEffect() {
 	SlashEffect* effect;
 	effect = new SlashEffect(m_Position);
 	effect->Initialize();

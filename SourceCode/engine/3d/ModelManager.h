@@ -19,6 +19,8 @@ public:
 		WALL_UP,
 		WALL_UNDER,
 		ENEMY,
+		PLAYER_1,
+		PLAYER_2
 	};
 	//FBXの名前
 	enum FBXName {

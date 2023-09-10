@@ -33,6 +33,8 @@ private:
 	unique_ptr<IKESprite> TimeGage;
 	unique_ptr<IKESprite> ScoreGage;
 	unique_ptr<IKESprite> MagGage;
+	unique_ptr<IKESprite> Miss;
+	XMFLOAT4 m_MissColor = { 1.0f,1.0f,1.0f,0.0f };
 private:
 	int m_MagTimer = 0;
 	bool m_Mag = false;

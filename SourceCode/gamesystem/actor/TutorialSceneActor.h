@@ -41,8 +41,9 @@ private:
 	void SkipUpdate();
 	void BirthEnemy(bool Move,bool End);
 private:
-	static const int AREA_NUM = 4;
+	static const int TEXT_MAX = 3;
 	static const int ENEMY_MAX = 3;
+
 private:
 	//敵死亡時のエフェクト
 	struct EnemyDeadEffect
@@ -57,8 +58,10 @@ private:
 		}
 	};
 private:
+	array<unique_ptr<IKESprite>, TEXT_MAX> Skip_Text;
 	std::vector<EnemyDeadEffect*> blood;
 	unique_ptr<IKESprite> window;
+	unique_ptr<IKESprite> window2;
 	unique_ptr<TutorialText> text_;
 	IKEModel* model;
 	unique_ptr<IKEObject3d> skydome;
@@ -93,5 +96,14 @@ private:
 
 	unique_ptr<UI> ui;
 	std::vector<MagText*> magtext;
+
+	array<XMFLOAT2, TEXT_MAX> m_Position;
+	array<XMFLOAT2, TEXT_MAX> m_AfterPos;
+
+	enum SkipType {
+		SKIP_Y,
+		ONE_MORE,
+		GAME_Y
+	};
 };
 

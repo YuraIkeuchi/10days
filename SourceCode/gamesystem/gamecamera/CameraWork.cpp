@@ -147,3 +147,20 @@ void CameraWork::TutorialUpdate(DebugCamera* camera) {
 	camera->SetTarget(m_targetPos);
 	camera->Update();
 }
+//タイトルカメラ
+void CameraWork::TitleCamera(DebugCamera* camera) {
+	m_TitleCameraScale = 10.0f;
+	m_TitleCameraSpeed += 0.1f;
+	//円運動の計算
+	m_TitleCameraRadius = m_TitleCameraSpeed * m_PI / 180.0f;
+	m_TitleCameraCircleX = cosf(m_TitleCameraRadius) * m_TitleCameraScale;
+	m_TitleCameraCircleZ = sinf(m_TitleCameraRadius) * m_TitleCameraScale;
+	m_eyePos.x = m_TitleCameraCircleX;
+	m_eyePos.z = m_TitleCameraCircleZ;
+	m_eyePos.y = 10.0f;
+	m_targetPos = { 0.0f,0.0f,0.0f };
+
+	camera->SetEye(m_eyePos);
+	camera->SetTarget(m_targetPos);
+	camera->Update();
+}
