@@ -66,6 +66,7 @@ void ScoreManager::Initialize() {
 }
 //更新
 void ScoreManager::Update() {
+	const int l_ScoreMax = 9998;
 	////繰り上げ処理
 	////ひとけた目
 	//if (m_FirstNumber > NUMBER_MAX - 1) {
@@ -86,6 +87,8 @@ void ScoreManager::Update() {
 	m_SecondNumber = getDigits(m_RealScore, 2, 2);
 	m_ThirdNumber = getDigits(m_RealScore, 3, 3);
 	m_FourthNumber = getDigits(m_RealScore, 4, 4);
+
+	Helper::GetInstance()->Clamp(m_RealScore, {}, l_ScoreMax);
 
 	//Helper::GetInstance()->Clamp(m_FirstNumber, 0, NUMBER_MAX - 1);
 }

@@ -39,7 +39,6 @@ private:
 private:
 	float m_BaseSpeed = {};
 	float m_SlowSpeed = {};
-	
 
 };
 

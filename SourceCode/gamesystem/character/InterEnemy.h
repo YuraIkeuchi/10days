@@ -102,6 +102,7 @@ public://gettersetter
 	void SetSlowMove(const bool SlowMove) { m_SlowMove = SlowMove; }
 	void SetMove(const bool Move) { m_Move = Move; }
 	void SetDamage(const bool Damage) { m_Damage = Damage; }
+	void SetCheckMiss(const bool CheckMiss) { m_CheckMiss = CheckMiss; }
 	const bool GetAlive() { return m_Alive; }
 	const bool GetHitCheck() { return m_HitCheck; }
 	const bool GetDeath() { return m_Death; }
@@ -144,6 +145,7 @@ protected:
 	int SlowStopTimer = {};
 	bool m_Slow = false;
 	float m_radius = 0.8f;
+	bool m_CheckMiss = false;
 
 	//エフェクトの大きさ
 	XMFLOAT2 EffectSize = {};
