@@ -73,7 +73,7 @@ bool InterEnemy::CheckCollide() {
 	}
 	else {
 		m_Slow = false;
-		m_ViewEffect = false;
+		//m_ViewEffect = false;
 		return false;
 	}
 

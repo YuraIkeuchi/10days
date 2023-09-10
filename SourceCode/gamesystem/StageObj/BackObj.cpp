@@ -67,7 +67,7 @@ void BackObj::Initialize() {
 	base_ground->TextureCreate();
 	base_ground->SetRotation({ 90.0f,0.0f,0.0f });
 	base_ground->SetPosition({ 0.0f,0.0f,0.0f });
-	base_ground->SetScale({ 5.0f,5.0f,1.0f });
+	base_ground->SetScale({ 8.0f,8.0f,8.0f });
 	base_ground->SetTiling(10.0f);
 }
 //XV

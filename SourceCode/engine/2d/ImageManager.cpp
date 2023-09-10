@@ -23,6 +23,9 @@ void ImageManager::StartLoad2D()
 	IKESprite::LoadTexture(CUT_DOWN, L"Resources/2d/effect/zanbot.png");
 	IKESprite::LoadTexture(CUTGAGE_UP, L"Resources/2d/effect/gaugeup.png");
 	IKESprite::LoadTexture(CUTGAGE_DOWN, L"Resources/2d/effect/gaugebot.png");
+	IKESprite::LoadTexture(TITLE, L"Resources/2d/sceneback/Title.png");
+	IKESprite::LoadTexture(SKIP, L"Resources/2d/sceneback/Skip.png");
+	IKESprite::LoadTexture(MISS, L"Resources/2d/effect/Miss.png");
 }
 
 //非同期処理で読み込むスプライト

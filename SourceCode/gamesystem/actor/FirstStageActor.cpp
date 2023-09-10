@@ -173,7 +173,7 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 			{
 				if (m->counter == 0)
 				{
-					m->object->SetPosition(enemy[i]->GetPosition());
+					m->object->SetPosition({ enemy[i]->GetPosition().x,0.3f,enemy[i]->GetPosition().z });
 					m->counter = 1;
 					break;
 				}
@@ -239,8 +239,8 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 		{
 			blood[i]->counter++;
 			float scale = blood[i]->object->GetScale().x;
-			scale += 0.03f;
-			scale = min(0.3f, scale);
+			scale += 0.05f;
+			scale = min(0.4f, scale);
 			blood[i]->object->SetScale({ scale, scale, scale });
 		}
 		//消える
@@ -356,7 +356,7 @@ void FirstStageActor::ImGuiDraw() {
 	//	if (enemy[i] == nullptr)continue;
 	//	enemy[i]->ImGuiDraw();
 	//}
-	ScoreManager::GetInstance()->ImGuiDraw();
+	//ScoreManager::GetInstance()->ImGuiDraw();
 }
 //倍率スコアの生成
 void FirstStageActor::BirthScoreText(const int EnemyCount, const int Magnification) {

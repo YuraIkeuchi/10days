@@ -143,7 +143,7 @@ protected:
 	bool m_Miss = false;
 	int SlowStopTimer = {};
 	bool m_Slow = false;
-	float m_radius = 1.2f;
+	float m_radius = 0.8f;
 
 	//エフェクトの大きさ
 	XMFLOAT2 EffectSize = {};

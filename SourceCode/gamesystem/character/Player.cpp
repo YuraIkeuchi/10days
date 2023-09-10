@@ -94,9 +94,7 @@ XMFLOAT3 Player::MoveVECTOR(XMVECTOR v, float angle)
 //描画
 void Player::Draw(DirectXCommon* dxCommon)
 {
-	if (!m_Damage) {
-		Obj_Draw();
-	}
+	Obj_Draw();
 }
 
 //ImGui
@@ -229,7 +227,7 @@ void Player::Move() {
 }
 //攻撃
 void Player::Attack() {
-	const float l_AddFrame = 0.01f;
+	const float l_AddFrame = 0.0125f;
 	m_AddFrame = l_AddFrame;
 	if (!Slow::GetInstance()->GetSlow()) {
 		if (Helper::GetInstance()->FrameCheck(m_Frame, m_AddFrame)) {
