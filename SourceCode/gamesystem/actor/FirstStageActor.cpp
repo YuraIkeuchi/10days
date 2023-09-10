@@ -185,7 +185,6 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 				}
 				m_AddScore = (ScoreManager::GetInstance()->GetMagnification() * 1);
 				BirthScoreText(1, ScoreManager::GetInstance()->GetMagnification());
-				//ScoreManager::GetInstance()->SetFirstNumber(ScoreManager::GetInstance()->GetFirstNumber() + m_AddScore);
 				ScoreManager::GetInstance()->SetRealScore(ScoreManager::GetInstance()->GetRealScore() + (m_AddScore * 10));
 				m_AddScore = 0;
 			}

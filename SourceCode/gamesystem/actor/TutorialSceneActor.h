@@ -75,6 +75,7 @@ private:
 		ATTACK_INTRO,
 		ATTACK_EXPLAIN,
 		ENEMY_BIRTH,
+		ENEMY_NEAR,
 		ENEMY_DEATH,
 		ENEMY_SLOW,
 		ENEMY_INTERVAL,
@@ -105,5 +106,9 @@ private:
 		ONE_MORE,
 		GAME_Y
 	};
+
+	int m_BirthTimer = 0;
+	bool m_PlayerDraw = false;
+	int m_TargetCount = 2;
 };
 

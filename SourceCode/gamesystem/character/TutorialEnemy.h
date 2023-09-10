@@ -38,5 +38,6 @@ private:
 	float m_BaseSpeed = {};
 	float m_Gravity = 0.01f;
 	float m_AddPower = {};
+	float m_JumpPower = {};
 };
 

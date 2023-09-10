@@ -281,4 +281,12 @@ void Player::TutorialUpdate() {
 	(this->*stateTable[_charaState])();
 
 	Obj_SetParam();
+
+	if (m_Damage) {
+		m_DamageTimer++;
+		if (m_DamageTimer >= 10) {
+			m_Damage = false;
+			m_DamageTimer = {};
+		}
+	}
 }

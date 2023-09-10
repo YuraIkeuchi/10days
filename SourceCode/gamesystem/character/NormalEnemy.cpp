@@ -178,12 +178,6 @@ void NormalEnemy::Draw(DirectXCommon* dxCommon) {
 }
 //エフェクト描画
 void NormalEnemy::EffectDraw(DirectXCommon* dxCommon) {
-	//斬撃エフェクト
-	for (auto i = 0; i < slash.size(); i++)
-	{
-		if (slash[i] == nullptr)continue;
-		slash[i]->ImGuiDraw();
-	}
 	if (m_ViewEffect) {
 		gauge_up->Draw();
 		gauge_down->Draw();
@@ -279,6 +273,7 @@ void NormalEnemy::BottomMove() {
 //上に動く
 void NormalEnemy::UpMove() {
 	const float l_MIN =MapMaxZ;
+	
 	if (m_SlowMove) {
 		m_velocity = m_SlowSpeed * Slow::GetInstance()->GetSlowPower() * Slow::GetInstance()->GetMovePower();
 	}
