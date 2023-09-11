@@ -93,6 +93,7 @@ void InterEnemy::AttackCollide() {
 				ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
 				BirthEffect();
 				Slow::GetInstance()->SetSlow(false);
+				Audio::GetInstance()->PlayWave("Resources/audio/kill.wav", 0.1f);
 			}
 			else {		//違ったボタンを押すとミス
 				Slow::GetInstance()->SetCheck(false);
@@ -101,6 +102,7 @@ void InterEnemy::AttackCollide() {
 				Player::GetInstance()->SetDamage(true);
 				Slow::GetInstance()->SetSlow(false);
 				m_ViewEffect = false;
+				Audio::GetInstance()->PlayWave("Resources/audio/miss.wav", 0.1f);
 			}
 		}
 		else if ((input->TriggerButton(input->A))) {
@@ -110,6 +112,7 @@ void InterEnemy::AttackCollide() {
 				int num = Random::GetRanNum(30, 40);
 				float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
 				ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
+				Audio::GetInstance()->PlayWave("Resources/audio/kill.wav", 0.1f);
 				BirthEffect();
 				Slow::GetInstance()->SetSlow(false);
 			}
@@ -120,6 +123,7 @@ void InterEnemy::AttackCollide() {
 				Player::GetInstance()->SetDamage(true);
 				Slow::GetInstance()->SetSlow(false);
 				m_ViewEffect = false;
+				Audio::GetInstance()->PlayWave("Resources/audio/miss.wav", 0.1f);
 			}
 		}
 		else if ((input->TriggerButton(input->X))) {
@@ -129,6 +133,7 @@ void InterEnemy::AttackCollide() {
 				int num = Random::GetRanNum(30, 40);
 				float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
 				ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
+				Audio::GetInstance()->PlayWave("Resources/audio/kill.wav", 0.1f);
 				BirthEffect();
 				Slow::GetInstance()->SetSlow(false);
 			}
@@ -139,6 +144,7 @@ void InterEnemy::AttackCollide() {
 				Player::GetInstance()->SetDamage(true);
 				Slow::GetInstance()->SetSlow(false);
 				m_ViewEffect = false;
+				Audio::GetInstance()->PlayWave("Resources/audio/miss.wav", 0.1f);
 			}
 		}
 		if (Collision::CircleCollision(m_Position.x, m_Position.z, l_DamageRadius, Player::GetInstance()->GetPosition().x, Player::GetInstance()->GetPosition().z, l_DamageRadius)
@@ -171,6 +177,7 @@ void InterEnemy::EffectCountDown() {
 	}
 
 	if (m_MissTimer >= 80) {
+		Audio::GetInstance()->PlayWave("Resources/audio/miss.wav", 0.1f);
 		Slow::GetInstance()->SetCheck(false);
 		m_Miss = true;
 		m_HitCheck = false;

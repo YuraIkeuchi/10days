@@ -175,6 +175,7 @@ void ClearSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 	Input* input = Input::GetInstance();
 	if ((input->TriggerButton(input->B))) {
 		SceneChanger::GetInstance()->SetChangeStart(true);
+		Audio::GetInstance()->PlayWave("Resources/audio/botton.wav", 0.1f);
 	}
 	if (SceneChanger::GetInstance()->GetChange()) {
 		SceneManager::GetInstance()->ChangeScene("TITLE");
@@ -270,6 +271,7 @@ void ClearSceneActor::ResultMove() {
 	else if (_ResultType == HYOUKA) {		//•]‰¿‚ÌƒXƒ^ƒ“ƒv‚Í‰Ÿ‚³‚ê‚é
 		if (Helper::GetInstance()->FrameCheck(m_Frame, l_AddFrame)) {
 			_ResultType = NEXT_SCORE;
+			Audio::GetInstance()->PlayWave("Resources/audio/result.wav", 0.1f);
 		}
 
 		m_Alpha = Ease(In, Cubic, m_Frame, m_Alpha, 1.0f);

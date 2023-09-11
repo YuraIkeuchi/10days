@@ -1,6 +1,7 @@
 #include "Slow.h"
 #include "imgui.h"
 #include "CsvLoader.h"
+#include "Audio.h"
 Slow* Slow::GetInstance()
 {
 	static Slow instance;
@@ -23,19 +24,23 @@ void Slow::Initialize() {
 //XV
 void Slow::Update() {
 	if (m_Slow) {
+		if (m_SlowTimer == 0)
+		{
+			Audio::GetInstance()->PlayWave("Resources/audio/result.wav", 0.1f);
+		}
 		if (!m_Tutorial) {
 			m_SlowPower = 0.1f;
 			m_PlayerSlowPower = 0.2f;
 			m_MovePower = 0.1f;
-			//m_SlowTimer--;
 		}
 		else {
 			m_SlowPower = 0.0f;
 			m_PlayerSlowPower = 0.0f;
 		}
+		m_SlowTimer++;
 	}
 	else {
-		m_SlowTimer = {};
+		m_SlowTimer = 0;
 		m_SlowPower = 1.0f;
 		m_PlayerSlowPower = 1.0f;
 		m_MovePower = 1.0f;
