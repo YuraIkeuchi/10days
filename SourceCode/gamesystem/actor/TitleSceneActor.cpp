@@ -45,6 +45,8 @@ void TitleSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 	if ((input->TriggerButton(input->B))) {
 		_SceneType = PLAY;
 		SceneChanger::GetInstance()->SetChangeStart(true);
+		Audio::GetInstance()->PlayWave("Resources/Sound/SE/Button_Text.wav", VolumManager::GetInstance()->GetSEVolum() * 0.7f);
+
 	}
 	if ((input->TriggerButton(input->X))) {
 		_SceneType = EDITOR;
