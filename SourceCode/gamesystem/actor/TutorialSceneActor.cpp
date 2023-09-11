@@ -325,16 +325,17 @@ void TutorialSceneActor::FrontDraw(DirectXCommon* dxCommon) {
 	IKESprite::PreDraw();
 	ui->BackDraw();
 	IKESprite::PostDraw();
+	
+	IKESprite::PreDraw();
+	TutorialTask::GetInstance()->Draw();
+	IKESprite::PostDraw();
 	//完全に前に書くスプライト
 	IKESprite::PreDraw();
 	window->Draw();
 	if (!m_Vanish && nowstate_ != state::END) {
 		text_->SpriteDraw(dxCommon);
 	}
-	
-	IKESprite::PostDraw();
-	IKESprite::PreDraw();
-	TutorialTask::GetInstance()->Draw();
+
 	IKESprite::PostDraw();
 	IKESprite::PreDraw();
 	SceneChanger::GetInstance()->Draw();
