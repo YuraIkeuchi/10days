@@ -11,8 +11,7 @@ AudioManager* AudioManager::GetInstance()
 
 //”ñ“¯Šú‘O‚É“Ç‚Ýž‚Þ‚à‚Ì
 void AudioManager::StartLoadAudio() {
-	//Audio::GetInstance()->LoadSound(AUDIO_TITLE, "Resources/Sound/BGM/BGM_title.wav");
-	//Audio::GetInstance()->LoadSound(AUDIO_LOAD, "Resources/Sound/BGM/BGM_load.wav");
+	Audio::GetInstance()->LoadSound(AUDIO_BATTLE, "Resources/audio/BGM.wav");
 }
 
 void AudioManager::SecondLoadAudio() {

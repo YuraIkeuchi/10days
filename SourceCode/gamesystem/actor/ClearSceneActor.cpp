@@ -13,9 +13,7 @@ void ClearSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 	BaseInitialize(dxCommon);
 
 	//オーディオ
-	//Audio::GetInstance()->LoadSound(3, "Resources/Sound/BGM/jto3s-8fzcz.wav");
-	//Audio::GetInstance()->LoopWave(3, VolumManager::GetInstance()->GetBGMVolum());
-	//シーンチェンジャー
+	Audio::GetInstance()->StopWave(AUDIO_BATTLE);
 	sceneChanger_ = make_unique<SceneChanger>();
 	sceneChanger_->Initialize();
 
@@ -177,6 +175,7 @@ void ClearSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 	Input* input = Input::GetInstance();
 	if ((input->TriggerButton(input->B))) {
 		SceneChanger::GetInstance()->SetChangeStart(true);
+		Audio::GetInstance()->PlayWave("Resources/audio/botton.wav", 0.1f);
 	}
 	if (SceneChanger::GetInstance()->GetChange()) {
 		SceneManager::GetInstance()->ChangeScene("TITLE");
@@ -272,6 +271,7 @@ void ClearSceneActor::ResultMove() {
 	else if (_ResultType == HYOUKA) {		//評価のスタンプは押される
 		if (Helper::GetInstance()->FrameCheck(m_Frame, l_AddFrame)) {
 			_ResultType = NEXT_SCORE;
+			Audio::GetInstance()->PlayWave("Resources/audio/result.wav", 0.1f);
 		}
 
 		m_Alpha = Ease(In, Cubic, m_Frame, m_Alpha, 1.0f);
