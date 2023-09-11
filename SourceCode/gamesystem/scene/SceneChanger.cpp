@@ -36,6 +36,7 @@ void SceneChanger::Update() {
 					_doorState = CLOSE_DOOR;
 					m_Frame = {};
 					m_ChangeTimer = {};
+					// TODO ‚±‚±‚É‰¹
 				}
 			}
 		}
