@@ -28,14 +28,6 @@ void FirstStageActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 	lightgroup->SetCircleShadowActive(0, true);
 	lightgroup->SetCircleShadowActive(1, true);
 
-	//スカイドーム
-	skydome.reset(new IKEObject3d());
-	skydome->Initialize();
-	skydome->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::SKYDOME));
-	skydome->SetScale({ 8.f,8.f,8.f });
-	skydome->SetPosition({ 0.0f,0.0f,0.0f });
-	skydome->VertexCheck();
-
 	//プレイヤー
 	Player::GetInstance()->LoadResource();
 	Player::GetInstance()->InitState({ 0.0f,0.0f,8.0f });
@@ -93,7 +85,6 @@ void FirstStageActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 	//各クラス更新
 	camerawork->Update(camera);
 	lightgroup->Update();
-	skydome->Update();
 	BackObj::GetInstance()->Update();
 
 	Timer::GetInstance()->Update();

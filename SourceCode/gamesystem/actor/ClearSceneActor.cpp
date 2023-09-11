@@ -140,10 +140,10 @@ void ClearSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 
 	//Še•]‰¿‚Ì“_”
 	m_ScoreLine[BUT] = 0;
-	m_ScoreLine[NORMAL] = 400;
-	m_ScoreLine[GOOD] = 800;
-	m_ScoreLine[VERYGOOD] = 1200;
-	m_ScoreLine[SUPER] = 1600;
+	m_ScoreLine[NORMAL] = 1000;
+	m_ScoreLine[GOOD] = 1800;
+	m_ScoreLine[VERYGOOD] = 2400;
+	m_ScoreLine[SUPER] = 3000;
 
 	m_TargetNowScore = ScoreManager::GetInstance()->GetRealScore();
 

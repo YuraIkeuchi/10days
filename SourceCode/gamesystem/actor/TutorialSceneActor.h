@@ -64,7 +64,6 @@ private:
 	unique_ptr<IKESprite> window2;
 	unique_ptr<TutorialText> text_;
 	IKEModel* model;
-	unique_ptr<IKEObject3d> skydome;
 	XMFLOAT2 m_AddOffset = {};
 	std::vector<InterEnemy*> enemys;
 	int m_TexTimer = {};
