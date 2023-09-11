@@ -36,6 +36,8 @@ public:
 		TITLE,
 		SKIP,
 		MISS,
+		NEXTHYOUKA,
+		HYOUKA,
 	};
 	//テクスチャの名前
 	enum tex2dName

@@ -26,6 +26,8 @@ void ImageManager::StartLoad2D()
 	IKESprite::LoadTexture(TITLE, L"Resources/2d/sceneback/Title.png");
 	IKESprite::LoadTexture(SKIP, L"Resources/2d/sceneback/Skip.png");
 	IKESprite::LoadTexture(MISS, L"Resources/2d/effect/Miss.png");
+	IKESprite::LoadTexture(NEXTHYOUKA, L"Resources/2d/sceneback/Nexthyouka.png");
+	IKESprite::LoadTexture(HYOUKA, L"Resources/2d/sceneback/hyouka.png");
 }
 
 //非同期処理で読み込むスプライト
