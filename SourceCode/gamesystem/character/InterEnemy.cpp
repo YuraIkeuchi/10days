@@ -19,8 +19,8 @@ void InterEnemy::Update() {
 }
 void InterEnemy::SetResPos(PosSt pos,float otpos)
 {
-	constexpr float PosX_Min = -7.5f;
-	constexpr float PosX_Max = 7.5f;
+	constexpr float PosX_Min = -9.0f;
+	constexpr float PosX_Max = 9.0f;
 
 	constexpr float PosZ_Min = -7.5f;
 	constexpr float PosZ_Max = 7.5f;
@@ -94,6 +94,8 @@ void InterEnemy::AttackCollide() {
 				BirthEffect();
 				Slow::GetInstance()->SetSlow(false);
 				Audio::GetInstance()->PlayWave("Resources/audio/kill.wav", 0.1f);
+				Player::GetInstance()->SetSlash(true);
+				Player::GetInstance()->SetSlashTimer(0);
 			}
 			else {		//違ったボタンを押すとミス
 				Slow::GetInstance()->SetCheck(false);
@@ -115,6 +117,8 @@ void InterEnemy::AttackCollide() {
 				Audio::GetInstance()->PlayWave("Resources/audio/kill.wav", 0.1f);
 				BirthEffect();
 				Slow::GetInstance()->SetSlow(false);
+				Player::GetInstance()->SetSlash(true);
+				Player::GetInstance()->SetSlashTimer(0);
 			}
 			else {		//違ったボタンを押すとミス
 				Slow::GetInstance()->SetCheck(false);
@@ -136,6 +140,8 @@ void InterEnemy::AttackCollide() {
 				Audio::GetInstance()->PlayWave("Resources/audio/kill.wav", 0.1f);
 				BirthEffect();
 				Slow::GetInstance()->SetSlow(false);
+				Player::GetInstance()->SetSlash(true);
+				Player::GetInstance()->SetSlashTimer(0);
 			}
 			else {		//違ったボタンを押すとミス
 				Slow::GetInstance()->SetCheck(false);

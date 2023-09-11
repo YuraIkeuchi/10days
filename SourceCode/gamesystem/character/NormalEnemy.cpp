@@ -13,11 +13,11 @@
 
 #include "ImageManager.h"
 
-#define MapMinX -8
-#define MapMaxX 8
+#define MapMinX -9
+#define MapMaxX 9
 
-#define MapMinZ -8
-#define MapMaxZ 8
+#define MapMinZ -7.5
+#define MapMaxZ 7.5
 
 //モデル読み込み
 NormalEnemy::NormalEnemy() {

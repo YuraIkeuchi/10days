@@ -291,6 +291,8 @@ void TutorialEnemy::SlowCollide() {
 					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
 					BirthEffect();
 					Slow::GetInstance()->SetSlow(false);
+					Player::GetInstance()->SetSlash(true);
+					Player::GetInstance()->SetSlashTimer(0);
 				}
 				else {		//違ったボタンを押すとミス
 					if (m_CheckMiss) {
@@ -313,6 +315,8 @@ void TutorialEnemy::SlowCollide() {
 					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
 					BirthEffect();
 					Slow::GetInstance()->SetSlow(false);
+					Player::GetInstance()->SetSlash(true);
+					Player::GetInstance()->SetSlashTimer(0);
 				}
 				else {		//違ったボタンを押すとミス
 					if (m_CheckMiss) {
@@ -334,6 +338,8 @@ void TutorialEnemy::SlowCollide() {
 					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
 					BirthEffect();
 					Slow::GetInstance()->SetSlow(false);
+					Player::GetInstance()->SetSlash(true);
+					Player::GetInstance()->SetSlashTimer(0);
 				}
 				else {		//違ったボタンを押すとミス
 					if (m_CheckMiss) {

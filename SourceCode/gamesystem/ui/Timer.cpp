@@ -38,11 +38,11 @@ void Timer::LoadResource() {
 }
 //‰Šú‰»
 void Timer::Initialize() {
-	m_GameTimer = 3600;
+	m_GameTimer = 5400;
 	m_SlowTimer = {};
 	m_End = false;
 	m_FirstCount = 0;
-	m_SecondCount = 6;
+	m_SecondCount = 9;
 }
 //XV
 void Timer::Update() {

@@ -57,6 +57,10 @@ void Player::InitState(const XMFLOAT3& pos) {
 	m_MoveTimer = {};
 
 	m_Attack = false;
+	m_Damage = false;
+	m_DamageTimer = {};
+	m_Slash = false;
+	m_SlashTimer = {};
 
 	_charaState = STATE_MOVE;
 }
@@ -80,6 +84,19 @@ void Player::Update()
 			m_Damage = false;
 			m_DamageTimer = {};
 		}
+	}
+
+	if (m_Slash) {
+		m_SlashTimer++;
+		if (m_SlashTimer >= 50) {
+			m_Slash = false;
+			m_SlashTimer = {};
+		}
+		m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::PLAYER_2));
+	}
+	else {
+		m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::PLAYER_1));
+
 	}
 }
 //VECTOR
@@ -204,27 +221,7 @@ void Player::Move() {
 			}
 		}
 	}
-	/*if (_MoveState == MOVE_LEFT) {
-		m_Rotation = { 0.0f,90.0f,0.0f };
-	}
-	else if (_MoveState == MOVE_RIGHT) {
-		m_Rotation = { 0.0f,270.0f,0.0f };
-	}
-	else if (_MoveState == MOVE_UP) {
-		m_Rotation = { 0.0f, 180.0f, 0.0f };
-	}
-	else {
-		m_Rotation = { 0.0f, 0.0f, 0.0f };
-	}*/
-	if(_charaState==STATE_ATTACK)
-	{
-		m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::PLAYER_2));
-	}
-	else
-	{
-		m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::PLAYER_1));
 
-	}
 	//Helper::GetInstance()->Clamp(m_Position.x, -9.5f, 9.5f);
 }
 //攻撃

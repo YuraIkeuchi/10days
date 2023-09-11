@@ -45,6 +45,8 @@ public:
 	const XMFLOAT3& GetAttackPos() { return m_AttackPos; }
 
 	void SetDamage(bool Damage) { this->m_Damage = Damage; }
+	void SetSlash(bool Slash) { this->m_Slash = Slash; }
+	void SetSlashTimer(int SlashTimer) { this->m_SlashTimer = SlashTimer; }
 private:
 	void LoadCSV();
 
@@ -80,4 +82,6 @@ private:
 	float m_AddFrame = {};
 	bool m_Damage = false;
 	int m_DamageTimer = 0;
+	bool m_Slash = false;
+	int m_SlashTimer = 0;
 };

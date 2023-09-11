@@ -240,8 +240,8 @@ void EditorSceneActor::ImGuiDraw() {
 	ImGui::Checkbox("X_Min", &checkPos[3]);
 
 
-	ImGui::SliderFloat("PosX", &PosX, -8, 8);
-	ImGui::SliderFloat("PosZ", &PosY, -8, 8);
+	ImGui::SliderFloat("PosX", &PosX, -9, 9);
+	ImGui::SliderFloat("PosZ", &PosY, -7.5f, 7.5f);
 
 	ImGui::InputInt("Timer", &timer);
 	if (checkPos[0]) {
@@ -302,6 +302,7 @@ void EditorSceneActor::ImGuiDraw() {
 		ResetF = true;
 	}
 	ImGui::End();
+	Timer::GetInstance()->ImGuiDraw();
 }
 void EditorSceneActor::FileWriting()
 {
