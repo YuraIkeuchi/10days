@@ -44,7 +44,6 @@ private:
 	static const int AREA_NUM = 4;
 private:
 	IKEModel* model;
-	unique_ptr<IKEObject3d> skydome;
 	XMFLOAT2 m_AddOffset = {};
 	std::vector <unique_ptr<InterEnemy>> enemy;
 	std::vector<MagText*> magtext;

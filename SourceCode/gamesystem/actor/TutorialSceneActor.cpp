@@ -30,14 +30,6 @@ void TutorialSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera
 
 	m_SceneState = SceneState::IntroState;
 
-	//スカイドーム
-	skydome.reset(new IKEObject3d());
-	skydome->Initialize();
-	skydome->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::SKYDOME));
-	skydome->SetScale({ 8.f,8.f,8.f });
-	skydome->SetPosition({ 0.0f,0.0f,0.0f });
-	skydome->VertexCheck();
-
 	//プレイヤー
 	Player::GetInstance()->LoadResource();
 	Player::GetInstance()->InitState({ 0.0f,0.0f,8.0f });
@@ -106,7 +98,6 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 	//各クラス更新
 	camerawork->TutorialUpdate(camera);
 	lightgroup->Update();
-	skydome->Update();
 	window->SetSize(window_size);
 	window->SetColor({ 1.0f,1.0f,1.0f,m_Alpha });
 	BackObj::GetInstance()->Update();

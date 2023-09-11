@@ -27,14 +27,6 @@ void EditorSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, 
 	lightgroup->SetCircleShadowActive(0, true);
 	lightgroup->SetCircleShadowActive(1, true);
 
-	//スカイドーム
-	skydome.reset(new IKEObject3d());
-	skydome->Initialize();
-	skydome->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::SKYDOME));
-	skydome->SetScale({ 8.f,8.f,8.f });
-	skydome->SetPosition({ 0.0f,0.0f,0.0f });
-	skydome->VertexCheck();
-
 	//プレイヤー
 	Player::GetInstance()->LoadResource();
 	Player::GetInstance()->InitState({ 0.0f,0.0f,8.0f });
@@ -83,7 +75,6 @@ void EditorSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Ligh
 	(this->*stateTable[static_cast<size_t>(m_SceneState)])(camera);
 		camerawork->Update(camera);
 	lightgroup->Update();
-	skydome->Update();
 	Sample->SetColor({ 1,1,1,0.5f });
 	Player::GetInstance()->Update();
 	BackObj::GetInstance()->Update();
@@ -166,8 +157,6 @@ void EditorSceneActor::FrontDraw(DirectXCommon* dxCommon) {
 //ポストエフェクトかかる
 void EditorSceneActor::BackDraw(DirectXCommon* dxCommon) {
 	IKEObject3d::PreDraw();
-
-	skydome->Draw();
 	if (viewf)
 	{
 		for (auto i = 0; i < enemys.size(); i++) {

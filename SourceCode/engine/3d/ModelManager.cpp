@@ -13,15 +13,12 @@ ModelManager* ModelManager::GetInstance()
 //モデル読み込み(最初から読み込むもの)
 void ModelManager::StartInitialize()
 {
-	LoadModel(PLAYERMODEL, "chr_knight");
-	LoadModel(SKYDOME, "skydome");
 	LoadModel(WALL_UP, "WallUp");
 	LoadModel(WALL_UNDER, "WallUnder");
 	LoadModel(PLAYER_1, "Samuraiidle2");
 
 	LoadModel(PLAYER_2, "Samuraiidle");
 	LoadModel(ENEMY, "slime");
-	LoadFBXModel(PLAYER, "kotoko");
 }
 
 //モデル読み込み(非同期処理で読み込むもの)
