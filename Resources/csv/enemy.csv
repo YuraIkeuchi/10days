@@ -1,1 +1,13 @@
-Enemy_Quantity,0
+Enemy_Quantity,2
+Number,0
+POP,-2.667,0,10
+ResCount,0
+MoveType,4
+EnemyType,0
+/*--------------------------------*/
+Number,1
+POP,0,0,10
+ResCount,3500
+MoveType,4
+EnemyType,1
+/*--------------------------------*/
