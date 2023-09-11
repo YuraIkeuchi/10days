@@ -19,11 +19,11 @@ void InterEnemy::Update() {
 }
 void InterEnemy::SetResPos(PosSt pos,float otpos)
 {
-	constexpr float PosX_Min = -10.f;
-	constexpr float PosX_Max = 10.f;
+	constexpr float PosX_Min = -7.5f;
+	constexpr float PosX_Max = 7.5f;
 
-	constexpr float PosZ_Min = -10.f;
-	constexpr float PosZ_Max = 10.f;
+	constexpr float PosZ_Min = -7.5f;
+	constexpr float PosZ_Max = 7.5f;
 
 	if (pos == PosSt::UPRES)
 	{
