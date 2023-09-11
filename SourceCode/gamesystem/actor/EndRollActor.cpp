@@ -10,7 +10,6 @@ void EndRollActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, Ligh
 	BaseInitialize(dxCommon);
 	//このシーンだけセピアカラーつかう
 	postEffect->CreateGraphicsPipeline(L"Resources/Shaders/PostEffectTestVS.hlsl", L"Resources/Shaders/SepiaPS.hlsl");
-	Audio::GetInstance()->LoopWave(AUDIO_TITLE, VolumManager::GetInstance()->GetBGMVolum() + 1.0f);
 	//シーンチェンジャー
 	PlayPostEffect = false;
 	sceneChanger_ = make_unique<SceneChanger>();
