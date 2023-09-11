@@ -14,6 +14,8 @@ public:
 	void Update();
 	void ImGuiDraw();
 	void SpriteDraw();
+
+private:
 	//Š„‡‚ğ•Ô‚·
 	int getDigits(int value, int m, int n);
 private:

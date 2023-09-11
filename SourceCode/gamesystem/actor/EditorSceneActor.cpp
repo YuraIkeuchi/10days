@@ -240,8 +240,8 @@ void EditorSceneActor::ImGuiDraw() {
 	ImGui::Checkbox("X_Min", &checkPos[3]);
 
 
-	ImGui::SliderFloat("PosX", &PosX, -10, 10);
-	ImGui::SliderFloat("PosZ", &PosY, -10, 10);
+	ImGui::SliderFloat("PosX", &PosX, -8, 8);
+	ImGui::SliderFloat("PosZ", &PosY, -8, 8);
 
 	ImGui::InputInt("Timer", &timer);
 	if (checkPos[0]) {

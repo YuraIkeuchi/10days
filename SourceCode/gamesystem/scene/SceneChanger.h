@@ -36,6 +36,7 @@ private:
 	static const int DOOR_NUM = 2;
 public:
 	const bool GetChange() { return m_Change; }
+	const bool GetChangeStart() { return m_ChangeStart; }
 	void SetChange(const bool Change) { m_Change = Change; }
 	void SetChangeStart(const bool ChangeStart) { m_ChangeStart = ChangeStart; }
 private:

@@ -1,5 +1,4 @@
 #include "TutorialEnemy.h"
-#include <random>
 #include "Player.h"
 #include "Helper.h"
 #include "CsvLoader.h"
@@ -10,6 +9,7 @@
 #include "ParticleEmitter.h"
 #include "Random.h"
 #include "ImageManager.h"
+#include "TutorialTask.h"
 #define MapMinX -10
 #define MapMaxX 10
 
@@ -36,7 +36,7 @@ bool TutorialEnemy::Initialize() {
 	gauge_down->SetAnchorPoint({ 0.5f,0.0f });
 	_charaState = StartState;
 	_EnemyType = m_EnemyType;
-
+	m_Scale = { 0.5f,0.5f,0.5f };
 	if (_EnemyType == RED_ENEMY) {
 		m_Color = { 1.0f,0.2f,0.0f,1.0f };
 		m_UpPos = { 1000.0f,200.0f };
@@ -80,6 +80,7 @@ bool TutorialEnemy::Initialize() {
 	m_BaseSpeed = static_cast<float>(std::any_cast<double>(LoadCSV::LoadCsvParam("Resources/csv/chara/enemy/enemy.csv", "speed")));
 	m_Birth = false;
 	m_AddPower = 0.2f;
+	//m_Position.y = 2.0f;
 	return true;
 }
 
@@ -93,16 +94,21 @@ void (TutorialEnemy::* TutorialEnemy::stateTable[])() = {
 
 //行動
 void TutorialEnemy::Action() {
-	if (!m_Death) {
-		(this->*stateTable[_charaState])();
+	if (m_Birth) {
+		if (!m_Death) {
+			(this->*stateTable[_charaState])();
+		}
+		else {
+			DeathMove();
+		}
 	}
 	else {
-		DeathMove();
+		BirthMove();
 	}
 	
 
 	//当たり判定
-	if (!m_Death) {
+	if (!m_Death && !TutorialTask::GetInstance()->GetStop()) {
 		SlowCollide();
 	}
 	
@@ -136,6 +142,13 @@ void TutorialEnemy::Action() {
 	if (m_EffectMove) {
 		EffectCountDown();
 	}
+
+	if (Slow::GetInstance()->GetSlow()) {
+		m_JumpPower = 0.1f;
+	}
+	else {
+		m_JumpPower = 1.0f;
+	}
 	Obj_SetParam();
 }
 //描画
@@ -163,11 +176,10 @@ void TutorialEnemy::EffectDraw(DirectXCommon* dxCommon) {
 //ImGui描画
 void TutorialEnemy::ImGui_Origin() {
 	ImGui::Begin("Enemy");
-	ImGui::Text("Damage:%d", m_Damage);
-	ImGui::Text("Death:%d", m_Death);
 	ImGui::Text("Scale.x:%f", m_Scale.x);
 	ImGui::Text("AddPower:%f", m_AddPower);
 	ImGui::Text("PosY:%f", m_Position.y);
+	ImGui::Text("Birth:%d", m_Birth);
 	ImGui::End();
 }
 //開放
@@ -197,7 +209,7 @@ void TutorialEnemy::RightMove() {
 		m_velocity = m_BaseSpeed;
 	}
 	m_AddPower -= m_Gravity;
-	if (Helper::GetInstance()->CheckMax(m_Position.y, {}, m_AddPower * Slow::GetInstance()->GetSlowPower())) {
+	if (Helper::GetInstance()->CheckMax(m_Position.y, {}, m_AddPower * m_JumpPower)) {
 		m_AddPower = 0.2f;
 	}
 	if (m_Move) {
@@ -219,7 +231,7 @@ void TutorialEnemy::LeftMove() {
 		m_velocity = -m_BaseSpeed;
 	}
 	m_AddPower -= m_Gravity;
-	if (Helper::GetInstance()->CheckMax(m_Position.y, {}, m_AddPower * Slow::GetInstance()->GetSlowPower())) {
+	if (Helper::GetInstance()->CheckMax(m_Position.y, {}, m_AddPower * m_JumpPower)) {
 		m_AddPower = 0.2f;
 	}
 	if (m_Move) {
@@ -270,31 +282,68 @@ void TutorialEnemy::SlowCollide() {
 			m_ViewEffect = true;
 		}
 		else {
-			if (m_EnemyType == RED_ENEMY) {
-				if ((input->TriggerButton(input->B))) {
+			if ((input->TriggerButton(input->B))) {		//Bボタンパターン
+				if (m_EnemyType == RED_ENEMY) {
+					Slow::GetInstance()->SetCheck(false);
 					m_Death = true;
 					int num = Random::GetRanNum(30, 40);
 					float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
 					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
-					TutoBirthEffect();
+					BirthEffect();
+					Slow::GetInstance()->SetSlow(false);
+				}
+				else {		//違ったボタンを押すとミス
+					if (m_CheckMiss) {
+						Slow::GetInstance()->SetCheck(false);
+						m_Miss = true;
+						m_HitCheck = false;
+						Player::GetInstance()->SetDamage(true);
+						Slow::GetInstance()->SetSlow(false);
+						m_ViewEffect = false;
+					}
 				}
 			}
-			else if (m_EnemyType == GREEN_ENEMY) {
-				if ((input->TriggerButton(input->A))) {
+			else if ((input->TriggerButton(input->A))) {
+				if (m_EnemyType == GREEN_ENEMY) {
+
+					Slow::GetInstance()->SetCheck(false);
 					m_Death = true;
 					int num = Random::GetRanNum(30, 40);
 					float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
 					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
-					TutoBirthEffect();
+					BirthEffect();
+					Slow::GetInstance()->SetSlow(false);
+				}
+				else {		//違ったボタンを押すとミス
+					if (m_CheckMiss) {
+						Slow::GetInstance()->SetCheck(false);
+						m_Miss = true;
+						m_HitCheck = false;
+						Player::GetInstance()->SetDamage(true);
+						Slow::GetInstance()->SetSlow(false);
+						m_ViewEffect = false;
+					}
 				}
 			}
-			else {
-				if ((input->TriggerButton(input->X))) {
+			else if ((input->TriggerButton(input->X))) {
+				if (m_EnemyType == BLUE_ENEMY) {
+					Slow::GetInstance()->SetCheck(false);
 					m_Death = true;
 					int num = Random::GetRanNum(30, 40);
 					float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
 					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
-					TutoBirthEffect();
+					BirthEffect();
+					Slow::GetInstance()->SetSlow(false);
+				}
+				else {		//違ったボタンを押すとミス
+					if (m_CheckMiss) {
+						Slow::GetInstance()->SetCheck(false);
+						m_Miss = true;
+						m_HitCheck = false;
+						Player::GetInstance()->SetDamage(true);
+						Slow::GetInstance()->SetSlow(false);
+						m_ViewEffect = false;
+					}
 				}
 			}
 		}

@@ -10,6 +10,7 @@
 #include "BackObj.h"
 #include "ScoreManager.h"
 #include "SceneChanger.h"
+#include "Random.h"
 //状態遷移
 /*stateの並び順に合わせる*/
 void (TutorialSceneActor::* TutorialSceneActor::TutorialTable[])() = {
@@ -65,6 +66,7 @@ void TutorialSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera
 	window2 = IKESprite::Create(ImageManager::TUTORIAL, {});
 	window2->SetPosition({ -20.0f, 0.0f });
 	window2->SetSize({ 300.0f, 100.0f });
+
 
 	const int TextCount = TEXT_MAX;
 	const float l_Width_Cut = 256.0f;
@@ -134,20 +136,20 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 	//スキップテキスト
 	if (nowstate_ != state::END) {
 		if (m_EndCount == 0) {
-			m_AfterPos[SKIP_Y].x = 0.0f;
+			m_AfterPos[SKIP_Y].x = 10.0f;
 			m_AfterPos[ONE_MORE].x = -256.0f;
 			m_AfterPos[GAME_Y].x = -256.0f;
 		}
 		else if (m_EndCount >= 1) {
 			m_AfterPos[SKIP_Y].x = -256.0f;
-			m_AfterPos[ONE_MORE].x = 0.0f;
+			m_AfterPos[ONE_MORE].x = 10.0f;
 			m_AfterPos[GAME_Y].x = -256.0f;
 		}
 	}
 	else {
 		m_AfterPos[SKIP_Y].x = -256.0f;
 		m_AfterPos[ONE_MORE].x = -256.0f;
-		m_AfterPos[GAME_Y].x = 0.0f;
+		m_AfterPos[GAME_Y].x = 10.0f;
 	}
 
 	m_Position[SKIP_Y].x = Ease(In, Cubic, 0.5f, m_Position[SKIP_Y].x, m_AfterPos[SKIP_Y].x);
@@ -157,7 +159,7 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 		Skip_Text[i]->SetPosition(m_Position[i]);
 	}
 	//ゲーム終了
-	if (m_EndCount == 2) {
+	if (m_EndCount == m_TargetCount) {
 		SceneChanger::GetInstance()->SetChangeStart(true);
 	}
 	if (SceneChanger::GetInstance()->GetChange()) {
@@ -190,13 +192,12 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 			}
 			m_AddScore = (ScoreManager::GetInstance()->GetMagnification() * 1);
 			BirthScoreText(1, ScoreManager::GetInstance()->GetMagnification());
-			ScoreManager::GetInstance()->SetFirstNumber(ScoreManager::GetInstance()->GetFirstNumber() + m_AddScore);
+			ScoreManager::GetInstance()->SetRealScore(ScoreManager::GetInstance()->GetRealScore() + (m_AddScore * 10));
 			m_AddScore = 0;
 			enemys[i]->SetDamage(true);
 		}
 
-		if (!enemys[i]->GetAlive())
-		{
+		if (!enemys[i]->GetAlive()) {
 			enemys.erase(cbegin(enemys) + i);
 		}
 	}
@@ -343,7 +344,9 @@ void TutorialSceneActor::FrontDraw(DirectXCommon* dxCommon) {
 void TutorialSceneActor::BackDraw(DirectXCommon* dxCommon) {
 	IKEObject3d::PreDraw();
 	BackObj::GetInstance()->Draw(dxCommon);
-	Player::GetInstance()->Draw(dxCommon);
+	if (!TutorialTask::GetInstance()->GetStop()) {
+		Player::GetInstance()->Draw(dxCommon);
+	}
 	for (auto i = 0; i < enemys.size(); i++) {
 		enemys[i]->Draw(dxCommon);
 	}
@@ -371,17 +374,7 @@ void TutorialSceneActor::FinishUpdate(DebugCamera* camera) {
 }
 
 void TutorialSceneActor::ImGuiDraw() {
-	//
-	//Slow::GetInstance()->ImGuiDraw();
-	//for (auto i = 0; i < enemys.size(); i++) {
-	//	enemys[i]->ImGuiDraw();
-	//}
-
-	//ImGui::Begin("Tuto");
-	//ImGui::Text("Timer:%d", m_TexTimer);
-	//ImGui::Text("Count:%d", m_EnemyCount);
-	//ImGui::Text("State:%d", _AttackState);
-	//ImGui::End();
+	
 }
 
 //移動
@@ -391,7 +384,7 @@ void TutorialSceneActor::MoveState() {
 		text_->SelectText(TextManager::MOVE);
 	}
 
-	if (Player::GetInstance()->GetMoveTimer() >= 300 && !m_Vanish) {
+	if (Player::GetInstance()->GetMoveTimer() >= 250 && !m_Vanish) {
 		nowstate_ = state::ATTACK;
 		text_->SelectText(TextManager::ATTACK);
 		m_TexTimer = 0;
@@ -428,6 +421,9 @@ void TutorialSceneActor::AttackState() {
 		}
 	}
 	else if (_AttackState == ENEMY_BIRTH) {
+		if (!Player::GetInstance()->GetAttack()) {
+			TutorialTask::GetInstance()->SetStop(true);
+		}
 		if (!m_Vanish) {
 			m_TexTimer++;
 		}
@@ -435,27 +431,35 @@ void TutorialSceneActor::AttackState() {
 			text_->SelectText(TextManager::ATTACK3);
 		}
 		if (m_TexTimer == 200) {
+			TutorialTask::GetInstance()->SetStop(false);
 			m_TexTimer = {};
-			_AttackState = ENEMY_DEATH;
+			_AttackState = ENEMY_NEAR;
 			TutorialTask::GetInstance()->SetMission(false);
 			text_->SelectText(TextManager::ATTACK4);
 		}
 	}
-	else if (_AttackState == ENEMY_DEATH) {
-		if (!m_Vanish) {
-			m_TexTimer++;
-		}
-		
+	else if (_AttackState == ENEMY_NEAR) {
 		if (Slow::GetInstance()->GetSlow()) {
+			TutorialTask::GetInstance()->SetStop(true);
+			m_TexTimer++;
 			Slow::GetInstance()->SetTutorial(true);
-			text_->SelectText(TextManager::ATTACK5);
+			if (m_TexTimer == 1) {
+				text_->SelectText(TextManager::ATTACK5);
+			}
+			if (m_TexTimer == 100) {
+				m_TexTimer = {};
+				text_->SelectText(TextManager::ATTACK6);
+				_AttackState = ENEMY_DEATH;
+				TutorialTask::GetInstance()->SetStop(false);
+			}
 		}
-
+	}
+	else if (_AttackState == ENEMY_DEATH) {
 		if (m_EnemyCount == 0) {	//敵を倒した瞬間
 			Slow::GetInstance()->SetTutorial(false);
 			m_TexTimer = {};
 			_AttackState = ENEMY_INTERVAL;
-			text_->SelectText(TextManager::ATTACK6);
+			text_->SelectText(TextManager::ATTACK7);
 			Slow::GetInstance()->SetSlow(false);
 		}
 	}
@@ -465,37 +469,64 @@ void TutorialSceneActor::AttackState() {
 		}
 
 		if (m_TexTimer == 150) {
-			text_->SelectText(TextManager::ATTACK7);
-		}
-		else if (m_TexTimer == 300) {
 			text_->SelectText(TextManager::ATTACK8);
 		}
-		else if (m_TexTimer == 450) {
+		else if (m_TexTimer == 300) {
 			text_->SelectText(TextManager::ATTACK9);
 		}
+		else if (m_TexTimer == 450) {
+			text_->SelectText(TextManager::ATTACK10);
+			text_->ChangeColor(0, { 1.0f,0.0f,0.0f });
+			text_->ChangeColor(1, { 0.0f,1.0f,0.0f });
+			text_->ChangeColor(2, { 0.0f,0.0f,1.0f });
+		}
 		else if (m_TexTimer == 600) {
-			text_->SelectText(TextManager::END);
+			text_->SelectText(TextManager::ATTACK11);
 		}
 		else if (m_TexTimer == 750) {
+			text_->SelectText(TextManager::ATTACK12);
+		}
+		else if (m_TexTimer == 900) {
+			text_->SelectText(TextManager::ATTACK13);
+		}
+		else if (m_TexTimer == 1050) {
+			text_->SelectText(TextManager::ATTACK14);
+		}
+		else if (m_TexTimer == 1200) {
+			text_->SelectText(TextManager::ATTACK15);
+		}
+		else if (m_TexTimer == 1350) {
+			text_->SelectText(TextManager::ATTACK16);
+		}
+		else if (m_TexTimer == 1500) {
+			text_->SelectText(TextManager::END);
+		}
+		else if (m_TexTimer == 1600) {
 			nowstate_ = state::END;
 			m_TexTimer = {};
+		}
+		if (m_EnemyCount == 0) {
+			Slow::GetInstance()->SetSlow(false);
+			m_BirthTimer++;
+			if (m_BirthTimer == 150) {
+				BirthEnemy(false, false);
+				m_BirthTimer = 0;
+			}
 		}
 	}
 }
 //終わり
 void TutorialSceneActor::EndState() {
+	m_TargetCount = 1;
 	window_size.x = Ease(In, Cubic, 0.8f, window_size.x, 0);
 	window_size.y = Ease(In, Cubic, 0.8f, window_size.y, 0);
-	Helper::GetInstance()->CheckMin(m_TexTimer, 200, 1);
-	if(m_TexTimer == 100){
-		BirthEnemy(false, true);
+	if (m_EnemyCount == 0) {
+		m_TexTimer++;
+		if (m_TexTimer >= 100) {
+			BirthEnemy(false, true);
+			m_TexTimer = {};
+		}
 	}
-
-	if (m_EnemyCount == 0 && m_TutorialEnd) {
-		m_TexTimer = {};
-		m_TutorialEnd = false;
-	}
-
 }
 //スキップの更新
 void TutorialSceneActor::SkipUpdate() {
@@ -518,12 +549,21 @@ void TutorialSceneActor::SkipUpdate() {
 void TutorialSceneActor::BirthEnemy(bool Move,bool End) {
 	if (!End) {
 		InterEnemy* newEnemy;
-		newEnemy = new TutorialEnemy();
-		newEnemy->Initialize();
-		newEnemy->SetPosition({ 0.0f,0.0f,0.0f });
+		newEnemy = new TutorialEnemy();	
+		newEnemy->SetPosition({ 0.0f,3.0f,0.0f });
 		newEnemy->SetMove(Move);
-		newEnemy->SetEnemyType(0);
+		if (_AttackState == ATTACK_EXPLAIN) {
+			newEnemy->SetEnemyType(0);
+			newEnemy->SetCheckMiss(false);
+		}
+		else {
+			int num = Random::GetRanNum(0, 2);
+			newEnemy->SetEnemyType(num);
+			newEnemy->SetCheckMiss(true);
+		}
+		newEnemy->Initialize();
 		newEnemy->SetEffectMove(false);
+		
 		enemys.push_back(newEnemy);
 		m_EnemyCount++;
 
@@ -538,17 +578,18 @@ void TutorialSceneActor::BirthEnemy(bool Move,bool End) {
 			InterEnemy* newEnemy;
 			newEnemy = new TutorialEnemy();
 			if (i == 0) {
-				newEnemy->SetPosition({ 0.0f,0.0f,0.0f });
+				newEnemy->SetPosition({ 0.0f,3.0f,0.0f });
 				newEnemy->SetEnemyType(0);
 			}else if (i == 1) {
-				newEnemy->SetPosition({ 3.0f,0.0f,0.0f });
+				newEnemy->SetPosition({ 3.0f,3.0f,0.0f });
 				newEnemy->SetEnemyType(1);
 			}else if (i == 2) {
-				newEnemy->SetPosition({ -3.0f,0.0f,0.0f });
+				newEnemy->SetPosition({ -3.0f,3.0f,0.0f });
 				newEnemy->SetEnemyType(2);
 			}
 			newEnemy->Initialize();
 			newEnemy->SetMove(Move);
+			newEnemy->SetCheckMiss(true);
 			enemys.push_back(newEnemy);
 			m_EnemyCount++;
 

@@ -38,7 +38,7 @@ void TextManager::Initialize(DirectXCommon* dxcomon)
 {
 	//ワード追加
 	//タイトル
-	CreateWord(FIRST, L"Bボタンでゲーム", L"Aボタンでチュートリアル", L"Xボタンでエディタ");
+	CreateWord(FIRST, L"Bボタンでゲーム", L"Aボタンでチュートリアル", L"");
 	//チュートリアル
 	CreateTutorialWord(INTRO, L"いきなりだが", L"この戦いについて", L"説明しよう");
 	CreateTutorialWord(MOVE, L"まずスティックを動かして", L"このステージの外周を", L"移動してみろ");
@@ -46,11 +46,18 @@ void TextManager::Initialize(DirectXCommon* dxcomon)
 	CreateTutorialWord(ATTACK2, L"Aボタンを押すと", L"対角に移動しながら", L"攻撃をすることができる");
 	CreateTutorialWord(ATTACK3, L"敵が出てきたぞ", L"しかしさっきの操作だけでは", L"敵を倒せない");
 	CreateTutorialWord(ATTACK4, L"倒し方について説明する", L"敵に狙いを定めて", L"Aボタンを押してみろ");
-	CreateTutorialWord(ATTACK5, L"敵に近づくと", L"動きが遅くなる", L"その瞬間に指定のボタンを押すと");
-	CreateTutorialWord(ATTACK6, L"敵を倒すことができる", L"敵を倒すとスコア獲得だ", L"");
-	CreateTutorialWord(ATTACK7, L"一回の攻撃で敵を多く倒すと", L"より多くのスコアがもらえる", L"つまり・・・");
-	CreateTutorialWord(ATTACK8, L"敵が並んだ瞬間に", L"攻撃を仕掛けて", L"多くのスコアを獲得するのだ");
-	CreateTutorialWord(ATTACK9, L"この後複数体の敵を出すので", L"実際に試してみると良い", L"");
+	CreateTutorialWord(ATTACK5, L"敵に近づくと", L"動きが遅くなりマークが出るだろう", L"その時にボタンを押すと敵を倒せる");
+	CreateTutorialWord(ATTACK6, L"試しにBボタンを押してみろ", L"", L"");
+	CreateTutorialWord(ATTACK7, L"そうだ", L"このように敵を倒すことができる", L"");
+	CreateTutorialWord(ATTACK8, L"敵を倒すとスコアを手に入れることができる", L"右上を見ればわかるだろう", L"");
+	CreateTutorialWord(ATTACK9, L"ちなみに敵の種類は三種類いて", L"その色に応じて押すボタンも違う", L"");
+	CreateTutorialWord(ATTACK10, L"赤だったらB", L"緑だったらA", L"青だったらXを押すのだ");
+	CreateTutorialWord(ATTACK11, L"スローになったときに出るマークで", L"見極めるのが良いだろう", L"そして・・・");
+	CreateTutorialWord(ATTACK12, L"一回の攻撃で敵を多く倒すと", L"コンボにより多くのスコアがもらえる", L"つまり・・・");
+	CreateTutorialWord(ATTACK13, L"敵が並んだ瞬間に", L"攻撃を仕掛けて", L"多くのスコアを獲得するのだ");
+	CreateTutorialWord(ATTACK14, L"ちなみにスロー中に", L"ボタンを押せなかったり", L"押すボタンを間違えると");
+	CreateTutorialWord(ATTACK15, L"コンボが途切れるので", L"気をつけるのだ", L"");
+	CreateTutorialWord(ATTACK16, L"この後複数体の敵を出すので", L"実際に試してみると良い", L"");
 	CreateTutorialWord(END, L"説明はここまでだ", L"健闘を祈る・・・", L"");
 	//コンヴァージョン初期化
 	Create(dxcomon);
