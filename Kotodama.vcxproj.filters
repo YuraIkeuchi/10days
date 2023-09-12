@@ -606,7 +606,6 @@
     <ClInclude Include="SourceCode\gamesystem\text\TextManager.h">
       <Filter>gamesystem\Text</Filter>
     </ClInclude>
-    <ClInclude Include="SourceCode\engine\enginebase\resource.h" />
     <ClInclude Include="SourceCode\gamesystem\scene\SceneSave.h">
       <Filter>gamesystem\scene\Base</Filter>
     </ClInclude>
@@ -665,6 +664,7 @@
     <ClInclude Include="SourceCode\gamesystem\effect\SlashEffect.h">
       <Filter>gamesystem\effect</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\Basic.hlsli">
@@ -899,9 +899,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Kotodama.rc" />
+    <Image Include="Resources\2d\objicon\magic.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Resources\2d\objicon\Kotodama.ico" />
+    <ResourceCompile Include="Kotodama.rc" />
   </ItemGroup>
 </Project>

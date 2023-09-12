@@ -69,7 +69,7 @@ void SceneChanger::SetChangeStart(const bool ChangeStart)
 {
 	if (m_ChangeStart == false)
 	{
-		Audio::GetInstance()->PlayWave("Resources/audio/open.wav", 0.5f);
+		Audio::GetInstance()->PlayWave("Resources/audio/open.wav", 0.3f);
 	}
 
 	m_ChangeStart = ChangeStart;

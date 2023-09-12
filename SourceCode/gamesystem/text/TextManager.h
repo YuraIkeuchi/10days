@@ -45,6 +45,11 @@ public:
 		ATTACK14,
 		ATTACK15,
 		ATTACK16,
+		KEY_MOVE,
+		KEY_ATTACK_1,
+		KEY_ATTACK_2,
+		KEY_ATTACK_3,
+		KEY_ATTACK_4,
 		END,
 	};
 

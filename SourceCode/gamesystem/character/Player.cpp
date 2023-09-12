@@ -61,7 +61,7 @@ void Player::InitState(const XMFLOAT3& pos) {
 	m_DamageTimer = {};
 	m_Slash = false;
 	m_SlashTimer = {};
-
+	m_AttackPos = { 100.0f, 0.0f, 0.0f };
 	_charaState = STATE_MOVE;
 }
 /*CharaStateのState並び順に合わせる*/

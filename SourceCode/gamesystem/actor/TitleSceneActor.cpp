@@ -48,23 +48,19 @@ void TitleSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 	if ((input->TriggerButton(input->B))) {
 		_SceneType = PLAY;
 		SceneChanger::GetInstance()->SetChangeStart(true);
+		Timer::GetInstance()->SetGameType(PAD_MODE);
 		Audio::GetInstance()->PlayWave("Resources/audio/botton.wav", 0.3f);
 	}
-	if ((input->TriggerButton(input->X))) {
-		_SceneType = EDITOR;
-		SceneChanger::GetInstance()->SetChangeStart(true);
-		SceneManager::GetInstance()->SetEditF(true);
-		Audio::GetInstance()->PlayWave("Resources/audio/botton.wav", 0.3f);
-	}
-	if ((input->TriggerButton(input->A))) {
-		_SceneType = TUTORIAL;
+	else if (input->TriggerKey(DIK_SPACE)) {
+		_SceneType = PLAY;
 		SceneChanger::GetInstance()->SetChangeStart(true);
 		Audio::GetInstance()->PlayWave("Resources/audio/botton.wav", 0.3f);
+		Timer::GetInstance()->SetGameType(KEYBOARD_MODE);
 	}
-
+	
 	if (SceneChanger::GetInstance()->GetChange()) {
 		if (_SceneType == PLAY) {
-			SceneManager::GetInstance()->ChangeScene("FIRSTSTAGE");
+			SceneManager::GetInstance()->ChangeScene("TUTORIAL");
 		}
 		else if (_SceneType == EDITOR) {
 			SceneManager::GetInstance()->ChangeScene("EDITOR");
