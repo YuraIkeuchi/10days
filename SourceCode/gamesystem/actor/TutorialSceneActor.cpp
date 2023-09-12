@@ -551,12 +551,14 @@ void TutorialSceneActor::SkipUpdate() {
 	//二回ボタンを押すとチュートリアル終了する
 	if (Timer::GetInstance()->getGameType() == PAD_MODE) {
 		if ((input->TriggerButton(input->Y))) {
+			Audio::GetInstance()->PlayWave("Resources/audio/botton.wav", 0.2f);
 			m_EndCount++;
 		}
 	}
 	else {
 		if ((input->TriggerKey(DIK_Y))) {
 			m_EndCount++;
+			Audio::GetInstance()->PlayWave("Resources/audio/botton.wav", 0.2f);
 		}
 	}
 	//一定時間立つとスキップ状態リセットされる
