@@ -464,7 +464,7 @@ void TutorialSceneActor::AttackState() {
 			if (m_TexTimer == 1) {
 				text_->SelectText(TextManager::ATTACK5);
 			}
-			if (m_TexTimer == 100) {
+			if (m_TexTimer == 200) {
 				m_TexTimer = {};
 				if (Timer::GetInstance()->getGameType() == PAD_MODE) {
 					text_->SelectText(TextManager::ATTACK6);
@@ -494,42 +494,43 @@ void TutorialSceneActor::AttackState() {
 		if (m_TexTimer == 150) {
 			text_->SelectText(TextManager::ATTACK8);
 		}
-		else if (m_TexTimer == 300) {
+		else if (m_TexTimer == 350) {
 			text_->SelectText(TextManager::ATTACK9);
 		}
-		else if (m_TexTimer == 450) {
+		else if (m_TexTimer == 550) {
 			if (Timer::GetInstance()->getGameType() == PAD_MODE) {
 				text_->SelectText(TextManager::ATTACK10);
 			}
 			else {
 				text_->SelectText(TextManager::KEY_ATTACK_4);
 			}
-			text_->ChangeColor(0, { 1.0f,0.0f,0.0f });
-			text_->ChangeColor(1, { 0.0f,1.0f,0.0f });
-			text_->ChangeColor(2, { 0.0f,0.0f,1.0f });
-		}
-		else if (m_TexTimer == 600) {
-			text_->SelectText(TextManager::ATTACK11);
+			text_->ChangeColor(0, { 1.0f,0.2f,0.0f });
+			text_->ChangeColor(1, { 0.0f,1.0f,0.2f });
+			text_->ChangeColor(2, { 0.2f,0.0f,1.0f });
 		}
 		else if (m_TexTimer == 750) {
+			text_->SelectText(TextManager::ATTACK11);
+		}
+		else if (m_TexTimer == 950) {
 			text_->SelectText(TextManager::ATTACK12);
 		}
-		else if (m_TexTimer == 900) {
+		else if (m_TexTimer == 1150) {
 			text_->SelectText(TextManager::ATTACK13);
-		}
-		else if (m_TexTimer == 1050) {
-			text_->SelectText(TextManager::ATTACK14);
-		}
-		else if (m_TexTimer == 1200) {
-			text_->SelectText(TextManager::ATTACK15);
+			text_->ChangeColor(0, { 1.0f,0.2f,0.0f });
 		}
 		else if (m_TexTimer == 1350) {
+			text_->SelectText(TextManager::ATTACK14);
+		}
+		else if (m_TexTimer == 1550) {
+			text_->SelectText(TextManager::ATTACK15);
+		}
+		else if (m_TexTimer == 1750) {
 			text_->SelectText(TextManager::ATTACK16);
 		}
-		else if (m_TexTimer == 1500) {
+		else if (m_TexTimer == 1950) {
 			text_->SelectText(TextManager::END);
 		}
-		else if (m_TexTimer == 1600) {
+		else if (m_TexTimer == 2150) {
 			nowstate_ = state::END;
 			m_TexTimer = {};
 		}
