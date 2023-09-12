@@ -283,6 +283,7 @@ void TutorialEnemy::SlowCollide() {
 			Slow::GetInstance()->SetSlowTimer(60);
 			m_Slow = true;
 			m_ViewEffect = true;
+			Audio::GetInstance()->PlayWave("Resources/audio/attack.wav", 0.1f);
 		}
 		else {
 			if (Timer::GetInstance()->getGameType() == PAD_MODE) {

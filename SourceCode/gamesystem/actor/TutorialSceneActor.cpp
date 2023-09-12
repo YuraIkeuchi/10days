@@ -66,7 +66,12 @@ void TutorialSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera
 
 	for (int i = 0; i < Skip_Text.size(); i++) {
 		//ひとけた目
-		Skip_Text[i] = IKESprite::Create(ImageManager::SKIP, { 0.0f,0.0f });
+		if (Timer::GetInstance()->getGameType() == PAD_MODE) {
+			Skip_Text[i] = IKESprite::Create(ImageManager::SKIP, { 0.0f,0.0f });
+		}
+		else {
+			Skip_Text[i] = IKESprite::Create(ImageManager::SKIP_KEY, { 0.0f,0.0f });
+		}
 		int number_index_y = i / TextCount;
 		int number_index_x = i % TextCount;
 		Skip_Text[i]->SetTextureRect(
@@ -555,7 +560,7 @@ void TutorialSceneActor::SkipUpdate() {
 		}
 	}
 	else {
-		if ((input->TriggerKey(DIK_Y))) {
+		if ((input->TriggerKey(DIK_R))) {
 			m_EndCount++;
 		}
 	}
