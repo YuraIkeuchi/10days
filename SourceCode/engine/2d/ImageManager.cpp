@@ -25,6 +25,7 @@ void ImageManager::StartLoad2D()
 	IKESprite::LoadTexture(CUTGAGE_DOWN, L"Resources/2d/effect/gaugebot.png");
 	IKESprite::LoadTexture(TITLE, L"Resources/2d/sceneback/Title.png");
 	IKESprite::LoadTexture(SKIP, L"Resources/2d/sceneback/Skip.png");
+	IKESprite::LoadTexture(SKIP_KEY, L"Resources/2d/sceneback/SkipKey.png");
 	IKESprite::LoadTexture(MISS, L"Resources/2d/effect/Miss.png");
 	IKESprite::LoadTexture(NEXTHYOUKA, L"Resources/2d/sceneback/Nexthyouka.png");
 	IKESprite::LoadTexture(HYOUKA, L"Resources/2d/sceneback/hyouka.png");

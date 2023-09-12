@@ -114,10 +114,12 @@ void ClearSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 			{ static_cast<float>(number_index_x) * l_NextWidth_Cut, static_cast<float>(number_index_y) * l_NextHeight_Cut },
 			{ static_cast<float>(l_NextWidth_Cut), static_cast<float>(l_NextHeight_Cut) });
 		Next_Hyouka[i]->SetAnchorPoint({ 0.0f,0.5f });
-		Next_Hyouka[i]->SetPosition({ 100.0f,500.0f });
 		Next_Hyouka[i]->SetSize({ l_NextWidth_Cut,l_NextHeight_Cut });
-		Next_Hyouka[i]->SetScale(0.5f);
 	}
+	Next_Hyouka[0]->SetPosition({ 100.0f,500.0f });
+	Next_Hyouka[1]->SetPosition({ 110.0f,500.0f });
+	Next_Hyouka[0]->SetScale(0.5f);
+	Next_Hyouka[1]->SetScale(0.8f);
 
 	//•]‰¿
 	const int HyoukaCount = HYOUKA_MAX;
@@ -185,9 +187,17 @@ void ClearSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 //XV
 void ClearSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, LightGroup* lightgroup) {
 	Input* input = Input::GetInstance();
-	if ((input->TriggerButton(input->B))) {
-		SceneChanger::GetInstance()->SetChangeStart(true);
-		Audio::GetInstance()->PlayWave("Resources/audio/botton.wav", 0.3f);
+	if (Timer::GetInstance()->getGameType() == PAD_MODE) {
+		if ((input->TriggerButton(input->B))) {
+			SceneChanger::GetInstance()->SetChangeStart(true);
+			Audio::GetInstance()->PlayWave("Resources/audio/botton.wav", 0.3f);
+		}
+	}
+	else {
+		if ((input->TriggerKey(DIK_SPACE))) {
+			SceneChanger::GetInstance()->SetChangeStart(true);
+			Audio::GetInstance()->PlayWave("Resources/audio/botton.wav", 0.3f);
+		}
 	}
 	if (SceneChanger::GetInstance()->GetChange()) {
 		SceneManager::GetInstance()->ChangeScene("TITLE");

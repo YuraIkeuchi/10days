@@ -35,6 +35,7 @@ public:
 		CUTGAGE_DOWN,
 		TITLE,
 		SKIP,
+		SKIP_KEY,
 		MISS,
 		NEXTHYOUKA,
 		HYOUKA,
