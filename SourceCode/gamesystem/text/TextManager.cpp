@@ -58,6 +58,11 @@ void TextManager::Initialize(DirectXCommon* dxcomon)
 	CreateTutorialWord(ATTACK14, L"ちなみにスロー中に", L"ボタンを押せなかったり", L"押すボタンを間違えると");
 	CreateTutorialWord(ATTACK15, L"コンボが途切れるので", L"気をつけるのだ", L"");
 	CreateTutorialWord(ATTACK16, L"この後複数体の敵を出すので", L"実際に試してみると良い", L"");
+	CreateTutorialWord(KEY_MOVE, L"まずWASDを押して", L"このステージの外周を", L"移動してみろ");
+	CreateTutorialWord(KEY_ATTACK_1, L"SPACEを押すと", L"対角に移動しながら", L"攻撃をすることができる");
+	CreateTutorialWord(KEY_ATTACK_2, L"倒し方について説明する", L"敵に狙いを定めて", L"SPACEを押してみろ");
+	CreateTutorialWord(KEY_ATTACK_3, L"試しにDキーを押してみろ", L"", L"");
+	CreateTutorialWord(KEY_ATTACK_4, L"赤だったらDキー", L"緑だったらSキー", L"青だったらAキーを押すのだ");
 	CreateTutorialWord(END, L"説明はここまでだ", L"健闘を祈る・・・", L"");
 	//コンヴァージョン初期化
 	Create(dxcomon);

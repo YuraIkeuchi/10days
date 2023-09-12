@@ -14,12 +14,14 @@ void Slow::LoadCSV() {
 }
 //初期化
 void Slow::Initialize() {
+	m_Check = false;
 	m_Slow = false;//ヒットストップ
 	m_SlowTimer = 0;//ヒットストップの時間
 
 	m_SlowPower = 1.0f;
 	m_PlayerSlowPower = 1.0f;
 	m_Tutorial = false;
+	m_MovePower = 1.0f;
 }
 //更新
 void Slow::Update() {

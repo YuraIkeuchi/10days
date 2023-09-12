@@ -2,7 +2,11 @@
 #include "IKESprite.h"
 #include <array>
 #include <memory>
-
+enum GameType {
+	NO_MODE,
+	PAD_MODE,
+	KEYBOARD_MODE,
+};
 using namespace std;
 //タイマークラス
 class Timer {
@@ -23,8 +27,11 @@ public:
 	const bool GetEnd() { return m_End; }
 	const bool GetStop() { return m_Stop; }
 	const int getNowTime() { return m_GameTimer; }
+	const int getGameType() { return m_GameType; }
+
+	void SetGameType(const int GameType) { m_GameType = GameType; }
 private:
-	int m_GameTimer = 1800;
+	int m_GameTimer = 5400;
 	int m_SlowTimer = {};
 	bool m_End = false;
 	bool m_Stop = false;
@@ -35,4 +42,5 @@ private:
 private://メンバ変数
 	array<unique_ptr<IKESprite>, NUMBER_MAX> Time_First;
 	array<unique_ptr<IKESprite>, NUMBER_MAX> Time_Second;
+	int m_GameType = NO_MODE;
 };

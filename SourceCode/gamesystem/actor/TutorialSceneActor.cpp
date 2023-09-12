@@ -373,7 +373,12 @@ void TutorialSceneActor::ImGuiDraw() {
 void TutorialSceneActor::MoveState() {
 	m_TexTimer++;
 	if (m_TexTimer == 200) {
-		text_->SelectText(TextManager::MOVE);
+		if (Timer::GetInstance()->getGameType() == PAD_MODE) {
+			text_->SelectText(TextManager::MOVE);
+		}
+		else {
+			text_->SelectText(TextManager::KEY_MOVE);
+		}
 	}
 
 	if (Player::GetInstance()->GetMoveTimer() >= 250 && !m_Vanish) {
@@ -396,7 +401,12 @@ void TutorialSceneActor::AttackState() {
 		if (m_TexTimer == 100) {
 			m_TexTimer = {};
 			_AttackState = ATTACK_EXPLAIN;
-			text_->SelectText(TextManager::ATTACK2);//Aで攻撃ができるぞ
+			if (Timer::GetInstance()->getGameType() == PAD_MODE) {
+				text_->SelectText(TextManager::ATTACK2);//Aで攻撃ができるぞ
+			}
+			else {
+				text_->SelectText(TextManager::KEY_ATTACK_1);//SPACEで攻撃ができるぞ
+			}
 			TutorialTask::GetInstance()->SetStop(false);
 		}
 	}
@@ -427,7 +437,12 @@ void TutorialSceneActor::AttackState() {
 			m_TexTimer = {};
 			_AttackState = ENEMY_NEAR;
 			TutorialTask::GetInstance()->SetMission(false);
-			text_->SelectText(TextManager::ATTACK4);
+			if (Timer::GetInstance()->getGameType() == PAD_MODE) {
+				text_->SelectText(TextManager::ATTACK4);
+			}
+			else {
+				text_->SelectText(TextManager::KEY_ATTACK_2);
+			}
 		}
 	}
 	else if (_AttackState == ENEMY_NEAR) {
@@ -440,7 +455,12 @@ void TutorialSceneActor::AttackState() {
 			}
 			if (m_TexTimer == 100) {
 				m_TexTimer = {};
-				text_->SelectText(TextManager::ATTACK6);
+				if (Timer::GetInstance()->getGameType() == PAD_MODE) {
+					text_->SelectText(TextManager::ATTACK6);
+				}
+				else {
+					text_->SelectText(TextManager::KEY_ATTACK_3);
+				}
 				_AttackState = ENEMY_DEATH;
 				TutorialTask::GetInstance()->SetStop(false);
 			}
@@ -467,7 +487,12 @@ void TutorialSceneActor::AttackState() {
 			text_->SelectText(TextManager::ATTACK9);
 		}
 		else if (m_TexTimer == 450) {
-			text_->SelectText(TextManager::ATTACK10);
+			if (Timer::GetInstance()->getGameType() == PAD_MODE) {
+				text_->SelectText(TextManager::ATTACK10);
+			}
+			else {
+				text_->SelectText(TextManager::KEY_ATTACK_4);
+			}
 			text_->ChangeColor(0, { 1.0f,0.0f,0.0f });
 			text_->ChangeColor(1, { 0.0f,1.0f,0.0f });
 			text_->ChangeColor(2, { 0.0f,0.0f,1.0f });
