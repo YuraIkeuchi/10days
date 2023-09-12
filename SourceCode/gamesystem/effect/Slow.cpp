@@ -28,7 +28,7 @@ void Slow::Update() {
 	if (m_Slow) {
 		if (m_SlowTimer == 0)
 		{
-			Audio::GetInstance()->PlayWave("Resources/audio/result.wav", 0.1f);
+			Audio::GetInstance()->PlayWave("Resources/audio/attack.wav", 0.1f);
 		}
 		if (!m_Tutorial) {
 			m_SlowPower = 0.1f;
