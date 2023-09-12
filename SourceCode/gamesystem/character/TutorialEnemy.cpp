@@ -10,6 +10,7 @@
 #include "Random.h"
 #include "ImageManager.h"
 #include "TutorialTask.h"
+#include "Timer.h"
 #define MapMinX -10
 #define MapMaxX 10
 
@@ -25,7 +26,6 @@ bool TutorialEnemy::Initialize() {
 
 	m_Object.reset(new IKEObject3d());
 	m_Object->Initialize();
-	m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::ENEMY));
 	effect_up = IKESprite::Create(ImageManager::CUT_UP, {});
 	effect_up->SetAnchorPoint({ 0.5f,1.0f });
 	effect_down = IKESprite::Create(ImageManager::CUT_DOWN, {});
@@ -38,19 +38,22 @@ bool TutorialEnemy::Initialize() {
 	_EnemyType = m_EnemyType;
 	m_Scale = { 0.5f,0.5f,0.5f };
 	if (_EnemyType == RED_ENEMY) {
-		m_Color = { 1.0f,0.2f,0.0f,1.0f };
 		m_UpPos = { 1000.0f,200.0f };
 		m_DownPos = { 1000.0f,195.0f };
+		m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::ENEMYRED));
+		m_Color = { 1.0f,0.2f,0.0f,1.0f };
 	}
 	else if (_EnemyType == GREEN_ENEMY) {
-		m_Color = { 0.0f,1.0f,0.2f,1.0f };
 		m_UpPos = { 800.0f,280.0f };
 		m_DownPos = { 800.0f,275.0f };
+		m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::ENEMYGREEN));
+		m_Color = { 0.0f,1.0f,0.2f,1.0f };
 	}
 	else {
-		m_Color = { 0.2f,0.0f,1.0f,1.0f };
+		m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::ENEMYBLUE));
 		m_UpPos = { 800.0f,360.0f };
 		m_DownPos = { 800.0f,355.0f };
+		m_Color = { 0.2f,0.0f,1.0f,1.0f };
 	}
 
 	if (_charaState == STATE_RIGHT) {
@@ -282,73 +285,55 @@ void TutorialEnemy::SlowCollide() {
 			m_ViewEffect = true;
 		}
 		else {
-			if ((input->TriggerButton(input->B))) {		//Bボタンパターン
-				if (m_EnemyType == RED_ENEMY) {
-					Slow::GetInstance()->SetCheck(false);
-					m_Death = true;
-					int num = Random::GetRanNum(30, 40);
-					float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
-					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
-					BirthEffect();
-					Slow::GetInstance()->SetSlow(false);
-					Player::GetInstance()->SetSlash(true);
-					Player::GetInstance()->SetSlashTimer(0);
+			if (Timer::GetInstance()->getGameType() == PAD_MODE) {
+				if ((input->TriggerButton(input->B))) {		//Bボタンパターン
+					if (m_EnemyType == RED_ENEMY) {
+						TutoSuccessAttack();
+					}
+					else {		//違ったボタンを押すとミス
+						TutoMissAttack();
+					}
 				}
-				else {		//違ったボタンを押すとミス
-					if (m_CheckMiss) {
-						Slow::GetInstance()->SetCheck(false);
-						m_Miss = true;
-						m_HitCheck = false;
-						Player::GetInstance()->SetDamage(true);
-						Slow::GetInstance()->SetSlow(false);
-						m_ViewEffect = false;
+				else if ((input->TriggerButton(input->A))) {
+					if (m_EnemyType == GREEN_ENEMY) {
+						TutoSuccessAttack();
+					}
+					else {		//違ったボタンを押すとミス
+						TutoMissAttack();
+					}
+				}
+				else if ((input->TriggerButton(input->X))) {
+					if (m_EnemyType == BLUE_ENEMY) {
+						TutoSuccessAttack();
+					}
+					else {		//違ったボタンを押すとミス
+						TutoMissAttack();
 					}
 				}
 			}
-			else if ((input->TriggerButton(input->A))) {
-				if (m_EnemyType == GREEN_ENEMY) {
-
-					Slow::GetInstance()->SetCheck(false);
-					m_Death = true;
-					int num = Random::GetRanNum(30, 40);
-					float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
-					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
-					BirthEffect();
-					Slow::GetInstance()->SetSlow(false);
-					Player::GetInstance()->SetSlash(true);
-					Player::GetInstance()->SetSlashTimer(0);
-				}
-				else {		//違ったボタンを押すとミス
-					if (m_CheckMiss) {
-						Slow::GetInstance()->SetCheck(false);
-						m_Miss = true;
-						m_HitCheck = false;
-						Player::GetInstance()->SetDamage(true);
-						Slow::GetInstance()->SetSlow(false);
-						m_ViewEffect = false;
+			else {
+				if ((input->TriggerKey(DIK_D))) {		//Ｄキーパターン
+					if (m_EnemyType == RED_ENEMY) {
+						TutoSuccessAttack();
+					}
+					else {		//違ったボタンを押すとミス
+						TutoMissAttack();
 					}
 				}
-			}
-			else if ((input->TriggerButton(input->X))) {
-				if (m_EnemyType == BLUE_ENEMY) {
-					Slow::GetInstance()->SetCheck(false);
-					m_Death = true;
-					int num = Random::GetRanNum(30, 40);
-					float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
-					ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
-					BirthEffect();
-					Slow::GetInstance()->SetSlow(false);
-					Player::GetInstance()->SetSlash(true);
-					Player::GetInstance()->SetSlashTimer(0);
+				else if ((input->TriggerKey(DIK_S))) {
+					if (m_EnemyType == GREEN_ENEMY) {
+						TutoSuccessAttack();
+					}
+					else {		//違ったボタンを押すとミス
+						TutoMissAttack();
+					}
 				}
-				else {		//違ったボタンを押すとミス
-					if (m_CheckMiss) {
-						Slow::GetInstance()->SetCheck(false);
-						m_Miss = true;
-						m_HitCheck = false;
-						Player::GetInstance()->SetDamage(true);
-						Slow::GetInstance()->SetSlow(false);
-						m_ViewEffect = false;
+				else if ((input->TriggerKey(DIK_A))) {
+					if (m_EnemyType == BLUE_ENEMY) {
+						TutoSuccessAttack();
+					}
+					else {		//違ったボタンを押すとミス
+						TutoMissAttack();
 					}
 				}
 			}
@@ -366,4 +351,27 @@ void TutorialEnemy::TutoBirthEffect() {
 	effect = new SlashEffect(m_Position);
 	effect->Initialize();
 	slash.push_back(effect);
+}
+//攻撃成功
+void TutorialEnemy::TutoSuccessAttack() {
+	Slow::GetInstance()->SetCheck(false);
+	m_Death = true;
+	int num = Random::GetRanNum(30, 40);
+	float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
+	ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
+	BirthEffect();
+	Slow::GetInstance()->SetSlow(false);
+	Player::GetInstance()->SetSlash(true);
+	Player::GetInstance()->SetSlashTimer(0);
+}
+//攻撃失敗
+void TutorialEnemy::TutoMissAttack() {
+	if (m_CheckMiss) {
+		Slow::GetInstance()->SetCheck(false);
+		m_Miss = true;
+		m_HitCheck = false;
+		Player::GetInstance()->SetDamage(true);
+		Slow::GetInstance()->SetSlow(false);
+		m_ViewEffect = false;
+	}
 }

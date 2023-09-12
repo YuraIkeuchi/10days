@@ -15,6 +15,8 @@ public:
 private:
 	void SlowCollide();
 	void TutoBirthEffect();
+	void TutoSuccessAttack();
+	void TutoMissAttack();
 private:
 
 	//ŠÖ”ƒ|ƒCƒ“ƒ^

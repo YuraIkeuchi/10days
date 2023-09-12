@@ -38,6 +38,8 @@ void TitleSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 	window->SetAnchorPoint({ 0.5f,0.5f });
 	window->SetPosition({ WinApp::window_width / 2.f,WinApp::window_height - 100 });
 	window->SetSize({ 1300.0f, 220.0f });
+
+	Timer::GetInstance()->SetGameType(NO_MODE);
 }
 //更新
 void TitleSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, LightGroup* lightgroup) {
@@ -60,12 +62,6 @@ void TitleSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 
 	if (SceneChanger::GetInstance()->GetChange()) {
 		if (_SceneType == PLAY) {
-			SceneManager::GetInstance()->ChangeScene("TUTORIAL");
-		}
-		else if (_SceneType == EDITOR) {
-			SceneManager::GetInstance()->ChangeScene("EDITOR");
-		}
-		else {
 			SceneManager::GetInstance()->ChangeScene("TUTORIAL");
 		}
 		SceneChanger::GetInstance()->SetChange(false);
@@ -100,11 +96,11 @@ void TitleSceneActor::Draw(DirectXCommon* dxCommon) {
 //前面描画
 void TitleSceneActor::FrontDraw(DirectXCommon* dxCommon) {
 	IKESprite::PreDraw();
-	window->Draw();
+	//window->Draw();
 	IKESprite::PostDraw();
 	//完全に前に書くスプライト
 	IKESprite::PreDraw();
-	text_->SpriteDraw(dxCommon);
+	//text_->SpriteDraw(dxCommon);
 	IKESprite::PostDraw();
 	IKESprite::PreDraw();
 	title->Draw();

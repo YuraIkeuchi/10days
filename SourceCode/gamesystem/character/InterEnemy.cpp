@@ -84,73 +84,56 @@ void InterEnemy::AttackCollide() {
 	const float l_DamageRadius = 0.5f;
 	Input* input = Input::GetInstance();
 	if (m_Slow) {
-		if ((input->TriggerButton(input->B))) {		//Bボタンパターン
-			if (m_EnemyType == RED_ENEMY) {
-				Slow::GetInstance()->SetCheck(false);
-				m_Death = true;
-				int num = Random::GetRanNum(30, 40);
-				float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
-				ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
-				BirthEffect();
-				Slow::GetInstance()->SetSlow(false);
-				Audio::GetInstance()->PlayWave("Resources/audio/kill.wav", 0.1f);
-				Player::GetInstance()->SetSlash(true);
-				Player::GetInstance()->SetSlashTimer(0);
+		if (Timer::GetInstance()->getGameType() == PAD_MODE) {			//ゲームパッド
+			if ((input->TriggerButton(input->B))) {		//Bボタンパターン
+				if (m_EnemyType == RED_ENEMY) {
+					SuccessAttack();
+				}
+				else {		//違ったボタンを押すとミス
+					MissAttack();
+				}
 			}
-			else {		//違ったボタンを押すとミス
-				Slow::GetInstance()->SetCheck(false);
-				m_Miss = true;
-				m_HitCheck = false;
-				Player::GetInstance()->SetDamage(true);
-				Slow::GetInstance()->SetSlow(false);
-				m_ViewEffect = false;
-				Audio::GetInstance()->PlayWave("Resources/audio/miss.wav", 0.1f);
+			else if ((input->TriggerButton(input->A))) {
+				if (m_EnemyType == GREEN_ENEMY) {
+					SuccessAttack();
+				}
+				else {		//違ったボタンを押すとミス
+					MissAttack();
+				}
 			}
-		}
-		else if ((input->TriggerButton(input->A))) {
-			if (m_EnemyType == GREEN_ENEMY) {
-				Slow::GetInstance()->SetCheck(false);
-				m_Death = true;
-				int num = Random::GetRanNum(30, 40);
-				float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
-				ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
-				Audio::GetInstance()->PlayWave("Resources/audio/kill.wav", 0.1f);
-				BirthEffect();
-				Slow::GetInstance()->SetSlow(false);
-				Player::GetInstance()->SetSlash(true);
-				Player::GetInstance()->SetSlashTimer(0);
-			}
-			else {		//違ったボタンを押すとミス
-				Slow::GetInstance()->SetCheck(false);
-				m_Miss = true;
-				m_HitCheck = false;
-				Player::GetInstance()->SetDamage(true);
-				Slow::GetInstance()->SetSlow(false);
-				m_ViewEffect = false;
-				Audio::GetInstance()->PlayWave("Resources/audio/miss.wav", 0.1f);
+			else if ((input->TriggerButton(input->X))) {
+				if (m_EnemyType == BLUE_ENEMY) {
+					SuccessAttack();
+				}
+				else {		//違ったボタンを押すとミス
+					MissAttack();
+				}
 			}
 		}
-		else if ((input->TriggerButton(input->X))) {
-			if (m_EnemyType == BLUE_ENEMY) {
-				Slow::GetInstance()->SetCheck(false);
-				m_Death = true;
-				int num = Random::GetRanNum(30, 40);
-				float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
-				ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
-				Audio::GetInstance()->PlayWave("Resources/audio/kill.wav", 0.1f);
-				BirthEffect();
-				Slow::GetInstance()->SetSlow(false);
-				Player::GetInstance()->SetSlash(true);
-				Player::GetInstance()->SetSlashTimer(0);
+		else {			//キーボード
+			if ((input->TriggerKey(DIK_D))) {		//Dキーパターン
+				if (m_EnemyType == RED_ENEMY) {
+					SuccessAttack();
+				}
+				else {		//違ったボタンを押すとミス
+					MissAttack();
+				}
 			}
-			else {		//違ったボタンを押すとミス
-				Slow::GetInstance()->SetCheck(false);
-				m_Miss = true;
-				m_HitCheck = false;
-				Player::GetInstance()->SetDamage(true);
-				Slow::GetInstance()->SetSlow(false);
-				m_ViewEffect = false;
-				Audio::GetInstance()->PlayWave("Resources/audio/miss.wav", 0.1f);
+			else if ((input->TriggerKey(DIK_S))) {
+				if (m_EnemyType == GREEN_ENEMY) {
+					SuccessAttack();
+				}
+				else {		//違ったボタンを押すとミス
+					MissAttack();
+				}
+			}
+			else if ((input->TriggerKey(DIK_A))) {
+				if (m_EnemyType == BLUE_ENEMY) {
+					SuccessAttack();
+				}
+				else {		//違ったボタンを押すとミス
+					MissAttack();
+				}
 			}
 		}
 		if (Collision::CircleCollision(m_Position.x, m_Position.z, l_DamageRadius, Player::GetInstance()->GetPosition().x, Player::GetInstance()->GetPosition().z, l_DamageRadius)
@@ -242,5 +225,27 @@ void InterEnemy::DeathMove() {
 	m_UpPos.x = Ease(In, Cubic, m_Frame, m_UpPos.x, 600.0f);
 	m_DownPos.x = Ease(In, Cubic, m_Frame, m_DownPos.x, 1000.0f);
 	m_Alpha = Ease(In, Cubic, m_Frame, m_Alpha, 0.0f);
-
+}
+//攻撃成功
+void InterEnemy::SuccessAttack() {
+	Slow::GetInstance()->SetCheck(false);
+	m_Death = true;
+	int num = Random::GetRanNum(30, 40);
+	float size = static_cast<float>(Random::GetRanNum(5, 15)) / 50;
+	ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
+	BirthEffect();
+	Slow::GetInstance()->SetSlow(false);
+	Audio::GetInstance()->PlayWave("Resources/audio/kill.wav", 0.1f);
+	Player::GetInstance()->SetSlash(true);
+	Player::GetInstance()->SetSlashTimer(0);
+}
+//攻撃失敗
+void InterEnemy::MissAttack() {
+	Slow::GetInstance()->SetCheck(false);
+	m_Miss = true;
+	m_HitCheck = false;
+	Player::GetInstance()->SetDamage(true);
+	Slow::GetInstance()->SetSlow(false);
+	m_ViewEffect = false;
+	Audio::GetInstance()->PlayWave("Resources/audio/miss.wav", 0.1f);
 }

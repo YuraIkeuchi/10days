@@ -8,6 +8,7 @@
 #include "ParticleEmitter.h"
 #include "TutorialTask.h"
 #include "ScoreManager.h"
+#include "Timer.h"
 Player* Player::GetInstance()
 {
 	static Player instance;
@@ -125,6 +126,78 @@ void Player::ImGuiDraw() {
 
 //移動
 void Player::Move() {
+	if (Timer::GetInstance()->getGameType() == PAD_MODE) {
+		PadMove();
+	}
+	else {
+		KeyMove();
+	}
+}
+//攻撃
+void Player::Attack() {
+	const float l_AddFrame = 0.0125f;
+	m_AddFrame = l_AddFrame;
+	if (!Slow::GetInstance()->GetSlow()) {
+		if (Helper::GetInstance()->FrameCheck(m_Frame, m_AddFrame)) {
+			m_Frame = {};
+			_charaState = STATE_MOVE;
+			m_Attack = false;
+			ScoreManager::GetInstance()->SetMagnification(0);
+		}
+	}
+	
+	if (_MoveState == MOVE_UP || _MoveState == MOVE_DOWN) {
+		m_Position.z = Ease(In, Cubic, m_Frame * Slow::GetInstance()->GetPlayerSlowPower(), m_Position.z, m_AfterPosZ);
+		float oldZ = m_Position.z;
+		m_playerVec = {0, 0, m_Position.z - oldZ};
+		ParticleEmitter::GetInstance()->DashEffect(10, 1, m_Position, {}, 0.5f, 1.0f, { 1, 1, 1, 0.5f });
+	}
+	else {
+		ParticleEmitter::GetInstance()->DashEffect(10, 1, m_Position, {}, 0.5f, 1.0f, { 1, 1, 1, 0.5f });
+		float oldX = m_Position.x;
+		m_Position.x = Ease(In, Cubic, m_Frame * Slow::GetInstance()->GetPlayerSlowPower(), m_Position.x, m_AfterPosX);
+		m_playerVec = { m_Position.x - oldX, 0, 0 };
+	}
+
+	if (_MoveState == MOVE_UP) {
+		m_AttackPos = { m_Position.x,m_Position.y,m_Position.z + 1.0f };
+		m_Rotation.y = 270.0f;
+	}
+	else if (_MoveState == MOVE_DOWN) {
+		m_AttackPos = { m_Position.x,m_Position.y,m_Position.z - 1.0f };
+		m_Rotation.y = 90.0f;
+	}
+	else if (_MoveState == MOVE_RIGHT) {
+		m_AttackPos = { m_Position.x + 1.0f,m_Position.y,m_Position.z };
+		m_Rotation.y = 0.0f;
+	}
+	else {
+		m_AttackPos = { m_Position.x - 1.0f,m_Position.y,m_Position.z };
+		m_Rotation.y = 180.0f;
+	}
+
+	if (m_Frame > 0.9f) {
+		m_CameraZoom = false;
+	}
+	
+}
+//チュートリアルの更新
+void Player::TutorialUpdate() {
+	//状態移行(charastateに合わせる)
+	(this->*stateTable[_charaState])();
+
+	Obj_SetParam();
+
+	if (m_Damage) {
+		m_DamageTimer++;
+		if (m_DamageTimer >= 10) {
+			m_Damage = false;
+			m_DamageTimer = {};
+		}
+	}
+}
+
+void Player::PadMove() {
 	Input* input = Input::GetInstance();
 	float StickX = input->GetLeftControllerX();
 	float StickY = input->GetLeftControllerY();
@@ -221,69 +294,103 @@ void Player::Move() {
 			}
 		}
 	}
-
-	//Helper::GetInstance()->Clamp(m_Position.x, -9.5f, 9.5f);
 }
-//攻撃
-void Player::Attack() {
-	const float l_AddFrame = 0.0125f;
-	m_AddFrame = l_AddFrame;
-	if (!Slow::GetInstance()->GetSlow()) {
-		if (Helper::GetInstance()->FrameCheck(m_Frame, m_AddFrame)) {
-			m_Frame = {};
-			_charaState = STATE_MOVE;
-			m_Attack = false;
-			ScoreManager::GetInstance()->SetMagnification(0);
+
+void Player::KeyMove() {
+	Input* input = Input::GetInstance();
+	float StickX = input->GetLeftControllerX();
+	float StickY = input->GetLeftControllerY();
+	const float STICK_MAX = 32768.0f;
+
+	if (input->Pushkey(DIK_W) ||
+		input->Pushkey(DIK_S) ||
+		input->Pushkey(DIK_D) ||
+		input->Pushkey(DIK_A))
+	{
+		ParticleEmitter::GetInstance()->DashEffect(10, 1, m_Position, {}, 0.5f, 1.0f, { 1, 1, 1, 0.5f });
+
+		//右入力
+		if (_MoveState == MOVE_UP || _MoveState == MOVE_DOWN) {
+			//右入力
+			if (input->Pushkey(DIK_D) && (m_Position.x < 9.5f)) {
+				m_AddSpeed = m_BaseSpeed;
+				m_MoveTimer++;
+				m_Rotation.y = 0.0f;
+			}
+			//左入力
+			else if (input->Pushkey(DIK_A) && (m_Position.x > -9.5f)) {
+				m_AddSpeed = -m_BaseSpeed;
+				m_MoveTimer++;
+				m_Rotation.y = 180.0f;
+			}
+			//入力なし
+			else {
+				m_AddSpeed = {};
+			}
+
+			if (Helper::GetInstance()->CheckMax(m_Position.x, -9.5f, m_AddSpeed)) {
+				m_ChangeLine = true;
+				_MoveState = MOVE_LEFT;
+			}
+			else if (Helper::GetInstance()->CheckMin(m_Position.x, 9.5f, m_AddSpeed)) {
+				m_ChangeLine = true;
+				_MoveState = MOVE_RIGHT;
+			}
+		}
+		else {
+			//上入力
+			if (input->Pushkey(DIK_W) && (m_Position.z < 8.0f)) {
+				m_AddSpeed = m_BaseSpeed;
+				m_MoveTimer++;
+				m_Rotation.y = 270.0f;
+			}
+			//下入力
+			else if (input->Pushkey(DIK_S) && (m_Position.z > -8.0f)) {
+				m_AddSpeed = -m_BaseSpeed;
+				m_MoveTimer++;
+				m_Rotation.y = 90.0f;
+			}
+			//入力なし
+			else {
+				m_AddSpeed = {};
+			}
+
+			//チュートリアルのタスクのときだけ移動できない
+			if (!TutorialTask::GetInstance()->GetMission()) {
+				if (Helper::GetInstance()->CheckMax(m_Position.z, -8.0f, m_AddSpeed)) {
+					m_ChangeLine = true;
+					_MoveState = MOVE_DOWN;
+				}
+				else if (Helper::GetInstance()->CheckMin(m_Position.z, 8.0f, m_AddSpeed)) {
+					m_ChangeLine = true;
+					_MoveState = MOVE_UP;
+				}
+			}
 		}
 	}
-	
-	if (_MoveState == MOVE_UP || _MoveState == MOVE_DOWN) {
-		m_Position.z = Ease(In, Cubic, m_Frame * Slow::GetInstance()->GetPlayerSlowPower(), m_Position.z, m_AfterPosZ);
-		float oldZ = m_Position.z;
-		m_playerVec = {0, 0, m_Position.z - oldZ};
-		ParticleEmitter::GetInstance()->DashEffect(10, 1, m_Position, {}, 0.5f, 1.0f, { 1, 1, 1, 0.5f });
-	}
-	else {
-		ParticleEmitter::GetInstance()->DashEffect(10, 1, m_Position, {}, 0.5f, 1.0f, { 1, 1, 1, 0.5f });
-		float oldX = m_Position.x;
-		m_Position.x = Ease(In, Cubic, m_Frame * Slow::GetInstance()->GetPlayerSlowPower(), m_Position.x, m_AfterPosX);
-		m_playerVec = { m_Position.x - oldX, 0, 0 };
-	}
 
-	if (_MoveState == MOVE_UP) {
-		m_AttackPos = { m_Position.x,m_Position.y,m_Position.z + 1.0f };
-		m_Rotation.y = 270.0f;
-	}
-	else if (_MoveState == MOVE_DOWN) {
-		m_AttackPos = { m_Position.x,m_Position.y,m_Position.z - 1.0f };
-		m_Rotation.y = 90.0f;
-	}
-	else if (_MoveState == MOVE_RIGHT) {
-		m_AttackPos = { m_Position.x + 1.0f,m_Position.y,m_Position.z };
-		m_Rotation.y = 0.0f;
-	}
-	else {
-		m_AttackPos = { m_Position.x - 1.0f,m_Position.y,m_Position.z };
-		m_Rotation.y = 180.0f;
-	}
-
-	if (m_Frame > 0.9f) {
-		m_CameraZoom = false;
-	}
-	
-}
-//チュートリアルの更新
-void Player::TutorialUpdate() {
-	//状態移行(charastateに合わせる)
-	(this->*stateTable[_charaState])();
-
-	Obj_SetParam();
-
-	if (m_Damage) {
-		m_DamageTimer++;
-		if (m_DamageTimer >= 10) {
-			m_Damage = false;
-			m_DamageTimer = {};
+	if ((input->Pushkey(DIK_SPACE))) {
+		_charaState = STATE_ATTACK;
+		m_Attack = true;
+		m_Frame = {};
+		m_CameraZoom = true;
+		if (_MoveState == MOVE_UP || _MoveState == MOVE_DOWN) {
+			m_AfterPosZ = m_Position.z * -1.0f;
+			if (_MoveState == MOVE_UP) {
+				_MoveState = MOVE_DOWN;
+			}
+			else {
+				_MoveState = MOVE_UP;
+			}
+		}
+		else {
+			m_AfterPosX = m_Position.x * -1.0f;
+			if (_MoveState == MOVE_RIGHT) {
+				_MoveState = MOVE_LEFT;
+			}
+			else {
+				_MoveState = MOVE_RIGHT;
+			}
 		}
 	}
 }

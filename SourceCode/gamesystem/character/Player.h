@@ -51,6 +51,9 @@ private:
 	void LoadCSV();
 
 private:
+	void PadMove();
+	void KeyMove();
+private:
 	//歩きまたは走り状態
 	float velocity = {};
 	//移動加算値

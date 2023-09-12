@@ -50,6 +50,10 @@ public://getter setter
 
 	const int GetMovingT() { return MovingTime; }
 	void SetEffectMove(bool EffectMove) { m_EffectMove = EffectMove; }
+
+private:
+	void SuccessAttack();
+	void MissAttack();
 protected:
 	int MovingTime;
 	bool StopF = false;

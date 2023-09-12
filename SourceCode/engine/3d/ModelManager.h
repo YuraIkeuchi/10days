@@ -16,7 +16,9 @@ public:
 	enum ModelName {
 		WALL_UP,
 		WALL_UNDER,
-		ENEMY,
+		ENEMYRED,
+		ENEMYBLUE,
+		ENEMYGREEN,
 		PLAYER_1,
 		PLAYER_2
 	};

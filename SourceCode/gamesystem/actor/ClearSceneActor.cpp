@@ -7,6 +7,7 @@
 #include "ScoreManager.h"
 #include "SceneChanger.h"
 #include "Helper.h"
+#include "Timer.h"
 //‰Šú‰»
 void ClearSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, LightGroup* lightgroup) {
 	//‹¤’Ê‚Ì‰Šú‰»
@@ -135,8 +136,19 @@ void ClearSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 		Hyouka_[i]->SetSize({ l_HyoukaWidth_Cut,l_HyoukaHeight_Cut });
 	}
 	
-	back = IKESprite::Create(ImageManager::RESULT, { 0.0f,0.0f });
-	back->SetSize({ 1280.0f,720.0f });
+	//•]‰¿
+	const int ResultCount = RESULT_MAX;
+	const float l_ResultWidth_Cut = 1280.0f;
+	const float l_ResultHeight_Cut = 720.0f;
+	for (int i = 0; i < back.size(); i++) {
+		int number_index_y = i / ResultCount;
+		int number_index_x = i % ResultCount;
+		back[i] = IKESprite::Create(ImageManager::RESULT, { 0.0f,0.0f });
+		back[i]->SetTextureRect(
+			{ static_cast<float>(number_index_x) * l_ResultWidth_Cut, static_cast<float>(number_index_y) * l_ResultHeight_Cut },
+			{ static_cast<float>(l_ResultWidth_Cut), static_cast<float>(l_ResultHeight_Cut) });
+		back[i]->SetSize({ l_ResultWidth_Cut,l_ResultHeight_Cut });
+	}
 
 	//Še•]‰¿‚Ì“_”
 	m_ScoreLine[BUT] = 0;
@@ -221,7 +233,7 @@ void ClearSceneActor::Draw(DirectXCommon* dxCommon) {
 //‘O–Ê•`‰æ
 void ClearSceneActor::FrontDraw() {
 	IKESprite::PreDraw();
-	back->Draw();
+	back[Timer::GetInstance()->getGameType() - 1]->Draw();
 	Hyouka_[_HyoukaType]->Draw();
 	Score_First[0]->Draw();
 	Score_Second[m_FirstNumber]->Draw();

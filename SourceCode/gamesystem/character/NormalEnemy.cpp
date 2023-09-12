@@ -28,7 +28,6 @@ bool NormalEnemy::Initialize() {
 
 	m_Object.reset(new IKEObject3d());
 	m_Object->Initialize();
-	m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::ENEMY));
 	effect_up = IKESprite::Create(ImageManager::CUT_UP, {});
 	effect_up->SetAnchorPoint({ 0.5f,1.0f });
 	effect_down = IKESprite::Create(ImageManager::CUT_DOWN, {});
@@ -41,19 +40,22 @@ bool NormalEnemy::Initialize() {
 	_EnemyType = m_EnemyType;
 	m_Scale = { 0.5f,0.5f,0.5f };
 	if (_EnemyType == RED_ENEMY) {
-		m_Color = { 1.0f,0.2f,0.0f,1.0f };
 		m_UpPos = { 1000.0f,200.0f };
 		m_DownPos = { 1000.0f,195.0f };
+		m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::ENEMYRED));
+		m_Color = { 1.0f,0.2f,0.0f,1.0f };
 	}
 	else if (_EnemyType == GREEN_ENEMY) {
-		m_Color = { 0.0f,1.0f,0.2f,1.0f };
 		m_UpPos = { 800.0f,280.0f };
 		m_DownPos = { 800.0f,275.0f };
+		m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::ENEMYGREEN));
+		m_Color = { 0.0f,1.0f,0.2f,1.0f };
 	}
 	else {
-		m_Color = { 0.2f,0.0f,1.0f,1.0f };
+		m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::ENEMYBLUE));
 		m_UpPos = { 800.0f,360.0f };
 		m_DownPos = { 800.0f,355.0f };
+		m_Color = { 0.2f,0.0f,1.0f,1.0f };
 	}
 
 	if (_charaState == STATE_RIGHT) {

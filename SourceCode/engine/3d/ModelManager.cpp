@@ -18,7 +18,9 @@ void ModelManager::StartInitialize()
 	LoadModel(PLAYER_1, "Samuraiidle2");
 
 	LoadModel(PLAYER_2, "Samuraiidle");
-	LoadModel(ENEMY, "slime");
+	LoadModel(ENEMYRED, "slimeRed");
+	LoadModel(ENEMYGREEN, "slimeGreen");
+	LoadModel(ENEMYBLUE, "slimeBlue");
 }
 
 //モデル読み込み(非同期処理で読み込むもの)

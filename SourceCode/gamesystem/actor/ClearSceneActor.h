@@ -24,6 +24,7 @@ private:
 	static const int NUMBER_MAX = 10;
 	static const int NEXT_MAX = 2;
 	static const int HYOUKA_MAX = 5;
+	static const int RESULT_MAX = 2;
 private://メンバ変数
 	//スコア
 	array<unique_ptr<IKESprite>, NUMBER_MAX> Score_First;
@@ -37,8 +38,8 @@ private://メンバ変数
 	array<unique_ptr<IKESprite>, NUMBER_MAX> Next_Fourth;
 	array<unique_ptr<IKESprite>, HYOUKA_MAX> Hyouka_;
 	array<unique_ptr<IKESprite>, NEXT_MAX> Next_Hyouka;
+	array<unique_ptr<IKESprite>, RESULT_MAX> back;
 
-	unique_ptr<IKESprite> back;
 	int m_TargetScore = {};//最終スコア
 	int m_TargetNowScore = {};//最終スコア
 	int m_FirstNumber = 0;//一桁目

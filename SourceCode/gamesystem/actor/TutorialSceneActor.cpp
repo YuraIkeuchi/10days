@@ -549,8 +549,15 @@ void TutorialSceneActor::EndState() {
 void TutorialSceneActor::SkipUpdate() {
 	Input* input = Input::GetInstance();
 	//二回ボタンを押すとチュートリアル終了する
-	if ((input->TriggerButton(input->Y))) {
-		m_EndCount++;
+	if (Timer::GetInstance()->getGameType() == PAD_MODE) {
+		if ((input->TriggerButton(input->Y))) {
+			m_EndCount++;
+		}
+	}
+	else {
+		if ((input->TriggerKey(DIK_Y))) {
+			m_EndCount++;
+		}
 	}
 	//一定時間立つとスキップ状態リセットされる
 	if (m_EndCount != 0) {
