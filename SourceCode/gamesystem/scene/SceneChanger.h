@@ -38,7 +38,7 @@ public:
 	const bool GetChange() { return m_Change; }
 	const bool GetChangeStart() { return m_ChangeStart; }
 	void SetChange(const bool Change) { m_Change = Change; }
-	void SetChangeStart(const bool ChangeStart) { m_ChangeStart = ChangeStart; }
+	void SetChangeStart(const bool ChangeStart);
 private:
 	unique_ptr<IKESprite> left_door;
 	unique_ptr<IKESprite> right_door;

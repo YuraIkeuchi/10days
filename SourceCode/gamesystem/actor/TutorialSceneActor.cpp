@@ -525,6 +525,7 @@ void TutorialSceneActor::SkipUpdate() {
 	Input* input = Input::GetInstance();
 	//二回ボタンを押すとチュートリアル終了する
 	if ((input->TriggerButton(input->Y))) {
+		Audio::GetInstance()->PlayWave("Resources/audio/botton.wav", 0.2f);
 		m_EndCount++;
 	}
 	//一定時間立つとスキップ状態リセットされる
