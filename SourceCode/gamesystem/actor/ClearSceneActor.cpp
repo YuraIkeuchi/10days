@@ -187,7 +187,7 @@ void ClearSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 	Input* input = Input::GetInstance();
 	if ((input->TriggerButton(input->B))) {
 		SceneChanger::GetInstance()->SetChangeStart(true);
-		Audio::GetInstance()->PlayWave("Resources/audio/botton.wav", 0.1f);
+		Audio::GetInstance()->PlayWave("Resources/audio/botton.wav", 0.3f);
 	}
 	if (SceneChanger::GetInstance()->GetChange()) {
 		SceneManager::GetInstance()->ChangeScene("TITLE");
@@ -269,9 +269,12 @@ void ClearSceneActor::Finalize() {
 void ClearSceneActor::ResultMove() {
 	const float l_AddFrame = 0.05f;
 	if (_ResultType == SCORE) {
+		m_counterTimer++;
+
 		for (int i = 0; i < 10; i++) {
 			if (Helper::GetInstance()->CheckMin(m_TargetScore, m_TargetNowScore, 1)) {
 				_ResultType = HYOUKA;
+				m_counterTimer = 0;
 			}
 		}
 		//スコアに応じて数字が変わる
@@ -279,11 +282,17 @@ void ClearSceneActor::ResultMove() {
 		m_SecondNumber = getDigits(m_TargetScore, 2, 2);
 		m_ThirdNumber = getDigits(m_TargetScore, 3, 3);
 		m_FourthNumber = getDigits(m_TargetScore, 4, 4);
+		
+		if (5 < m_counterTimer)
+		{
+			Audio::GetInstance()->PlayWave("Resources/audio/number.wav", 0.1f);
+			m_counterTimer = 0;
+		}
 	}
 	else if (_ResultType == HYOUKA) {		//評価のスタンプは押される
 		if (Helper::GetInstance()->FrameCheck(m_Frame, l_AddFrame)) {
 			_ResultType = NEXT_SCORE;
-			Audio::GetInstance()->PlayWave("Resources/audio/result.wav", 0.1f);
+			Audio::GetInstance()->PlayWave("Resources/audio/result.wav", 0.3f);
 		}
 
 		m_Alpha = Ease(In, Cubic, m_Frame, m_Alpha, 1.0f);

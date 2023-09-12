@@ -1,6 +1,7 @@
 #include "SceneChanger.h"
 #include "ImageManager.h"
 #include "Helper.h"
+#include "Audio.h"
 
 SceneChanger* SceneChanger::GetInstance() {
 	static SceneChanger instance;
@@ -36,7 +37,7 @@ void SceneChanger::Update() {
 					_doorState = CLOSE_DOOR;
 					m_Frame = {};
 					m_ChangeTimer = {};
-					// TODO ‚±‚±‚É‰¹
+					Audio::GetInstance()->PlayWave("Resources/audio/close.wav", 0.2f);
 				}
 			}
 		}
@@ -62,4 +63,14 @@ void SceneChanger::InitializeOver() {
 void SceneChanger::Draw() {
 	left_door->Draw();
 	right_door->Draw();
+}
+
+void SceneChanger::SetChangeStart(const bool ChangeStart)
+{
+	if (m_ChangeStart == false)
+	{
+		Audio::GetInstance()->PlayWave("Resources/audio/open.wav", 0.3f);
+	}
+
+	m_ChangeStart = ChangeStart;
 }

@@ -52,6 +52,8 @@ private://メンバ変数
 	int m_NextThirdNumber = 0;//三桁め
 	int m_NextFourthNumber = 0;//四桁目
 
+	int m_counterTimer = 0;//スコアのオーディオタイマー
+
 	enum HyoukaType {
 		BUT,//一番下
 		NORMAL,//普通

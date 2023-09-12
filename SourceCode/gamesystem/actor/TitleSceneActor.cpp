@@ -14,7 +14,7 @@ void TitleSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 	dxCommon->SetFullScreen(true);
 
 	//オーディオ
-	Audio::GetInstance()->LoopWave(AUDIO_BATTLE, 0.1f);
+	Audio::GetInstance()->LoopWave(AUDIO_BATTLE, 0.075f);
 
 	text_ = make_unique<TitleText>();
 	text_->Initialize(dxCommon);
@@ -50,16 +50,16 @@ void TitleSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 	if ((input->TriggerButton(input->B))) {
 		_SceneType = PLAY;
 		SceneChanger::GetInstance()->SetChangeStart(true);
-		Audio::GetInstance()->PlayWave("Resources/audio/botton.wav", 0.1f);
 		Timer::GetInstance()->SetGameType(PAD_MODE);
+		Audio::GetInstance()->PlayWave("Resources/audio/botton.wav", 0.3f);
 	}
 	else if (input->TriggerKey(DIK_SPACE)) {
 		_SceneType = PLAY;
 		SceneChanger::GetInstance()->SetChangeStart(true);
-		Audio::GetInstance()->PlayWave("Resources/audio/botton.wav", 0.1f);
+		Audio::GetInstance()->PlayWave("Resources/audio/botton.wav", 0.3f);
 		Timer::GetInstance()->SetGameType(KEYBOARD_MODE);
 	}
-
+	
 	if (SceneChanger::GetInstance()->GetChange()) {
 		if (_SceneType == PLAY) {
 			SceneManager::GetInstance()->ChangeScene("TUTORIAL");
