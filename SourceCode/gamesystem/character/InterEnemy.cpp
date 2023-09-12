@@ -136,14 +136,14 @@ void InterEnemy::AttackCollide() {
 				}
 			}
 		}
-		if (Collision::CircleCollision(m_Position.x, m_Position.z, l_DamageRadius, Player::GetInstance()->GetPosition().x, Player::GetInstance()->GetPosition().z, l_DamageRadius)
+		/*if (Collision::CircleCollision(m_Position.x, m_Position.z, l_DamageRadius, Player::GetInstance()->GetPosition().x, Player::GetInstance()->GetPosition().z, l_DamageRadius)
 			&& !m_Death) {
 			Slow::GetInstance()->SetCheck(false);
 			m_Miss = true;
 			Player::GetInstance()->SetDamage(true);
 			Slow::GetInstance()->SetSlow(false);
 			m_ViewEffect = false;
-		}
+		}*/
 	}
 }
 

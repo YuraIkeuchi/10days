@@ -261,7 +261,7 @@ Number,43
 POP,9,0,-3.578
 ResCount,2800
 MoveType,2
-EnemyType,0
+EnemyType,2
 /*--------------------------------*/
 Number,44
 POP,9,0,-0.833
@@ -279,7 +279,7 @@ Number,46
 POP,9,0,3.873
 ResCount,2800
 MoveType,2
-EnemyType,0
+EnemyType,2
 /*--------------------------------*/
 Number,47
 POP,9,0,6.225

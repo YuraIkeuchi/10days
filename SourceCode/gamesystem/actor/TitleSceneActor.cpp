@@ -47,17 +47,19 @@ void TitleSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Light
 	camerawork->TitleCamera(camera);
 	Input* input = Input::GetInstance();
 	//シーンチェンジ
-	if ((input->TriggerButton(input->B))) {
-		_SceneType = PLAY;
-		SceneChanger::GetInstance()->SetChangeStart(true);
-		Timer::GetInstance()->SetGameType(PAD_MODE);
-		Audio::GetInstance()->PlayWave("Resources/audio/botton.wav", 0.3f);
-	}
-	else if (input->TriggerKey(DIK_SPACE)) {
-		_SceneType = PLAY;
-		SceneChanger::GetInstance()->SetChangeStart(true);
-		Audio::GetInstance()->PlayWave("Resources/audio/botton.wav", 0.3f);
-		Timer::GetInstance()->SetGameType(KEYBOARD_MODE);
+	if (!SceneChanger::GetInstance()->GetChangeStart()) {
+		if ((input->TriggerButton(input->B))) {
+			_SceneType = PLAY;
+			SceneChanger::GetInstance()->SetChangeStart(true);
+			Timer::GetInstance()->SetGameType(PAD_MODE);
+			Audio::GetInstance()->PlayWave("Resources/audio/botton.wav", 0.3f);
+		}
+		else if (input->TriggerKey(DIK_SPACE)) {
+			_SceneType = PLAY;
+			SceneChanger::GetInstance()->SetChangeStart(true);
+			Audio::GetInstance()->PlayWave("Resources/audio/botton.wav", 0.3f);
+			Timer::GetInstance()->SetGameType(KEYBOARD_MODE);
+		}
 	}
 	
 	if (SceneChanger::GetInstance()->GetChange()) {

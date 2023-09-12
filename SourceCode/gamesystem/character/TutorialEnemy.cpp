@@ -44,15 +44,15 @@ bool TutorialEnemy::Initialize() {
 		m_EffectColor = { 1.0f,0.2f,0.0f,1.0f };
 	}
 	else if (_EnemyType == GREEN_ENEMY) {
-		m_UpPos = { 800.0f,280.0f };
-		m_DownPos = { 800.0f,275.0f };
+		m_UpPos = { 1000.0f,280.0f };
+		m_DownPos = { 1000.0f,275.0f };
 		m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::ENEMYGREEN));
 		m_EffectColor = { 0.0f,1.0f,0.2f,1.0f };
 	}
 	else {
 		m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::ENEMYBLUE));
-		m_UpPos = { 800.0f,360.0f };
-		m_DownPos = { 800.0f,355.0f };
+		m_UpPos = { 1000.0f,360.0f };
+		m_DownPos = { 1000.0f,355.0f };
 		m_EffectColor = { 0.2f,0.0f,1.0f,1.0f };
 	}
 

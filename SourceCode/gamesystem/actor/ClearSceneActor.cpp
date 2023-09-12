@@ -187,16 +187,18 @@ void ClearSceneActor::Initialize(DirectXCommon* dxCommon, DebugCamera* camera, L
 //XV
 void ClearSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, LightGroup* lightgroup) {
 	Input* input = Input::GetInstance();
-	if (Timer::GetInstance()->getGameType() == PAD_MODE) {
-		if ((input->TriggerButton(input->B))) {
-			SceneChanger::GetInstance()->SetChangeStart(true);
-			Audio::GetInstance()->PlayWave("Resources/audio/botton.wav", 0.3f);
+	if (!SceneChanger::GetInstance()->GetChangeStart()) {
+		if (Timer::GetInstance()->getGameType() == PAD_MODE) {
+			if ((input->TriggerButton(input->B))) {
+				SceneChanger::GetInstance()->SetChangeStart(true);
+				Audio::GetInstance()->PlayWave("Resources/audio/botton.wav", 0.3f);
+			}
 		}
-	}
-	else {
-		if ((input->TriggerKey(DIK_SPACE))) {
-			SceneChanger::GetInstance()->SetChangeStart(true);
-			Audio::GetInstance()->PlayWave("Resources/audio/botton.wav", 0.3f);
+		else {
+			if ((input->TriggerKey(DIK_SPACE))) {
+				SceneChanger::GetInstance()->SetChangeStart(true);
+				Audio::GetInstance()->PlayWave("Resources/audio/botton.wav", 0.3f);
+			}
 		}
 	}
 	if (SceneChanger::GetInstance()->GetChange()) {
