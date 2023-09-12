@@ -41,19 +41,19 @@ bool TutorialEnemy::Initialize() {
 		m_UpPos = { 1000.0f,200.0f };
 		m_DownPos = { 1000.0f,195.0f };
 		m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::ENEMYRED));
-		m_Color = { 1.0f,0.2f,0.0f,1.0f };
+		m_EffectColor = { 1.0f,0.2f,0.0f,1.0f };
 	}
 	else if (_EnemyType == GREEN_ENEMY) {
 		m_UpPos = { 800.0f,280.0f };
 		m_DownPos = { 800.0f,275.0f };
 		m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::ENEMYGREEN));
-		m_Color = { 0.0f,1.0f,0.2f,1.0f };
+		m_EffectColor = { 0.0f,1.0f,0.2f,1.0f };
 	}
 	else {
 		m_Object->SetModel(ModelManager::GetInstance()->GetModel(ModelManager::ENEMYBLUE));
 		m_UpPos = { 800.0f,360.0f };
 		m_DownPos = { 800.0f,355.0f };
-		m_Color = { 0.2f,0.0f,1.0f,1.0f };
+		m_EffectColor = { 0.2f,0.0f,1.0f,1.0f };
 	}
 
 	if (_charaState == STATE_RIGHT) {
@@ -73,8 +73,8 @@ bool TutorialEnemy::Initialize() {
 	gauge_down->SetScale(0.25f);
 	effect_up->SetScale(0.25f);
 	effect_down->SetScale(0.25f);
-	gauge_up->SetColor(m_Color);
-	gauge_down->SetColor(m_Color);
+	gauge_up->SetColor(m_EffectColor);
+	gauge_down->SetColor(m_EffectColor);
 
 	gauge_up->SetPosition(m_UpPos);
 	gauge_down->SetPosition(m_DownPos);
@@ -120,8 +120,8 @@ void TutorialEnemy::Action() {
 	gauge_down->SetPosition(m_DownPos);
 	effect_up->SetPosition(m_UpPos);
 	effect_down->SetPosition(m_DownPos);
-	gauge_up->SetColor({ m_Color.x,m_Color.y,m_Color.z,m_Alpha });
-	gauge_down->SetColor({ m_Color.x,m_Color.y,m_Color.z,m_Alpha });
+	gauge_up->SetColor({ m_EffectColor.x,m_EffectColor.y,m_EffectColor.z,m_Alpha });
+	gauge_down->SetColor({ m_EffectColor.x,m_EffectColor.y,m_EffectColor.z,m_Alpha });
 	effect_up->SetColor({ 1.0f,1.0f,1.0f,m_Alpha });
 	effect_down->SetColor({ 1.0f,1.0f,1.0f,m_Alpha });
 
@@ -363,6 +363,7 @@ void TutorialEnemy::TutoSuccessAttack() {
 	Slow::GetInstance()->SetSlow(false);
 	Player::GetInstance()->SetSlash(true);
 	Player::GetInstance()->SetSlashTimer(0);
+	Audio::GetInstance()->PlayWave("Resources/audio/kill.wav", 0.1f);
 }
 //UŒ‚Ž¸”s
 void TutorialEnemy::TutoMissAttack() {
@@ -373,5 +374,6 @@ void TutorialEnemy::TutoMissAttack() {
 		Player::GetInstance()->SetDamage(true);
 		Slow::GetInstance()->SetSlow(false);
 		m_ViewEffect = false;
+		Audio::GetInstance()->PlayWave("Resources/audio/miss.wav", 0.1f);
 	}
 }

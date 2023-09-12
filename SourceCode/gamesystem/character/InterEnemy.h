@@ -119,7 +119,6 @@ protected:
 	unique_ptr<IKESprite> gauge_up;
 	unique_ptr<IKESprite> gauge_down;
 	std::vector<SlashEffect*> slash;
-	XMFLOAT4 m_EffectColor = {};
 	bool m_SlowMove = false;
 	bool m_Move = true;
 	bool m_Alive = true;
@@ -163,4 +162,5 @@ protected:
 		BIRTH_SET,
 		BIRTH_START
 	}_BirthType = BIRTH_SET;
+	XMFLOAT4 m_EffectColor = {};
 };

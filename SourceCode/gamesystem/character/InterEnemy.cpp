@@ -83,7 +83,7 @@ bool InterEnemy::CheckCollide() {
 void InterEnemy::AttackCollide() {
 	const float l_DamageRadius = 0.5f;
 	Input* input = Input::GetInstance();
-	if (m_Slow) {
+	if (m_Slow && m_MissTimer > 1) {
 		if (Timer::GetInstance()->getGameType() == PAD_MODE) {			//ゲームパッド
 			if ((input->TriggerButton(input->B))) {		//Bボタンパターン
 				if (m_EnemyType == RED_ENEMY) {

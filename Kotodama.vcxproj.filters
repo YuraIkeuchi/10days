@@ -899,9 +899,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Resources\2d\objicon\magic.ico" />
+    <ResourceCompile Include="Kotodama.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Kotodama.rc" />
+    <Image Include="Resources\2d\objicon\samurai.ico" />
   </ItemGroup>
 </Project>
