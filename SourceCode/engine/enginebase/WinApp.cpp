@@ -26,7 +26,7 @@ void WinApp::Initialize()
 	//WNDCLASSEX w{};
 	w.cbSize = sizeof(WNDCLASSEX);
 	w.lpfnWndProc = (WNDPROC)WindowProc;
-	w.lpszClassName = L"Ža‚èŽÌ‚Ä‚¿‚á‚Á‚ÄŒä–Æ";
+	w.lpszClassName = L"4005_Ža‚èŽÌ‚Ä‚¿‚á‚Á‚ÄŒä–Æ";
 	w.hInstance = GetModuleHandle(nullptr);
 	w.hCursor = LoadCursor(NULL, IDC_ARROW);
 	w.hIcon = LoadIcon(w.hInstance, MAKEINTRESOURCE(IDI_ICON1));	//ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX‚ðOS‚É“o˜^
@@ -36,7 +36,7 @@ void WinApp::Initialize()
 	AdjustWindowRect(&wrc, WS_OVERLAPPEDWINDOW, false);
 
 	hwnd = CreateWindow(w.lpszClassName,
-		L"Ža‚èŽÌ‚Ä‚¿‚á‚Á‚ÄŒä–Æ",
+		L"4005_Ža‚èŽÌ‚Ä‚¿‚á‚Á‚ÄŒä–Æ",
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,

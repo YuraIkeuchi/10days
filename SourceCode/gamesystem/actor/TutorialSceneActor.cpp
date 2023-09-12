@@ -592,14 +592,16 @@ void TutorialSceneActor::BirthEnemy(bool Move,bool End) {
 		if (_AttackState == ATTACK_EXPLAIN) {
 			newEnemy->SetEnemyType(0);
 			newEnemy->SetCheckMiss(false);
+			newEnemy->SetEffectMove(false);
 		}
 		else {
 			int num = Random::GetRanNum(0, 2);
 			newEnemy->SetEnemyType(num);
 			newEnemy->SetCheckMiss(true);
+			newEnemy->SetEffectMove(true);
 		}
 		newEnemy->Initialize();
-		newEnemy->SetEffectMove(false);
+	
 		
 		enemys.push_back(newEnemy);
 		m_EnemyCount++;

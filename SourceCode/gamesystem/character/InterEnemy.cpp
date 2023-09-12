@@ -165,7 +165,7 @@ void InterEnemy::EffectCountDown() {
 		m_MissTimer++;
 	}
 
-	if (m_MissTimer >= 120) {
+	if (m_MissTimer >= 100) {
 		Audio::GetInstance()->PlayWave("Resources/audio/miss.wav", 0.1f);
 		Slow::GetInstance()->SetCheck(false);
 		m_Miss = true;
