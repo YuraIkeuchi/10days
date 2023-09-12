@@ -154,6 +154,7 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 		SceneChanger::GetInstance()->SetChangeStart(true);
 	}
 	if (SceneChanger::GetInstance()->GetChange()) {
+		blood.clear();
 		SceneManager::GetInstance()->ChangeScene("FIRSTSTAGE");
 		SceneChanger::GetInstance()->SetChange(false);
 	}
@@ -168,15 +169,6 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 
 		if (enemys[i]->GetDeath() && !enemys[i]->GetDamage()) {
 			ui->SetMag(true);
-			for (auto& m : blood)
-			{
-				if (m->counter == 0)
-				{
-					m->object->SetPosition({ enemys[i]->GetPosition().x,0.3f,enemys[i]->GetPosition().z});
-					m->counter = 1;
-					break;
-				}
-			}
 			m_EnemyCount--;
 			if (ScoreManager::GetInstance()->GetMagnification() < 5) {
 				ScoreManager::GetInstance()->SetMagnification(ScoreManager::GetInstance()->GetMagnification() + 1);
@@ -186,6 +178,15 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 			ScoreManager::GetInstance()->SetRealScore(ScoreManager::GetInstance()->GetRealScore() + (m_AddScore * 10));
 			m_AddScore = 0;
 			enemys[i]->SetDamage(true);
+			for (auto& m : blood)
+			{
+				if (m->counter == 0)
+				{
+					m->object->SetPosition({ enemys[i]->GetPosition().x,0.3f,enemys[i]->GetPosition().z });
+					m->counter = 1;
+					break;
+				}
+			}
 		}
 
 		if (!enemys[i]->GetAlive()) {
@@ -199,6 +200,11 @@ void TutorialSceneActor::Update(DirectXCommon* dxCommon, DebugCamera* camera, Li
 	//血だまりのエフェクト
 	for (int i = 0; i < blood.size(); i++)
 	{
+		if (blood[i]->counter == 0)
+		{
+			continue;
+		}
+
 		//拡大
 		if (0 < blood[i]->counter && blood[i]->counter < 60)
 		{
