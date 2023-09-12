@@ -165,7 +165,7 @@ void InterEnemy::EffectCountDown() {
 		m_MissTimer++;
 	}
 
-	if (m_MissTimer >= 80) {
+	if (m_MissTimer >= 120) {
 		Audio::GetInstance()->PlayWave("Resources/audio/miss.wav", 0.1f);
 		Slow::GetInstance()->SetCheck(false);
 		m_Miss = true;
@@ -178,10 +178,10 @@ void InterEnemy::EffectCountDown() {
 		gauge_down->SetSize({ 1632.0f,819 });
 		effect_up->SetSize({ 1632.0f,703.0f });
 		effect_down->SetSize({ 1632.0f,823.0f });
-		gauge_up->SetScale(0.25f);
-		gauge_down->SetScale(0.25f);
-		effect_up->SetScale(0.25f);
-		effect_down->SetScale(0.25f);
+		gauge_up->SetScale(0.23f);
+		gauge_down->SetScale(0.3f);
+		effect_up->SetScale(0.3f);
+		effect_down->SetScale(0.3f);
 		m_MissTimer = {};
 	}
 }
