@@ -271,6 +271,7 @@ void Player::PadMove() {
 	}
 
 	if ((input->TriggerButton(input->A))) {
+		Audio::GetInstance()->PlayWave("Resources/audio/dash.wav", 0.2f);
 		_charaState = STATE_ATTACK;
 		m_Attack = true;
 		m_Frame = {};
@@ -370,6 +371,7 @@ void Player::KeyMove() {
 	}
 
 	if ((input->Pushkey(DIK_SPACE))) {
+		Audio::GetInstance()->PlayWave("Resources/audio/dash.wav", 0.2f);
 		_charaState = STATE_ATTACK;
 		m_Attack = true;
 		m_Frame = {};
