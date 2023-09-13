@@ -235,7 +235,7 @@ void InterEnemy::SuccessAttack() {
 	ParticleEmitter::GetInstance()->SplatterEffect(20, num, m_Position, Player::GetInstance()->GetPlayerVec(), size, size, { 1, 0, 0, 1 });
 	BirthEffect();
 	Slow::GetInstance()->SetSlow(false);
-	Audio::GetInstance()->PlayWave("Resources/audio/kill.wav", 0.1f);
+	Audio::GetInstance()->PlayWave("Resources/audio/kill.wav", 0.3f);
 	Player::GetInstance()->SetSlash(true);
 	Player::GetInstance()->SetSlashTimer(0);
 }

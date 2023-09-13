@@ -364,7 +364,7 @@ void TutorialEnemy::TutoSuccessAttack() {
 	Slow::GetInstance()->SetSlow(false);
 	Player::GetInstance()->SetSlash(true);
 	Player::GetInstance()->SetSlashTimer(0);
-	Audio::GetInstance()->PlayWave("Resources/audio/kill.wav", 0.1f);
+	Audio::GetInstance()->PlayWave("Resources/audio/kill.wav", 0.3f);
 }
 //UŒ‚¸”s
 void TutorialEnemy::TutoMissAttack() {
